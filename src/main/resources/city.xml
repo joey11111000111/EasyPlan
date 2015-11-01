@@ -1,0 +1,543 @@
+<?xml version="1.0"?>
+
+<city>
+    <!-- Pályaudvar -->
+    <bus_station_connections>
+		<!-- 1-es megálló -->
+		<connection>
+			<refid>1</refid>
+			<travel_time>8</travel_time>
+		</connection>
+		<!-- 4-es megálló -->
+		<connection>
+			<refid>4</refid>
+			<travel_time>6</travel_time>
+		</connection>
+		<!-- 6-os megálló -->
+		<connection>
+			<refid>6</refid>
+			<travel_time>12</travel_time>
+		</connection>
+		<!-- 2-es megálló -->
+		<connection>
+			<refid>2</refid>
+			<travel_time>5</travel_time>
+		</connection>
+    </bus_station_connections>
+
+    <!-- Buszmegállók -->
+
+    <!-- 1-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>1</id>
+        <position>
+            <x>9</x>
+            <y>2</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- Pályaudvar -->
+            <connection>
+                <refid>0</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 4-es megálló -->
+            <connection>
+                <refid>4</refid>
+                <travel_time>13</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 2-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>2</id>
+        <position>
+            <x>9</x>
+            <y>8</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- Pályaudvar -->
+            <connection>
+                <refid>0</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 3-as megálló -->
+            <connection>
+                <refid>3</refid>
+                <travel_time>9</travel_time>
+            </connection>
+            <!-- 5-ös megálló -->
+            <connection>
+                <refid>5</refid>
+                <travel_time>10</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 3-as buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>3</id>
+        <position>
+            <x>10</x>
+            <y>10</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 2-es megálló -->
+            <connection>
+                <refid>2</refid>
+                <travel_time>10</travel_time>
+            </connection>
+            <!-- 5-ös megálló -->
+            <connection>
+                <refid>5</refid>
+                <travel_time>12</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 4-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>4</id>
+        <position>
+            <x>7</x>
+            <y>4</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- Pályaudvar -->
+            <connection>
+                <refid>0</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 1-es megálló -->
+            <connection>
+                <refid>1</refid>
+                <travel_time>12</travel_time>
+            </connection>
+            <!-- 6-os megálló -->
+            <connection>
+                <refid>6</refid>
+                <travel_time>10</travel_time>
+            </connection>
+            <!-- 7-es megálló -->
+            <connection>
+                <refid>7</refid>
+                <travel_time>10</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 5-ös buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>5</id>
+        <position>
+            <x>7</x>
+            <y>10</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 2-es megálló -->
+            <connection>
+                <refid>2</refid>
+                <travel_time>11</travel_time>
+            </connection>
+            <!-- 3-as megálló -->
+            <connection>
+                <refid>3</refid>
+                <travel_time>15</travel_time>
+            </connection>
+            <!-- 6-os megálló -->
+            <connection>
+                <refid>6</refid>
+                <travel_time>15</travel_time>
+            </connection>
+            <!-- 10-es megálló -->
+            <connection>
+                <refid>10</refid>
+                <travel_time>12</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 6-os buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>6</id>
+        <position>
+            <x>6</x>
+            <y>6</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- Pályaudvar -->
+            <connection>
+                <refid>0</refid>
+                <travel_time>12</travel_time>
+            </connection>
+            <!-- 4-es megálló -->
+            <connection>
+                <refid>4</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 5-ös megálló -->
+            <connection>
+                <refid>5</refid>
+                <travel_time>13</travel_time>
+            </connection>
+            <!-- 8-as megálló -->
+            <connection>
+                <refid>8</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 9-as megálló -->
+            <connection>
+                <refid>9</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 10-es megálló -->
+            <connection>
+                <refid>10</refid>
+                <travel_time>11</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 7-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>7</id>
+        <position>
+            <x>5</x>
+            <y>2</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 4-es megálló -->
+            <connection>
+                <refid>4</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 8-as megálló -->
+            <connection>
+                <refid>8</refid>
+                <travel_time>10</travel_time>
+            </connection>
+            <!-- 11-es megálló -->
+            <connection>
+                <refid>11</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 14-es megálló -->
+            <connection>
+                <refid>14</refid>
+                <travel_time>15</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 8-as buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>8</id>
+        <position>
+            <x>4</x>
+            <y>5</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 6-os megálló -->
+            <connection>
+                <refid>6</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 7-es megálló -->
+            <connection>
+                <refid>7</refid>
+                <travel_time>10</travel_time>
+            </connection>
+            <!-- 9-es megálló -->
+            <connection>
+                <refid>9</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 11-es megálló -->
+            <connection>
+                <refid>11</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 13-es megálló -->
+            <connection>
+                <refid>13</refid>
+                <travel_time>10</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 9-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>9</id>
+        <position>
+            <x>4</x>
+            <y>7</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 6-os megálló -->
+            <connection>
+                <refid>6</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 8-as megálló -->
+            <connection>
+                <refid>8</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 10-es megálló -->
+            <connection>
+                <refid>10</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 12-es megálló -->
+            <connection>
+                <refid>12</refid>
+                <travel_time>8</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 10-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>10</id>
+        <position>
+            <x>4</x>
+            <y>9</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 5-ös megálló -->
+            <connection>
+                <refid>5</refid>
+                <travel_time>13</travel_time>
+            </connection>
+            <!-- 6-os megálló -->
+            <connection>
+                <refid>6</refid>
+                <travel_time>11</travel_time>
+            </connection>
+            <!-- 9-es megálló -->
+            <connection>
+                <refid>9</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 12-es megálló -->
+            <connection>
+                <refid>12</refid>
+                <travel_time>11</travel_time>
+            </connection>
+            <!-- 15-ös megálló -->
+            <connection>
+                <refid>15</refid>
+                <travel_time>15</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 11-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>11</id>
+        <position>
+            <x>3</x>
+            <y>3</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 7-es megálló -->
+            <connection>
+                <refid>7</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 8-as megálló -->
+            <connection>
+                <refid>8</refid>
+                <travel_time>5</travel_time>
+            </connection>
+            <!-- 13-as megálló -->
+            <connection>
+                <refid>13</refid>
+                <travel_time>9</travel_time>
+            </connection>
+            <!-- 14-es megálló -->
+            <connection>
+                <refid>14</refid>
+                <travel_time>8</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 12-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>12</id>
+        <position>
+            <x>2</x>
+            <y>7</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 9-es megálló -->
+            <connection>
+                <refid>9</refid>
+                <travel_time>7</travel_time>
+            </connection>
+            <!-- 10-es megálló -->
+            <connection>
+                <refid>10</refid>
+                <travel_time>10</travel_time>
+            </connection>
+            <!-- 13-as megálló -->
+            <connection>
+                <refid>13</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 15-ös megálló -->
+            <connection>
+                <refid>15</refid>
+                <travel_time>13</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 13-as buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>13</id>
+        <position>
+            <x>1</x>
+            <y>5</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 8-as megálló -->
+            <connection>
+                <refid>8</refid>
+                <travel_time>11</travel_time>
+            </connection>
+            <!-- 11-es megálló -->
+            <connection>
+                <refid>11</refid>
+                <travel_time>9</travel_time>
+            </connection>
+            <!-- 12-es megálló -->
+            <connection>
+                <refid>12</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 14-es megálló -->
+            <connection>
+                <refid>14</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 15-ös megálló -->
+            <connection>
+                <refid>15</refid>
+                <travel_time>16</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+
+    <!-- 14-es buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>14</id>
+        <position>
+            <x>1</x>
+            <y>2</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 7-es megálló -->
+            <connection>
+                <refid>7</refid>
+                <travel_time>16</travel_time>
+            </connection>
+            <!-- 11-es megálló -->
+            <connection>
+                <refid>11</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 13-as megálló -->
+            <connection>
+                <refid>13</refid>
+                <travel_time>9</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+    <!-- 15-ös (utolsó) buszmegálló -->
+    <bus_stop>
+        <!-- Alapadatok -->
+        <id>15</id>
+        <position>
+            <x>1</x>
+            <y>10</y>
+        </position>
+
+        <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
+        <connections>
+            <!-- 10-es megálló -->
+            <connection>
+                <refid>10</refid>
+                <travel_time>14</travel_time>
+            </connection>
+            <!-- 12-es megálló -->
+            <connection>
+                <refid>12</refid>
+                <travel_time>13</travel_time>
+            </connection>
+            <!-- 13-as megálló -->
+            <connection>
+                <refid>13</refid>
+                <travel_time>16</travel_time>
+            </connection>
+        </connections>
+    </bus_stop>
+
+</city>
