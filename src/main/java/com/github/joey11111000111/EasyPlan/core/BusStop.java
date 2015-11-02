@@ -50,8 +50,17 @@ public class BusStop {
         return null;
     }
 
-    private static int getIntValueOfTag(Node node, String tagName) {
-        
+    private static int getNumericContentOfTag(Node node, String tagName) {
+        Element parent = (Element)node;
+        NodeList tags = parent.getElementsByTagName(tagName);
+        // there is only one appearance of a certain tag in a connection element, so the first one is the needed
+        Element neededElement = (Element)tags.item(0);
+        // get all child nodes (the content is also a child node)
+        NodeList childNodes = neededElement.getChildNodes();
+
+        // the parent node only has text-content, so there is only one child node; get the text
+        String text = childNodes.item(0).getNodeValue().trim();
+        return Integer.parseInt(text);
     }
 
     static BusStop getStop(int id) {
