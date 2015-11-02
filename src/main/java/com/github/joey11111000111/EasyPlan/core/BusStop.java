@@ -1,9 +1,8 @@
 package com.github.joey11111000111.EasyPlan.core;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,7 +21,7 @@ public class BusStop {
         List<BusStop> allStopsList = new LinkedList<BusStop>();
         try {
             // get the 'city.xml' file as an InputStream
-            InputStream is = BusStop.class.getResourceAsStream("city.xml");
+            InputStream is = BusStop.class.getClassLoader().getResourceAsStream("city.xml");
             // create a document builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -46,9 +45,13 @@ public class BusStop {
         }
         catch (Exception e) {
             // TODO: log the exception
+            System.out.println("exception happened " + e);
             System.exit(1);
         }
         allStops = allStopsList.toArray(new BusStop[0]);
+        for (int i = 0; i < allStops.length; i++) {
+            System.out.println(allStops[i]);
+        }
     }//static
 
 
@@ -137,13 +140,13 @@ public class BusStop {
     }
 
     public String toString() {
-        String msgBase = "id : " + id + " x: " + x + "y: " + y
-                + " Reachables: ";
-        StringBuilder sb = new StringBuilder(msgBase);
+        String lnSep = System.getProperty("line.separator");
+        StringBuilder sb = new StringBuilder();
+        sb.append("id: ").append(id).append("  x: ").append(x).append("  y: ").append(y).append(lnSep);
         for (Map.Entry<Integer, Integer> entry : reachableStops.entrySet()) {
             sb.append("   ").append("id: ").append(entry.getKey())
                     .append(" travel time: ").append(entry.getValue())
-                    .append(System.getProperty("line.separator"));
+                    .append(lnSep);
         }
         return sb.toString();
     }

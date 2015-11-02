@@ -101,7 +101,7 @@
                             <archive>
                                 <manifest>
                                     <!-- TODO -->
-                                    <mainClass>test.the.connection.FXEntry</mainClass>
+                                    <mainClass>com.github.joey11111000111.EasyPlan.EasyPlan</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
