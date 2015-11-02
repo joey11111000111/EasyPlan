@@ -1,12 +1,14 @@
 package com.github.joey11111000111.EasyPlan.core;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Element;
 
-import javax.xml.bind.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +40,18 @@ public class BusStop {
     }//static
 
     private static Map<Integer, Integer> getAllReachablesOf(Element element) {
+        Map<Integer, Integer> reachables = new HashMap<Integer, Integer>();
+        NodeList connections = element.getElementsByTagName("connection");
+
+        // iterate through the list and fill the map
+        for (int i = 0; i < connections.getLength(); i++) {
+        }
+
         return null;
+    }
+
+    private static int getIntValueOfTag(Node node, String tagName) {
+        
     }
 
     static BusStop getStop(int id) {
