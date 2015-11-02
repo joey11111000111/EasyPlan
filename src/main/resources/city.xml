@@ -2,28 +2,36 @@
 
 <city>
     <!-- Pályaudvar -->
-    <bus_station_connections>
-		<!-- 1-es megálló -->
-		<connection>
-			<refid>1</refid>
-			<travel_time>8</travel_time>
-		</connection>
-		<!-- 4-es megálló -->
-		<connection>
-			<refid>4</refid>
-			<travel_time>6</travel_time>
-		</connection>
-		<!-- 6-os megálló -->
-		<connection>
-			<refid>6</refid>
-			<travel_time>12</travel_time>
-		</connection>
-		<!-- 2-es megálló -->
-		<connection>
-			<refid>2</refid>
-			<travel_time>5</travel_time>
-		</connection>
-    </bus_station_connections>
+    <bus_station>
+        <id>0</id>
+        <position>
+            <x>9</x>
+            <y>5</y>
+        </position>
+
+        <connections>
+            <!-- 1-es megálló -->
+            <connection>
+                <refid>1</refid>
+                <travel_time>8</travel_time>
+            </connection>
+            <!-- 4-es megálló -->
+            <connection>
+                <refid>4</refid>
+                <travel_time>6</travel_time>
+            </connection>
+            <!-- 6-os megálló -->
+            <connection>
+                <refid>6</refid>
+                <travel_time>12</travel_time>
+            </connection>
+            <!-- 2-es megálló -->
+            <connection>
+                <refid>2</refid>
+                <travel_time>5</travel_time>
+            </connection>
+        </connections>
+    </bus_station>
 
     <!-- Buszmegállók -->
 
