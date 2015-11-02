@@ -100,7 +100,6 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <!-- TODO -->
                                     <mainClass>com.github.joey11111000111.EasyPlan.EasyPlan</mainClass>
                                 </manifest>
                             </archive>

@@ -15,7 +15,7 @@ import java.util.*;
 public class BusStop {
 
     // static ----------------------------------------------------------
-    static final BusStop[] allStops;
+    private static final BusStop[] allStops;
 
     static {
         List<BusStop> allStopsList = new LinkedList<BusStop>();
@@ -49,9 +49,6 @@ public class BusStop {
             System.exit(1);
         }
         allStops = allStopsList.toArray(new BusStop[0]);
-        for (int i = 0; i < allStops.length; i++) {
-            System.out.println(allStops[i]);
-        }
     }//static
 
 
@@ -111,13 +108,17 @@ public class BusStop {
         return reachableIds;
     }
 
+    static int[] getReachableIdsOfStation() {
+        return getReachableIdsOf(0);
+    }
+
     // member ----------------------------------------------------------
     public final int id;
     public final int x;
     public final int y;
-    final Map<Integer, Integer> reachableStops;
+    private final Map<Integer, Integer> reachableStops;
 
-    public BusStop(int id, int x, int y, Map<Integer, Integer> reachableStops) {
+    private BusStop(int id, int x, int y, Map<Integer, Integer> reachableStops) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -137,6 +138,10 @@ public class BusStop {
 
     public boolean isStationReachable() {
         return reachableStops.containsKey(0);
+    }
+
+    public boolean isReachable(int id) {
+        return reachableStops.containsKey(id);
     }
 
     public String toString() {
