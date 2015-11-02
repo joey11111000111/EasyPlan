@@ -1,5 +1,12 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+import javax.xml.bind.Element;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +19,26 @@ public class BusStop {
     static final BusStop[] allStops;
 
     static {
-        // init the 'allStops' array from the xml file
+        try {
+            // get the 'city.xml' file as an InputStream
+            InputStream is = BusStop.class.getResourceAsStream("city.xml");
+            // create a document builder
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // parse the xml file and normalize it
+            Document document = builder.parse(is);
+            document.getDocumentElement().normalize();
+
+        }
+        catch (Exception e) {
+            // TODO: log the exception
+            System.exit(1);
+        }
+    }//static
+
+    private static Map<Integer, Integer> getAllReachablesOf(Element element) {
+        return null;
     }
 
     static BusStop getStop(int id) {
