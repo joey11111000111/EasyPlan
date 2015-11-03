@@ -6,22 +6,15 @@ package com.github.joey11111000111.EasyPlan.core.util;
 public class OpenLinkedList<E> {
 
     static class Node<E> {
-        private E object;
+        private E element;
         private Node<E> next;
         private Node<E> previous;
 
         // only available in the class OpenLinkedList
         private Node(E object, Node<E> next, Node<E> previous) {
-            this.object = object;
+            this.element = object;
             this.next = next;
             this.previous = previous;
-        }
-
-        private void setNext(Node<E> nextNode) {
-            next = nextNode;
-        }
-        private void setPrevious(Node<E> prevNode) {
-            previous = prevNode;
         }
 
         // iteration methods --------------
@@ -43,8 +36,8 @@ public class OpenLinkedList<E> {
             throw new IllegalStateException("no previous element");
         }
 
-        public E getObject() {
-            return object;
+        public E getElement() {
+            return element;
         }
     }//static class
 
@@ -95,8 +88,12 @@ public class OpenLinkedList<E> {
         size += chainLinkNum;
     }
 
+    public boolean validIndex(int index) {
+        return index >= 0 && index < size;
+    }
+
     public Node<E> removeLast() {
-        if (size < 1)
+        if (isEmpty())
             throw new IllegalStateException("the list is empty");
 
         Node<E> last = tail;
@@ -133,6 +130,9 @@ public class OpenLinkedList<E> {
     }
 
     public Node<E> removeChainFrom(int index) {
+        if (!validIndex(index))
+            throw new IndexOutOfBoundsException("invalid list index: " + index);
+
         Node<E> node;
         if (index < size / 2) {
             node = head;
@@ -146,6 +146,13 @@ public class OpenLinkedList<E> {
 
         }
         return removeChainFrom(node);
+    }
+
+    public void clear() {
+        if (isEmpty())
+            return;
+        head = tail = null;
+        size = 0;
     }
 
     public Node<E> getHead() {
