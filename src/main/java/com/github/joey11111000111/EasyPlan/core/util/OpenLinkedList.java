@@ -11,8 +11,10 @@ public class OpenLinkedList<E> {
         private Node<E> previous;
 
         // only available in the class OpenLinkedList
-        private Node(E object, Node<E> next, Node<E> previous) {
-            this.element = object;
+        private Node(E element, Node<E> next, Node<E> previous) {
+            if (element == null)
+                throw new NullPointerException("Node element must not be null");
+            this.element = element;
             this.next = next;
             this.previous = previous;
         }
@@ -115,7 +117,7 @@ public class OpenLinkedList<E> {
         return chainLinkNum;
     }
 
-    public Node<E> removeChainFrom(Node<E> node) {
+    private Node<E> removeChainFrom(Node<E> node) {
         if (!node.hasPrevious()) {
             head = tail = null;
             size = 0;
@@ -125,11 +127,14 @@ public class OpenLinkedList<E> {
             tail = node.previous;
             tail.next = null;
             size -= countChainLinks(node);
+            node.previous = null;
             return node;
         }
     }
 
     public Node<E> removeChainFrom(int index) {
+        if (isEmpty())
+            throw new IllegalStateException("the list is empty");
         if (!validIndex(index))
             throw new IndexOutOfBoundsException("invalid list index: " + index);
 
@@ -141,11 +146,26 @@ public class OpenLinkedList<E> {
         }
         else {
             node = tail;
-            for (int i = 0; i < index; i++)
+            for (int i = 0; i < (size - 1) - index; i++)
                 node = node.previous;
 
         }
         return removeChainFrom(node);
+    }
+
+    public Node<E> removeChainFrom(E element) {
+        if (isEmpty())
+            throw new IllegalStateException("list is empty");
+        // search for the last node that has the given element
+        Node<E> node = tail;
+        if (node.getElement().equals(element))
+            return removeChainFrom(node);
+        while (node.hasPrevious()) {
+            if (node.getElement().equals(element))
+                return removeChainFrom(node);
+            node = node.previous;
+        }
+        throw new IllegalArgumentException("the element to remove is not in the list");
     }
 
     public void clear() {

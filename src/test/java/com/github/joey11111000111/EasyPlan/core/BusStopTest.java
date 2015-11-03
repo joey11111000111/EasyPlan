@@ -60,6 +60,18 @@ public class BusStopTest {
         reachIds = bs.getReachableIds();
         for (int id : reachIds)
             assertTrue(bs.isReachable(id));
+
+        // test equals and hashCode
+        BusStop stop1 = BusStop.getStop(1);
+        BusStop stop2 = BusStop.getStop(1);
+        BusStop stop3 = BusStop.getStop(3);
+        assertTrue(stop1.equals(stop2));
+        assertFalse(stop1.equals(stop3));
+        assertFalse(stop3.equals(stop2));
+        assertEquals(stop1.hashCode(), stop2.hashCode());
+        assertFalse(stop1.hashCode() == stop3.hashCode());
+        assertFalse(stop3.hashCode() == stop2.hashCode());
+
     }
 
 

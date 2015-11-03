@@ -19,6 +19,7 @@ public class OpenLinkedListTest {
 
     @Test
     public void testAppendAndRemoveLast() {
+        // test append
         assertNull(openList.getHead());
         assertNull(openList.getHead());
         for (int i = 0; i < 22; i++) {
@@ -29,15 +30,43 @@ public class OpenLinkedListTest {
         assertNotNull(openList.getHead());
         assertNotNull(openList.getTail());
 
+        // test removeLast
         for (int i = 21; i >= 0; i--) {
             Integer value = openList.removeLast().getElement();
             assertEquals(new Integer(i), value);
             assertEquals(i, openList.size());
         }
+
+        // test that the list really is empty
         assertEquals(0, openList.size());
         assertNull(openList.getHead());
         assertNull(openList.getTail());
-    }
+
+        // test removal exceptions
+        try {
+            openList.removeLast();
+            assertTrue(false);
+        } catch (IllegalStateException ise) {}
+        try {
+            openList.removeChainFrom(0);
+            assertTrue(false);
+        } catch (IllegalStateException ise) {}
+        try {
+            openList.removeChainFrom(new Integer(-1));
+            assertTrue(false);
+        } catch (IllegalStateException ise) {}
+
+        openList.append(23);
+        openList.append(12);
+        try {
+            openList.removeChainFrom(new Integer(-1));
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
+        try {
+            openList.removeChainFrom(2);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+    }//test
 
     @Test
     public void testIteration() {
@@ -48,26 +77,25 @@ public class OpenLinkedListTest {
         Node<Integer> head = openList.getHead();
         Node<Integer> tail = openList.getTail();
 
+        // test the first (head) and last (tail) elements in value and next/previous references
         Integer lastI = tail.getElement();
         assertEquals(new Integer(99), lastI);
         Integer firstI = head.getElement();
         assertEquals(new Integer(0), firstI);
-
         assertFalse(tail.hasNext());
         assertTrue(tail.hasPrevious());
         assertTrue(head.hasNext());
         assertFalse(head.hasPrevious());
 
+        // trying to get next/previous should throw and exception
         try {
             head.previous();
             assertTrue(false);
-        } catch (IllegalStateException ise) {
-        }
+        } catch (IllegalStateException ise) {}
         try {
             tail.next();
             assertTrue(false);
-        } catch (IllegalStateException ise) {
-        }
+        } catch (IllegalStateException ise) {}
 
         // iterate forward
         Node<Integer> node = head;
@@ -88,6 +116,69 @@ public class OpenLinkedListTest {
                 break;
             node = node.previous();
         }
+
+        // clear test
+        openList.clear();
+        assertNull(openList.getHead());
+        assertNull(openList.getTail());
+        assertEquals(0, openList.size());
+    }
+
+    @Test
+    public void testChainOperations() {
+        for (int i = 10; i < 110; i++)
+            openList.append(i);
+
+        // test the removed and the remaining chains
+        Node<Integer> node = openList.removeChainFrom(new Integer(106));
+        assertFalse(node.hasPrevious());
+        for (int i = 0; i < 4; i++) {
+            assertEquals(new Integer(106 + i), node.getElement());
+            if (!node.hasNext())
+                break;
+            node = node.next();
+        }
+        assertEquals(new Integer(105), openList.getTail().getElement());
+
+        // refill the list with some repeating 0 values among the incrementing values
+        openList.clear();
+        for (int i = 0; i < 18; i++) {
+            if (i % 3 == 0)
+                openList.append(0);
+            else
+                openList.append(i);
+        }
+
+        // test that the chain was cut at the last appearance of the value 0
+        node = openList.removeChainFrom(new Integer(0));
+        assertEquals(15, openList.size());
+
+        // test the appendChain method both in a non-empty and empty state of the list
+        openList.appendChain(node);
+        assertEquals(18, openList.size());
+        for (int i = 0; i < 2; i++) {
+            Integer value = openList.removeLast().getElement();
+            assertEquals(new Integer(17), value);
+            value = openList.removeLast().getElement();
+            assertEquals(new Integer(16), value);
+            value = openList.removeLast().getElement();
+            assertEquals(new Integer(0), value);
+            if (i == 0) {
+                openList.clear();
+                openList.appendChain(node);
+                assertEquals(3, openList.size());
+            }
+        }
+        openList.clear();
+
+        // test index-based chain removal in both iteration directions
+        for (int i = 0; i < 10; i++)
+            openList.append(i);
+        node = openList.removeChainFrom(8);
+        assertEquals(new Integer(8), node.getElement());
+        node = openList.removeChainFrom(1);
+        assertEquals(new Integer(1), node.getElement());
+        assertEquals(1, openList.size());
     }
 
 

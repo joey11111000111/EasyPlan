@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Created by joey on 2015.11.01..
  */
-public class BusStop {
+public final class BusStop {
 
     // static ----------------------------------------------------------
     private static final BusStop[] allStops;
@@ -156,5 +156,17 @@ public class BusStop {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return this == o;
+    }
 
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + x;
+        result = 31 * result + y;
+        result = 31 * result + (reachableStops != null ? reachableStops.hashCode() : 0);
+        return result;
+    }
 }//class
