@@ -42,7 +42,6 @@ class BasicServiceData {
 
     private String name;
     private int timeGap;
-    private int maxTimeGap;
     private SimpleTime firstLeaveTime;
     private SimpleTime boundaryTime;
     private boolean modified;
@@ -51,7 +50,6 @@ class BasicServiceData {
         // set to default values, so it's valid even without any modification
         name = "new service";
         timeGap = 10;
-        maxTimeGap = 120;
         firstLeaveTime = new SimpleTime(8, 0);
         boundaryTime = new SimpleTime(18, 0);
         modified = false;
@@ -64,6 +62,9 @@ class BasicServiceData {
     public void markAsSaved() {
         if (modified)
             modified = false;
+    }
+    public boolean isModified() {
+        return modified;
     }
 
     public String getName() {
@@ -84,8 +85,8 @@ class BasicServiceData {
     }
 
     public void setTimeGap(int timeGap) {
-        if (timeGap < 1 || timeGap > maxTimeGap)
-            throw new IllegalArgumentException("timeGap must be in range [1, " + maxTimeGap + "]");
+        if (timeGap < 1)
+            throw new IllegalArgumentException("timeGap must be at least 1");
         if (this.timeGap == timeGap)
             return;
         this.timeGap = timeGap;
