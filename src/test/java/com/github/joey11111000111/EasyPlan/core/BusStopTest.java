@@ -62,7 +62,7 @@ public class BusStopTest {
             assertTrue(bs.isReachable(id));
 
         // test equals and hashCode
-        BusStop stop1 = BusStop.getStop(1);
+        BusStop stop1 = BusStop.getStop(1);     // there is no other way to acquire a BusStop object
         BusStop stop2 = BusStop.getStop(1);
         BusStop stop3 = BusStop.getStop(3);
         assertTrue(stop1.equals(stop2));

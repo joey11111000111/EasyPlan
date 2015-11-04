@@ -182,6 +182,4 @@ public class OpenLinkedList<E> {
         return tail;
     }
 
-
-
 }//class
