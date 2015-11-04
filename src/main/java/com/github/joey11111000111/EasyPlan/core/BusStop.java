@@ -61,12 +61,12 @@ public final class BusStop {
         x = getNumericContentOfTag(posNode, "x");
         y = getNumericContentOfTag(posNode, "y");
 
-        Map<Integer, Integer> reachables = getAllReachablesOf(bsElement);
+        Map<java.lang.Integer, java.lang.Integer> reachables = getAllReachablesOf(bsElement);
         return new BusStop(id, x, y, reachables);
     }
 
-    private static Map<Integer, Integer> getAllReachablesOf(Element busStop) {
-        Map<Integer, Integer> reachables = new HashMap<Integer, Integer>();
+    private static Map<java.lang.Integer, java.lang.Integer> getAllReachablesOf(Element busStop) {
+        Map<java.lang.Integer, java.lang.Integer> reachables = new HashMap<java.lang.Integer, java.lang.Integer>();
         NodeList connections = busStop.getElementsByTagName("connection");
 
         // iterate through the list and fill the map
@@ -89,18 +89,18 @@ public final class BusStop {
 
         // the parent node only has text-content, so there is only one child node; get the text
         String text = childNodes.item(0).getNodeValue().trim();
-        return Integer.parseInt(text);
+        return java.lang.Integer.parseInt(text);
     }
 
-    static BusStop getStop(int id) {
+    public static BusStop getStop(int id) {
         if (id < 0 || id >= allStops.length)
             throw new IndexOutOfBoundsException("given bus stop id is out of range: " + id);
 
         return allStops[id];
     }
 
-    static int[] getReachableIdsOf(int id) {
-        Set<Integer> keyIds = allStops[id].reachableStops.keySet();
+    public static int[] getReachableIdsOf(int id) {
+        Set<java.lang.Integer> keyIds = allStops[id].reachableStops.keySet();
         int[] reachableIds = new int[keyIds.size()];
         int i = 0;
         for (int reId : keyIds)
@@ -108,47 +108,55 @@ public final class BusStop {
         return reachableIds;
     }
 
-    static int[] getReachableIdsOfStation() {
+    public static int[] getReachableIdsOfStation() {
         return getReachableIdsOf(0);
+    }
+
+    public static boolean validIndex(int index) {
+        return index >= 0 && index < allStops.length;
+    }
+
+    public static boolean isReachableFrom(int toId, int fromId) {
+        if (!validIndex(toId))
+            throw new IndexOutOfBoundsException("toId is out of range: " + toId);
+        if (!validIndex(fromId))
+            throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
+        return allStops[fromId].reachableStops.containsKey(toId);
+    }
+
+    public static boolean isStationReachableFrom(int fromId) {
+        if (!validIndex(fromId))
+            throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
+        return allStops[fromId].reachableStops.containsKey(0);
+    }
+
+    public static int travelTimeFromTo(int fromId, int toId) {
+        if (!validIndex(fromId))
+            throw new IndexOutOfBoundsException("fromId is out range: " + fromId);
+        if (!validIndex(toId))
+            throw new IndexOutOfBoundsException("toId is out of range: " + toId);
+        return allStops[fromId].reachableStops.get(toId);
     }
 
     // member ----------------------------------------------------------
     public final int id;
     public final int x;
     public final int y;
-    private final Map<Integer, Integer> reachableStops;
+    private final Map<java.lang.Integer, java.lang.Integer> reachableStops;
 
-    private BusStop(int id, int x, int y, Map<Integer, Integer> reachableStops) {
+    private BusStop(int id, int x, int y, Map<java.lang.Integer, java.lang.Integer> reachableStops) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.reachableStops = reachableStops;
     }
 
-    public int[] getReachableIds() {
-        return BusStop.getReachableIdsOf(id);
-    }
-
-    public int travelTimeTo(int id) {
-        if (!reachableStops.containsKey(id))
-            throw new IllegalArgumentException("given " + id + " bus stop is not reachable from "
-                    + this.id);
-        return reachableStops.get(id);
-    }
-
-    public boolean isStationReachable() {
-        return reachableStops.containsKey(0);
-    }
-
-    public boolean isReachable(int id) {
-        return reachableStops.containsKey(id);
-    }
 
     public String toString() {
         String lnSep = System.getProperty("line.separator");
         StringBuilder sb = new StringBuilder();
         sb.append("id: ").append(id).append("  x: ").append(x).append("  y: ").append(y).append(lnSep);
-        for (Map.Entry<Integer, Integer> entry : reachableStops.entrySet()) {
+        for (Map.Entry<java.lang.Integer, java.lang.Integer> entry : reachableStops.entrySet()) {
             sb.append("   ").append("id: ").append(entry.getKey())
                     .append(" travel time: ").append(entry.getValue())
                     .append(lnSep);
@@ -156,17 +164,4 @@ public final class BusStop {
         return sb.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return this == o;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + x;
-        result = 31 * result + y;
-        result = 31 * result + (reachableStops != null ? reachableStops.hashCode() : 0);
-        return result;
-    }
 }//class
