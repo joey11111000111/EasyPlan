@@ -5,7 +5,7 @@ package com.github.joey11111000111.EasyPlan.core.util;
  */
 public class OpenLinkedList<E> {
 
-    static class Node<E> {
+    public static class Node<E> {
         private E element;
         private Node<E> next;
         private Node<E> previous;

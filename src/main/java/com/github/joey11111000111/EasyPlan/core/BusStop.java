@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Created by joey on 2015.11.01..
  */
-public final class BusStop {
+public final class BusStop implements Comparable<BusStop> {
 
     // static ----------------------------------------------------------
     private static final BusStop[] allStops;
@@ -48,7 +48,9 @@ public final class BusStop {
             System.out.println("exception happened " + e);
             System.exit(1);
         }
+
         allStops = allStopsList.toArray(new BusStop[0]);
+        Arrays.sort(allStops);
     }//static
 
 
@@ -65,8 +67,8 @@ public final class BusStop {
         return new BusStop(id, x, y, reachables);
     }
 
-    private static Map<java.lang.Integer, java.lang.Integer> getAllReachablesOf(Element busStop) {
-        Map<java.lang.Integer, java.lang.Integer> reachables = new HashMap<java.lang.Integer, java.lang.Integer>();
+    private static Map<Integer, Integer> getAllReachablesOf(Element busStop) {
+        Map<Integer, Integer> reachables = new HashMap<Integer, Integer>();
         NodeList connections = busStop.getElementsByTagName("connection");
 
         // iterate through the list and fill the map
@@ -92,11 +94,21 @@ public final class BusStop {
         return java.lang.Integer.parseInt(text);
     }
 
-    public static BusStop getStop(int id) {
-        if (id < 0 || id >= allStops.length)
-            throw new IndexOutOfBoundsException("given bus stop id is out of range: " + id);
-
-        return allStops[id];
+    public static int getXCoordOf(int id) {
+        if (!validIndex(id))
+            throw new IndexOutOfBoundsException("id is out of range: " + id);
+        return allStops[id].x;
+    }
+    public static int getYCoordOf(int id) {
+        if (!validIndex(id))
+            throw new IndexOutOfBoundsException("id is out of range: " + id);
+        return allStops[id].y;
+    }
+    public static int getXCoordOfStation() {
+        return allStops[0].x;
+    }
+    public static int getYCoordOfStation() {
+        return allStops[0].y;
     }
 
     public static int[] getReachableIdsOf(int id) {
@@ -116,7 +128,7 @@ public final class BusStop {
         return index >= 0 && index < allStops.length;
     }
 
-    public static boolean isReachableFrom(int toId, int fromId) {
+    public static boolean isReachableToFrom(int toId, int fromId) {
         if (!validIndex(toId))
             throw new IndexOutOfBoundsException("toId is out of range: " + toId);
         if (!validIndex(fromId))
@@ -130,12 +142,29 @@ public final class BusStop {
         return allStops[fromId].reachableStops.containsKey(0);
     }
 
-    public static int travelTimeFromTo(int fromId, int toId) {
+    public static boolean isReachableFromStation(int id) {
+        if (!validIndex(id))
+            throw new IndexOutOfBoundsException("id is out of range: " + id);
+        return allStops[0].reachableStops.containsKey(id);
+    }
+
+    public static int travelTimeToFrom(int toId, int fromId) {
         if (!validIndex(fromId))
             throw new IndexOutOfBoundsException("fromId is out range: " + fromId);
         if (!validIndex(toId))
             throw new IndexOutOfBoundsException("toId is out of range: " + toId);
+        if (!allStops[fromId].reachableStops.containsKey(toId))
+            throw new IllegalArgumentException("the bus stop '" + toId +
+                    "'  is not reachable from '" + fromId + "'");
+
         return allStops[fromId].reachableStops.get(toId);
+    }
+    public static int travelTimeToFromStation(int id) {
+        if (!validIndex(id))
+            throw new IndexOutOfBoundsException("id is out of range: " + id);
+        if (!allStops[0].reachableStops.containsKey(id))
+            throw new IllegalArgumentException("the bus stop at '" + id + "' is not reachable from the station");
+        return allStops[0].reachableStops.get(id);
     }
 
     // member ----------------------------------------------------------
@@ -151,6 +180,9 @@ public final class BusStop {
         this.reachableStops = reachableStops;
     }
 
+    public int compareTo(BusStop otherStop) {
+        return this.id - otherStop.id;
+    }
 
     public String toString() {
         String lnSep = System.getProperty("line.separator");

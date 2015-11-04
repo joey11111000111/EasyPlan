@@ -10,69 +10,60 @@ import static org.junit.Assert.*;
 public class BusStopTest {
 
     @Test
-    public void testAll() {
-        try {
-            BusStop.getStop(16);
-            assertTrue(false);
-        } catch(IndexOutOfBoundsException ioobe) {
-        }
+    public void testReturnedValues() {
         // test the bus station
-        BusStop station = BusStop.getStop(0);
-        assertEquals(0, station.id);
-        assertEquals(9, station.x);
-        assertEquals(5, station.y);
-        assertTrue(station.isReachable(1));
-        assertTrue(station.isReachable(4));
-        assertTrue(station.isReachable(6));
-        assertTrue(station.isReachable(2));
-        assertFalse(station.isReachable(12));
-        assertFalse(station.isReachable(3));
-        assertFalse(station.isStationReachable());
-        assertEquals(8, station.travelTimeTo(1));
-        assertEquals(6, station.travelTimeTo(4));
-        assertEquals(12, station.travelTimeTo(6));
-        assertEquals(5, station.travelTimeTo(2));
-        // must throw runtime exception
-        try {
-            station.travelTimeTo(15);
-            assertTrue(false);
-        } catch (IllegalArgumentException iae) {
-        }
+        assertEquals(9, BusStop.getXCoordOfStation());
+        assertEquals(5, BusStop.getYCoordOfStation());
+        assertTrue(BusStop.isReachableFromStation(1));
+        assertTrue(BusStop.isReachableFromStation(4));
+        assertTrue(BusStop.isReachableFromStation(6));
+        assertTrue(BusStop.isReachableFromStation(2));
+        assertFalse(BusStop.isReachableFromStation(12));
+        assertFalse(BusStop.isReachableFromStation(3));
+        assertEquals(8, BusStop.travelTimeToFromStation(1));
+        assertEquals(6, BusStop.travelTimeToFromStation(4));
+        assertEquals(12, BusStop.travelTimeToFromStation(6));
+        assertEquals(5, BusStop.travelTimeToFromStation(2));
+
+        assertEquals(1, BusStop.getXCoordOf(15));
+        assertEquals(10, BusStop.getYCoordOf(15));
+        assertEquals(9, BusStop.getXCoordOfStation());
+        assertEquals(5, BusStop.getYCoordOfStation());
+
+        assertFalse(BusStop.isStationReachableFrom(12));
+        assertTrue(BusStop.isStationReachableFrom(1));
+
+        assertEquals(13, BusStop.travelTimeToFrom(4, 1));
+
+        assertTrue(BusStop.isReachableToFrom(3, 2));
+        assertFalse(BusStop.isReachableToFrom(8, 15));
+
 
         int[] reachIds = BusStop.getReachableIdsOfStation();
         for (int id : reachIds)
-                assertTrue(station.isReachable(id));
-
-        // test a bus stop
-        BusStop bs = BusStop.getStop(15);
-        assertEquals(15, bs.id);
-        assertEquals(1, bs.x);
-        assertEquals(10, bs.y);
-        assertTrue(bs.isReachable(10));
-        assertTrue(bs.isReachable(12));
-        assertTrue(bs.isReachable(13));
-        assertFalse(bs.isReachable(1));
-        assertFalse(bs.isStationReachable());
-        assertEquals(14, bs.travelTimeTo(10));
-        assertEquals(13, bs.travelTimeTo(12));
-        assertEquals(16, bs.travelTimeTo(13));
-
-        reachIds = bs.getReachableIds();
-        for (int id : reachIds)
-            assertTrue(bs.isReachable(id));
-
-        // test equals and hashCode
-        BusStop stop1 = BusStop.getStop(1);     // there is no other way to acquire a BusStop object
-        BusStop stop2 = BusStop.getStop(1);
-        BusStop stop3 = BusStop.getStop(3);
-        assertTrue(stop1.equals(stop2));
-        assertFalse(stop1.equals(stop3));
-        assertFalse(stop3.equals(stop2));
-        assertEquals(stop1.hashCode(), stop2.hashCode());
-        assertFalse(stop1.hashCode() == stop3.hashCode());
-        assertFalse(stop3.hashCode() == stop2.hashCode());
+                assertTrue(BusStop.isReachableFromStation(id));
 
     }
 
+    @Test
+    public void testExceptions() {
+        try {
+            BusStop.travelTimeToFromStation(15);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
+        try {
+            BusStop.travelTimeToFromStation(19);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.isStationReachableFrom(-1);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.travelTimeToFrom(2, 1);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
+
+    }
 
 }
