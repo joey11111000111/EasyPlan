@@ -71,6 +71,7 @@ public class TouchedStops {
     public void markAsSaved() {
         if (modified)
             modified = false;
+        undoStack.clear();
     }
 
     public boolean isEmpty() {
@@ -93,30 +94,32 @@ public class TouchedStops {
         if (closed)
             throw new IllegalStateException("bus service is closed, cannot add new stop to the list");
         // id validation
-        if (BusStop.isStation(id))
-            throw new IllegalArgumentException("bus station must not be added like a simple stop");
         if (!BusStop.validId(id))
             throw new IllegalArgumentException("given id '" + id + "' is not valid");
-
+        if (BusStop.isStation(id))
+            throw new IllegalArgumentException("bus station must not be added like a simple stop");
         // check reachable rule 1
-        if (isEmpty())
+        if (isEmpty()) {
             if (!BusStop.isReachableFromStation(id))
                 throw new IllegalArgumentException("given stop '" + id + "' is not reachable from the station");
+        }
         else {
                 int lastId = stops.getTail().getElement();
                 if (!BusStop.isReachableToFrom(id, lastId))
                     throw new IllegalArgumentException("given stop '" + id + "' is not "
                             + "reachable from the stop '" + lastId + "'");
         }
-        // check reachable rule 2
-        Node<Integer> node = stops.getTail();
-        int counter = 0;
-        while (node.hasPrevious()) {
-            node = node.previous();
-            if (id == node.getElement())
-                if (++counter == 2)
-                    throw new IllegalArgumentException("given bus stop '" + id
-                            + "' has already appeared twice in the list");
+        // check reachable rule 2 if needed
+        if (stops.size() > 3) {
+            Node<Integer> node = stops.getTail();
+            int counter = 0;
+            while (node.hasPrevious()) {
+                node = node.previous();
+                if (id == node.getElement())
+                    if (++counter == 2)
+                        throw new IllegalArgumentException("given bus stop '" + id
+                                + "' has already appeared twice in the list");
+            }
         }
 
         // append bus stop and create the undo operation for this append operation
@@ -125,12 +128,48 @@ public class TouchedStops {
         undoStack.push(UndoOperation.newDeleteInstance());
     }
 
+    public int[] getStops() {
+        if (isEmpty())
+            throw new IllegalStateException("list is empty, no stops to return");
+
+        int[] stopIds = new int[stops.size()];
+        Node<Integer> node = stops.getHead();
+        stopIds[0] = node.getElement();
+        int counter = 1;
+        while (node.hasNext()) {
+            node = node.next();
+            stopIds[counter++] = node.getElement();
+        }
+        return stopIds;
+    }
+
     public void closeService() {
         if (!isStationReachable())
             throw new IllegalStateException("bus service cannot be closed now");
         closed = true;
         markAsModified();
         undoStack.push(UndoOperation.newOpenInstance());
+    }
+
+    private void addUndoOfRemoval(Node<Integer> chain) {
+        if (closed) {
+            closed = false;
+            undoStack.push(UndoOperation.newAppendCloseInstance(chain));
+        }
+        else
+            undoStack.push(UndoOperation.newAppendInstance(chain));
+    }
+
+    public void clear() {
+        Node<Integer> chain;
+        try {
+            chain = stops.removeChainFrom(0);
+        } catch (IllegalStateException ise) {
+            return;
+        }
+
+        addUndoOfRemoval(chain);
+        markAsModified();
     }
 
     public void removeChainFrom(int fromId) {
@@ -143,12 +182,7 @@ public class TouchedStops {
             throw new IllegalArgumentException("the given id '" + fromId + "' is invalid");
         }
 
-        if (closed) {
-            closed = false;
-            undoStack.push(UndoOperation.newAppendCloseInstance(chain));
-        }
-        else
-            undoStack.push(UndoOperation.newAppendInstance(chain));
+        addUndoOfRemoval(chain);
         markAsModified();
     }
 
