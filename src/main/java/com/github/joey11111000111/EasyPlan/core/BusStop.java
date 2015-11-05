@@ -95,12 +95,12 @@ public final class BusStop implements Comparable<BusStop> {
     }
 
     public static int getXCoordOf(int id) {
-        if (!validIndex(id))
+        if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return allStops[id].x;
     }
     public static int getYCoordOf(int id) {
-        if (!validIndex(id))
+        if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return allStops[id].y;
     }
@@ -124,34 +124,40 @@ public final class BusStop implements Comparable<BusStop> {
         return getReachableIdsOf(0);
     }
 
-    public static boolean validIndex(int index) {
+    public static boolean validId(int index) {
         return index >= 0 && index < allStops.length;
     }
 
     public static boolean isReachableToFrom(int toId, int fromId) {
-        if (!validIndex(toId))
+        if (!validId(toId))
             throw new IndexOutOfBoundsException("toId is out of range: " + toId);
-        if (!validIndex(fromId))
+        if (!validId(fromId))
             throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
         return allStops[fromId].reachableStops.containsKey(toId);
     }
 
     public static boolean isStationReachableFrom(int fromId) {
-        if (!validIndex(fromId))
+        if (!validId(fromId))
             throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
         return allStops[fromId].reachableStops.containsKey(0);
     }
 
     public static boolean isReachableFromStation(int id) {
-        if (!validIndex(id))
+        if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return allStops[0].reachableStops.containsKey(id);
     }
 
+    public static boolean isStation(int id) {
+        if (!validId(id))
+            throw new IndexOutOfBoundsException("id is out of range: " + id);
+        return id == 0;
+    }
+
     public static int travelTimeToFrom(int toId, int fromId) {
-        if (!validIndex(fromId))
+        if (!validId(fromId))
             throw new IndexOutOfBoundsException("fromId is out range: " + fromId);
-        if (!validIndex(toId))
+        if (!validId(toId))
             throw new IndexOutOfBoundsException("toId is out of range: " + toId);
         if (!allStops[fromId].reachableStops.containsKey(toId))
             throw new IllegalArgumentException("the bus stop '" + toId +
@@ -160,7 +166,7 @@ public final class BusStop implements Comparable<BusStop> {
         return allStops[fromId].reachableStops.get(toId);
     }
     public static int travelTimeToFromStation(int id) {
-        if (!validIndex(id))
+        if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         if (!allStops[0].reachableStops.containsKey(id))
             throw new IllegalArgumentException("the bus stop at '" + id + "' is not reachable from the station");

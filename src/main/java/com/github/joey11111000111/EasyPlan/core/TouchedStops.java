@@ -2,6 +2,9 @@ package com.github.joey11111000111.EasyPlan.core;
 
 import com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 import static com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList.Node;
@@ -12,45 +15,53 @@ import static com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList.Node;
 public class TouchedStops {
 
     private static class UndoOperation<E> {
-        private boolean deleteOperation;
+        public enum OperationType {
+            OPEN, DELETE, APPEND, APPEND_CLOSE
+        }
+
+        private OperationType operationType;
         private Node<E> chain;
 
-        private UndoOperation() {
-            deleteOperation = true;
-            chain = null;
-        }
-        private UndoOperation(Node<E> chain) {
+        private UndoOperation(OperationType operationType, Node<E> chain) {
+            this.operationType = operationType;
             this.chain = chain;
-            deleteOperation = false;
         }
 
-        public static <E> UndoOperation newDeleteInstance() {
-            return new UndoOperation<E>();
-        }
-        public static <E> UndoOperation newAppendInstance(Node<E> chain) {
-            return new UndoOperation<E>(chain);
+        public OperationType getOperationType() {
+            return operationType;
         }
 
-        public boolean isDelete() {
-            return deleteOperation;
-        }
-        public boolean isAppend() {
-            return !deleteOperation;
-        }
         public Node<E> getChain() {
             return chain;
+        }
+
+        public static <E> UndoOperation newOpenInstance(
+        ) {
+            return new UndoOperation<E>(OperationType.OPEN, null);
+        }
+        public static <E> UndoOperation newDeleteInstance() {
+            return new UndoOperation<E>(OperationType.DELETE, null);
+        }
+        public static <E> UndoOperation newAppendInstance(Node<E> chain) {
+            return new UndoOperation<E>(OperationType.APPEND, chain);
+        }
+
+        public static <E> UndoOperation newAppendCloseInstance(Node<E> chain) {
+            return new UndoOperation<E>(OperationType.APPEND_CLOSE, chain);
         }
     }//private static class
 
 
-    private OpenLinkedList<BusStop> stops;
-    private Stack<UndoOperation> undoStack;
+    private OpenLinkedList<Integer> stops;
+    private Stack<UndoOperation<Integer>> undoStack;
     private boolean modified;
+    private boolean closed;
 
     public TouchedStops() {
-        stops = new OpenLinkedList<BusStop>();
-        undoStack = new Stack<UndoOperation>();
+        stops = new OpenLinkedList<Integer>();
+        undoStack = new Stack<UndoOperation<Integer>>();
         modified = false;
+        closed = false;
     }
 
     private void markAsModified() {
@@ -70,26 +81,140 @@ public class TouchedStops {
         return modified;
     }
 
-    public void appendStop(BusStop stop) {
-        // TODO
+    public boolean isClosed() {
+        return closed;
     }
 
-    public void removeLast() {
+    public boolean canUndo() {
+        return !undoStack.isEmpty();
+    }
+
+    public void appendStop(int id) {
+        if (closed)
+            throw new IllegalStateException("bus service is closed, cannot add new stop to the list");
+        // id validation
+        if (BusStop.isStation(id))
+            throw new IllegalArgumentException("bus station must not be added like a simple stop");
+        if (!BusStop.validId(id))
+            throw new IllegalArgumentException("given id '" + id + "' is not valid");
+
+        // check reachable rule 1
         if (isEmpty())
+            if (!BusStop.isReachableFromStation(id))
+                throw new IllegalArgumentException("given stop '" + id + "' is not reachable from the station");
+        else {
+                int lastId = stops.getTail().getElement();
+                if (!BusStop.isReachableToFrom(id, lastId))
+                    throw new IllegalArgumentException("given stop '" + id + "' is not "
+                            + "reachable from the stop '" + lastId + "'");
+        }
+        // check reachable rule 2
+        Node<Integer> node = stops.getTail();
+        int counter = 0;
+        while (node.hasPrevious()) {
+            node = node.previous();
+            if (id == node.getElement())
+                if (++counter == 2)
+                    throw new IllegalArgumentException("given bus stop '" + id
+                            + "' has already appeared twice in the list");
+        }
+
+        // append bus stop and create the undo operation for this append operation
+        stops.append(id);
+        markAsModified();
+        undoStack.push(UndoOperation.newDeleteInstance());
+    }
+
+    public void closeService() {
+        if (!isStationReachable())
+            throw new IllegalStateException("bus service cannot be closed now");
+        closed = true;
+        markAsModified();
+        undoStack.push(UndoOperation.newOpenInstance());
+    }
+
+    public void removeChainFrom(int fromId) {
+        Node<Integer> chain;
+        try {
+            chain = stops.removeChainFrom(new Integer(fromId));
+        } catch (IllegalStateException ise) {
             throw new IllegalStateException("there is no bus stop to remove");
-        // TODO
+        } catch (IllegalArgumentException iae) {
+            throw new IllegalArgumentException("the given id '" + fromId + "' is invalid");
+        }
+
+        if (closed) {
+            closed = false;
+            undoStack.push(UndoOperation.newAppendCloseInstance(chain));
+        }
+        else
+            undoStack.push(UndoOperation.newAppendInstance(chain));
+        markAsModified();
     }
 
     public void undo() {
-        if (undoStack.isEmpty())
-            throw new IllegalStateException("undo stack is empty");
-        // TODO
+        if (!canUndo())
+            throw new IllegalStateException("undo stack is empty, there is nothing to undo");
+
+        UndoOperation<Integer> operation = undoStack.pop();
+        UndoOperation.OperationType type = operation.getOperationType();
+        if (type == UndoOperation.OperationType.OPEN) {
+            closed = false;
+        } else if (type == UndoOperation.OperationType.DELETE) {
+            if (closed)
+                closed = false;
+            stops.removeLast();
+        } else if (type == UndoOperation.OperationType.APPEND) {
+            Node<Integer> chain = operation.getChain();
+            stops.appendChain(chain);
+        } else { // (type == UndoOperation.OperationType.APPEND_CLOSE)
+            Node<Integer> chain = operation.getChain();
+            stops.appendChain(chain);
+            closed = true;
+        }
     }
 
-//    public int[] getReachableStopIds() {
-//        if (isEmpty())
-//            return BusStop.getReachableIdsOfStation();
-//
-//    }
+    public boolean isStationReachable() {
+        if (closed)
+            return false;
+        if (isEmpty())
+            return false;
+        int lastId = stops.getTail().getElement();
+        if (!BusStop.isStationReachableFrom(lastId))
+            return false;
+        return true;
+    }
+
+    public int[] getReachableStopIds() {
+        if (isEmpty())
+            return BusStop.getReachableIdsOfStation();
+
+        int lastId = stops.getTail().getElement();
+        int[] ids = BusStop.getReachableIdsOf(lastId);
+        if (stops.size() < 3)
+            return ids;
+
+        List<Integer> validIds = new ArrayList<Integer>(ids.length);
+        FOR:
+        for (int i : ids) {
+            // the bus station will not be included
+            if (BusStop.isStation(i))
+                continue;
+            // iterate backwords to find one more appearance
+            Node<Integer> node = stops.getTail();
+            while (node.hasPrevious()) {
+                node = node.previous();
+                int id = node.getElement();
+                if (i == id)
+                    continue FOR;
+            }
+            validIds.add(i);
+        }
+
+        int[] resultIds = new int[validIds.size()];
+        for (int i = 0; i < resultIds.length; i++)
+            resultIds[i] = validIds.get(i);
+        return resultIds;
+    }
 
 }//class
