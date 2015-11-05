@@ -35,18 +35,17 @@ public class TouchedStops {
             return chain;
         }
 
-        public static <E> UndoOperation newOpenInstance(
-        ) {
+        public static <E> UndoOperation<E> newOpenInstance(E typeObject) {
             return new UndoOperation<E>(OperationType.OPEN, null);
         }
-        public static <E> UndoOperation newDeleteInstance() {
+        public static <E> UndoOperation<E> newDeleteInstance(E typeObject) {
             return new UndoOperation<E>(OperationType.DELETE, null);
         }
-        public static <E> UndoOperation newAppendInstance(Node<E> chain) {
+        public static <E> UndoOperation<E> newAppendInstance(Node<E> chain) {
             return new UndoOperation<E>(OperationType.APPEND, chain);
         }
 
-        public static <E> UndoOperation newAppendCloseInstance(Node<E> chain) {
+        public static <E> UndoOperation<E> newAppendCloseInstance(Node<E> chain) {
             return new UndoOperation<E>(OperationType.APPEND_CLOSE, chain);
         }
     }//private static class
@@ -125,19 +124,21 @@ public class TouchedStops {
         // append bus stop and create the undo operation for this append operation
         stops.append(id);
         markAsModified();
-        undoStack.push(UndoOperation.newDeleteInstance());
+        undoStack.push(UndoOperation.newDeleteInstance(new Integer(0)));
     }
 
     public int[] getStops() {
         if (isEmpty())
             throw new IllegalStateException("list is empty, no stops to return");
 
+        System.out.println("\tstops.size() = " + stops.size());
         int[] stopIds = new int[stops.size()];
         Node<Integer> node = stops.getHead();
         stopIds[0] = node.getElement();
         int counter = 1;
         while (node.hasNext()) {
             node = node.next();
+            System.out.println("\t\tcounter = " + counter);
             stopIds[counter++] = node.getElement();
         }
         return stopIds;
@@ -148,7 +149,7 @@ public class TouchedStops {
             throw new IllegalStateException("bus service cannot be closed now");
         closed = true;
         markAsModified();
-        undoStack.push(UndoOperation.newOpenInstance());
+        undoStack.push(UndoOperation.newOpenInstance(new Integer(0)));
     }
 
     private void addUndoOfRemoval(Node<Integer> chain) {

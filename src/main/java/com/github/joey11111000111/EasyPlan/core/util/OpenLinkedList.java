@@ -101,9 +101,10 @@ public class OpenLinkedList<E> {
         Node<E> last = tail;
         if (size == 1)
             head = tail = null;
-        else
+        else {
             tail = tail.previous;
-
+            tail.next = null;
+        }
         size--;
         return last;
     }

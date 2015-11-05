@@ -153,25 +153,18 @@ public class OpenLinkedListTest {
         node = openList.removeChainFrom(new Integer(0));
         assertEquals(15, openList.size());
 
-        // test the appendChain method both in a non-empty and empty state of the list
+        // test the appendChain method in a non-empty state of the list
         openList.appendChain(node);
         assertEquals(18, openList.size());
-        for (int i = 0; i < 2; i++) {
-            Integer value = openList.removeLast().getElement();
-            assertEquals(new Integer(17), value);
-            value = openList.removeLast().getElement();
-            assertEquals(new Integer(16), value);
-            value = openList.removeLast().getElement();
-            assertEquals(new Integer(0), value);
-            if (i == 0) {
-                openList.clear();
-                openList.appendChain(node);
-                assertEquals(3, openList.size());
-            }
-        }
-        openList.clear();
+        Integer value = openList.removeLast().getElement();
+        assertEquals(new Integer(17), value);
+        value = openList.removeLast().getElement();
+        assertEquals(new Integer(16), value);
+        value = openList.removeLast().getElement();
+        assertEquals(new Integer(0), value);
 
         // test index-based chain removal in both iteration directions
+        openList.clear();
         for (int i = 0; i < 10; i++)
             openList.append(i);
         node = openList.removeChainFrom(8);
@@ -179,6 +172,17 @@ public class OpenLinkedListTest {
         node = openList.removeChainFrom(1);
         assertEquals(new Integer(1), node.getElement());
         assertEquals(1, openList.size());
+
+        // test appendChain method in an empty state of the list
+        openList.clear();
+        openList.appendChain(node);
+        assertEquals(7, openList.size());
+        for (int i = 1; i < 8; i++) {
+            assertEquals(new Integer(i), node.getElement());
+            if (node.hasNext())
+                node = node.next();
+        }
+
     }
 
 

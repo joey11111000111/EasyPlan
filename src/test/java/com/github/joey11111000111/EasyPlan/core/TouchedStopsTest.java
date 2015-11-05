@@ -130,22 +130,79 @@ public class TouchedStopsTest {
         ts.appendStop(2);
         ts.appendStop(3);
         ts.appendStop(5);
-        System.out.println("1");
-
+        // delete -undo test
         assertTrue(ts.canUndo());
         ts.undo();
-        System.out.println("2");
+        assertFalse(ts.isEmpty());
+        assertFalse(ts.isClosed());
         int[] stops = ts.getStops();
-        System.out.println("3");
-        assertEquals(3, stops.length);
-        System.out.println("4");
+        assertEquals(2, stops.length);
         assertEquals(2, stops[0]);
-        System.out.println("5");
         assertEquals(3, stops[1]);
-        System.out.println("6");
-        assertEquals(5, stops[2]);
-        System.out.println("7");
-    }
 
+        ts.appendStop(5);
+        ts.appendStop(6);
+        ts.closeService();
+        // open -undo test
+        assertTrue(ts.isClosed());
+        ts.undo();
+        assertFalse(ts.isClosed());
+        stops = ts.getStops();
+        assertEquals(4, stops.length);
+        assertEquals(2, stops[0]);
+        assertEquals(3, stops[1]);
+        assertEquals(5, stops[2]);
+        assertEquals(6, stops[3]);
+
+        ts.appendStop(9);
+        ts.appendStop(10);
+        ts.removeChainFrom(5);
+        stops = ts.getStops();
+        assertEquals(2, stops.length);
+        // append -undo test
+        ts.undo();
+        assertFalse(ts.isClosed());
+        stops = ts.getStops();
+        assertEquals(6, stops.length);
+        assertEquals(10, stops[5]);
+        assertEquals(9, stops[4]);
+        assertEquals(6, stops[3]);
+
+        ts.appendStop(5);
+        ts.appendStop(2);
+        ts.closeService();
+        ts.removeChainFrom(5);
+        assertFalse(ts.isClosed());
+        // append_close -undo test
+        ts.undo();
+        assertTrue(ts.isClosed());
+        stops = ts.getStops();
+        assertEquals(8, stops.length);
+
+        ts.clear();
+        ts.markAsSaved();
+        assertFalse(ts.isClosed());
+        assertFalse(ts.canUndo());
+
+        ts.appendStop(1);
+        ts.appendStop(4);
+        ts.appendStop(6);
+        ts.appendStop(9);
+        ts.appendStop(8);
+        ts.appendStop(11);
+        ts.appendStop(7);
+        ts.removeChainFrom(9);
+        ts.appendStop(5);
+        ts.removeChainFrom(5);
+        ts.closeService();
+        // test "undo until there is nothing to undo"
+        while (ts.canUndo())
+            ts.undo();
+
+        assertTrue(ts.isEmpty());
+        assertFalse(ts.isClosed());
+
+
+    }
 
 }//class
