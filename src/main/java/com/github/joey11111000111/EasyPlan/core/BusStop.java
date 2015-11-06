@@ -120,6 +120,9 @@ public final class BusStop implements Comparable<BusStop> {
         return reachableIds;
     }
 
+    public static int getIdOfStation() {
+        return allStops[0].id;
+    }
     public static int[] getReachableIdsOfStation() {
         return getReachableIdsOf(0);
     }

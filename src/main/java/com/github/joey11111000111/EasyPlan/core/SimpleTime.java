@@ -15,12 +15,21 @@ public class SimpleTime {
         hours = rhs.getHours();
         minutes = rhs.getMinutes();
     }
+    public SimpleTime(int minutes) {
+        hours = minutes / 60;
+        this.minutes = minutes % 60;
+    }
+
 
     public int getHours() {
         return hours;
     }
     public int getMinutes() {
         return minutes;
+    }
+
+    public int getTimeAsMinutes() {
+        return hours * 60 + minutes;
     }
 
     public boolean setHours(int hours) {
