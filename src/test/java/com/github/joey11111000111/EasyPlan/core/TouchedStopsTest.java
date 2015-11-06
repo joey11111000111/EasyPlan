@@ -201,8 +201,44 @@ public class TouchedStopsTest {
 
         assertTrue(ts.isEmpty());
         assertFalse(ts.isClosed());
+        ts.clear();
+    }
 
+    @Test
+    public void testTravelTimes() {
+        // test a closed service
+        ts.appendStop(1);
+        ts.appendStop(4);
+        ts.appendStop(6);
+        ts.closeService();
+        int[] times = ts.getTravelTimes();
+        assertEquals(4, times.length);
+        assertEquals(8, times[0]);
+        assertEquals(13, times[1]);
+        assertEquals(10, times[2]);
+        assertEquals(12, times[3]);
 
+        // test an open service
+        ts.undo();
+        times = ts.getTravelTimes();
+        assertEquals(3, times.length);
+        assertEquals(8, times[0]);
+        assertEquals(13, times[1]);
+        assertEquals(10, times[2]);
+
+        // test a 1-stop-sized service
+        ts.clear();
+        ts.appendStop(2);
+        times = ts.getTravelTimes();
+        assertEquals(1, times.length);
+        assertEquals(5, times[0]);
+
+        // test an empty service
+        ts.clear();
+        try {
+            times = ts.getTravelTimes();
+            assertTrue(false);
+        } catch (IllegalStateException ise) {}
     }
 
 }//class

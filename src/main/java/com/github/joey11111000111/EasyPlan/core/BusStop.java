@@ -165,12 +165,19 @@ public final class BusStop implements Comparable<BusStop> {
 
         return allStops[fromId].reachableStops.get(toId);
     }
-    public static int travelTimeToFromStation(int id) {
-        if (!validId(id))
-            throw new IndexOutOfBoundsException("id is out of range: " + id);
-        if (!allStops[0].reachableStops.containsKey(id))
-            throw new IllegalArgumentException("the bus stop at '" + id + "' is not reachable from the station");
-        return allStops[0].reachableStops.get(id);
+    public static int travelTimeToFromStation(int toId) {
+        if (!validId(toId))
+            throw new IndexOutOfBoundsException("toId is out of range: " + toId);
+        if (!allStops[0].reachableStops.containsKey(toId))
+            throw new IllegalArgumentException("the bus stop at '" + toId + "' is not reachable from the station");
+        return allStops[0].reachableStops.get(toId);
+    }
+    public static int travelTimeToStationFrom(int fromId) {
+        if (!validId(fromId))
+            throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
+        if (!allStops[fromId].reachableStops.containsKey(0))
+            throw new IllegalArgumentException("the bus station is not reachabel from the given station: " + fromId);
+        return allStops[fromId].reachableStops.get(0);
     }
 
     // member ----------------------------------------------------------

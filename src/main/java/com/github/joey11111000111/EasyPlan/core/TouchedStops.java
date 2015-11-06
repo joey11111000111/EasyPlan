@@ -67,7 +67,7 @@ public class TouchedStops {
         if (!modified)
             modified = false;
     }
-    public void markAsSaved() {
+    void markAsSaved() {
         if (modified)
             modified = false;
         undoStack.clear();
@@ -250,6 +250,35 @@ public class TouchedStops {
         for (int i = 0; i < resultIds.length; i++)
             resultIds[i] = validIds.get(i);
         return resultIds;
+    }
+
+    public int[] getTravelTimes() {
+        if (isEmpty())
+            throw new IllegalStateException("stop list is empty, cannot get any travel time");
+
+        int size = (closed) ? stops.size() + 1 : stops.size();
+        int[] times = new int[size];
+        Node<Integer> node = stops.getHead();
+        int from;
+        int to;
+        // first from the station
+        to = node.getElement();
+        times[0] = BusStop.travelTimeToFromStation(to);
+
+        int counter = 0;
+        while (node.hasNext()) {
+            node = node.next();
+            from = to;
+            to = node.getElement();
+            times[++counter] = BusStop.travelTimeToFrom(to, from);
+        }
+
+        if (closed) {
+            from = to;
+            times[++counter] = BusStop.travelTimeToStationFrom(from);
+        }
+
+        return times;
     }
 
 }//class

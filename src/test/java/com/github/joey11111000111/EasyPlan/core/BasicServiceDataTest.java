@@ -13,7 +13,11 @@ public class BasicServiceDataTest {
 
     @Before
     public void init() {
-        bsd = new BasicServiceData();
+        String name = "new service";
+        int timeGap = 10;
+        SimpleTime firstLT = new SimpleTime(8, 0);
+        SimpleTime boundaryT = new SimpleTime(18, 0);
+        bsd = new BasicServiceData(name, timeGap, firstLT, boundaryT);
     }
 
     @Test

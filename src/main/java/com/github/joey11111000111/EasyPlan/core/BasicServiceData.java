@@ -5,53 +5,17 @@ package com.github.joey11111000111.EasyPlan.core;
  */
 class BasicServiceData {
 
-    private class SimpleTime {
-        private int hours;
-        private int minutes;
-
-        public SimpleTime(int hours, int minutes) {
-            this.hours = hours;
-            this.minutes = minutes;
-        }
-
-        public int getHours() {
-            return hours;
-        }
-        public int getMinutes() {
-            return minutes;
-        }
-
-        public boolean setHours(int hours) {
-            if (hours < 0 || hours > 23)
-                throw new IllegalArgumentException("hours must be in range [0, 23]");
-            if (this.hours == hours)
-                return false;
-            this.hours = hours;
-            return true;
-        }
-
-        public boolean setMinutes(int minutes) {
-            if (minutes < 0 || minutes > 59)
-                throw new IllegalArgumentException("minutes must be in range [0, 59]");
-            if (this.minutes == minutes)
-                return false;
-            this.minutes = minutes;
-            return true;
-        }
-    }//private class
-
     private String name;
     private int timeGap;
     private SimpleTime firstLeaveTime;
     private SimpleTime boundaryTime;
     private boolean modified;
 
-    public BasicServiceData() {
-        // set to default values, so it's valid even without any modification
-        name = "new service";
-        timeGap = 10;
-        firstLeaveTime = new SimpleTime(8, 0);
-        boundaryTime = new SimpleTime(18, 0);
+    public BasicServiceData(String name, int timeGap, SimpleTime firstLeaveTime, SimpleTime boundaryTime) {
+        this.name = name;
+        this.timeGap = timeGap;
+        this.firstLeaveTime = new SimpleTime(firstLeaveTime);
+        this.boundaryTime = new SimpleTime(boundaryTime);
         modified = false;
     }
 
@@ -119,6 +83,9 @@ class BasicServiceData {
         return firstLeaveTime.getMinutes();
     }
 
+    SimpleTime getFirstLeaveTime() {
+        return firstLeaveTime;
+    }
 
     public void setBoundaryTime(int hours, int minutes) {
         boolean hoursModified = boundaryTime.setHours(hours);
@@ -142,4 +109,7 @@ class BasicServiceData {
         return boundaryTime.getMinutes();
     }
 
+    SimpleTime getBoundaryTime() {
+        return boundaryTime;
+    }
 }//class
