@@ -7,15 +7,15 @@ class BasicServiceData {
 
     private String name;
     private int timeGap;
-    private SimpleTime firstLeaveTime;
-    private SimpleTime boundaryTime;
+    private DayTime firstLeaveTime;
+    private DayTime boundaryTime;
     private boolean modified;
 
-    public BasicServiceData(String name, int timeGap, SimpleTime firstLeaveTime, SimpleTime boundaryTime) {
+    public BasicServiceData(String name, int timeGap, DayTime firstLeaveTime, DayTime boundaryTime) {
         this.name = name;
         this.timeGap = timeGap;
-        this.firstLeaveTime = new SimpleTime(firstLeaveTime);
-        this.boundaryTime = new SimpleTime(boundaryTime);
+        this.firstLeaveTime = new DayTime(firstLeaveTime);
+        this.boundaryTime = new DayTime(boundaryTime);
         modified = false;
     }
 
@@ -83,7 +83,7 @@ class BasicServiceData {
         return firstLeaveTime.getMinutes();
     }
 
-    SimpleTime getFirstLeaveTime() {
+    DayTime getFirstLeaveTime() {
         return firstLeaveTime;
     }
 
@@ -109,7 +109,7 @@ class BasicServiceData {
         return boundaryTime.getMinutes();
     }
 
-    SimpleTime getBoundaryTime() {
+    DayTime getBoundaryTime() {
         return boundaryTime;
     }
 }//class

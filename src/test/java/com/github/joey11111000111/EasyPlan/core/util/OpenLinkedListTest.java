@@ -122,6 +122,7 @@ public class OpenLinkedListTest {
         assertNull(openList.getHead());
         assertNull(openList.getTail());
         assertEquals(0, openList.size());
+        openList.clear(); // should have no effect
     }
 
     @Test

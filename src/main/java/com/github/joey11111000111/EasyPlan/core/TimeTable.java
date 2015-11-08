@@ -9,13 +9,13 @@ public class TimeTable {
 
     public static class StopTimes {
         public final int id;
-        public final List<SimpleTime> times;
+        public final List<DayTime> times;
 
-        StopTimes(int id, List<SimpleTime> times) {
+        StopTimes(int id, List<DayTime> times) {
             if (times.size() == 0)
                 throw new IllegalArgumentException("there must be at least one stop time for a stop or a station");
             try {
-                times.add(new SimpleTime(0, 0));
+                times.add(new DayTime(0, 0));
                 throw new IllegalArgumentException("given list must be unmodifiable");
             } catch (UnsupportedOperationException uoe) {}
 
@@ -26,7 +26,7 @@ public class TimeTable {
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append("id: ").append(id).append("  stop times: ");
-            for (SimpleTime st : times)
+            for (DayTime st : times)
                 sb.append(st).append("  ");
             return sb.toString();
         }
@@ -36,8 +36,8 @@ public class TimeTable {
         private String name;
         private int[] stopIds;
         private int[] travelTimes;
-        private SimpleTime firstLeaveTime;
-        private SimpleTime boundaryTime;
+        private DayTime firstLeaveTime;
+        private DayTime boundaryTime;
         private int timeGap;
 
         public TimeTableArguments() {
@@ -82,18 +82,18 @@ public class TimeTable {
                 this.travelTimes[i] = travelTimes[i];
         }
 
-        public void setFirstLeaveTime(SimpleTime firstLeaveTime) {
+        public void setFirstLeaveTime(DayTime firstLeaveTime) {
             if (firstLeaveTime == null)
                 throw new NullPointerException("firstLeaveTime must not be null");
             // create deep copy
-            this.firstLeaveTime = new SimpleTime(firstLeaveTime);
+            this.firstLeaveTime = new DayTime(firstLeaveTime);
         }
 
-        public void setBoundaryTime(SimpleTime boundaryTime) {
+        public void setBoundaryTime(DayTime boundaryTime) {
             if (boundaryTime == null)
                 throw new NullPointerException("boundaryTime must not be null");
             // create deep copy
-            this.boundaryTime = new SimpleTime(boundaryTime);
+            this.boundaryTime = new DayTime(boundaryTime);
         }
 
         public void setTimeGap(int timeGap) {
@@ -125,7 +125,9 @@ public class TimeTable {
 
     public final String name;
     public final List<StopTimes> stopTimes;
-    public final SimpleTime totalTravelTime;
+    public final int busCount;
+    public final int timeGap;
+    public final DayTime totalTravelTime;
 
     public static TimeTable newInstance(TimeTableArguments tta) {
         if (!tta.isValid())
@@ -139,7 +141,7 @@ public class TimeTable {
 
 
     private TimeTable(String name, int[] stopIds, int[] travelTimes,
-                     SimpleTime firstLeaveTime, SimpleTime boundaryTime, int timeGap) {
+                     DayTime firstLeaveTime, DayTime boundaryTime, int timeGap) {
 
         this.name = name;
         boolean closed = travelTimes.length > stopIds.length;
@@ -179,19 +181,21 @@ public class TimeTable {
 
         // everything is added, the list is now completed
         stopTimes = Collections.unmodifiableList(allStopTimes);
+        this.busCount = busCount;
+        this.timeGap = timeGap;
 
         // calculate the total travel time
         int firstMinutes = stopTimes.get(0).times.get(0).getTimeAsMinutes();
         int lastIndex = stopTimes.size() - 1;
         int lastMinutes = stopTimes.get(lastIndex).times.get(0).getTimeAsMinutes();
-        totalTravelTime = new SimpleTime(lastMinutes - firstMinutes);
+        totalTravelTime = new DayTime(lastMinutes - firstMinutes);
     }
 
     private StopTimes getStopTimes(int id, int busCount, int timeGap, int firstLeaveMinutes, int travelTime) {
-        List<SimpleTime> list = new ArrayList<SimpleTime>(busCount);
+        List<DayTime> list = new ArrayList<DayTime>(busCount);
         for (int i = 0; i < busCount; i++) {
             int minutes = i * timeGap + firstLeaveMinutes + travelTime;
-            list.add(new SimpleTime(minutes, true));
+            list.add(new DayTime(minutes, true));
         }
         list = Collections.unmodifiableList(list);
         return new StopTimes(id, list);

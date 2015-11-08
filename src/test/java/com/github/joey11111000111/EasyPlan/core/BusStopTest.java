@@ -84,6 +84,10 @@ public class BusStopTest {
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
         try {
+            BusStop.isReachableToFrom(-1, 3);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
             BusStop.travelTimeToStationFrom(19);
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
@@ -91,7 +95,14 @@ public class BusStopTest {
             BusStop.travelTimeToStationFrom(9);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
-
+        try {
+            BusStop.travelTimeToFrom(-1, 12);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.travelTimeToFrom(5, 16);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
     }
 
 }

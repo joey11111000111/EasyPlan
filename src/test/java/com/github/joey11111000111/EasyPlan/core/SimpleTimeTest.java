@@ -10,34 +10,34 @@ public class SimpleTimeTest {
 
     @Test
     public void testAll() {
-        SimpleTime st;
+        DayTime st;
         // test construction exceptions
         try {
-            st = new SimpleTime(26, 1);
+            st = new DayTime(26, 1);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         try {
-            st = new SimpleTime(12, -1);
+            st = new DayTime(12, -1);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
 
         try {
-            st = new SimpleTime( (23 * 60 + 59) + 1);
+            st = new DayTime( (23 * 60 + 59) + 1);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         try {
-            st = new SimpleTime(-1);
+            st = new DayTime(-1);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
 
 
         // test general methods
-        st = new SimpleTime(12, 9);
+        st = new DayTime(12, 9);
         assertEquals(12, st.getHours());
         assertEquals(9, st.getMinutes());
         assertEquals(12 * 60 + 9, st.getTimeAsMinutes());
 
-        st = new SimpleTime(121);
+        st = new DayTime(121);
         assertEquals(2, st.getHours());
         assertEquals(1, st.getMinutes());
 
@@ -45,7 +45,7 @@ public class SimpleTimeTest {
         assertFalse(st.setMinutes(1));
 
         // test deep copy
-        SimpleTime st2 = new SimpleTime(st);
+        DayTime st2 = new DayTime(st);
         assertEquals(st.getHours(), st2.getHours());
         assertEquals(st.getMinutes(), st2.getMinutes());
         assertEquals(st.getTimeAsMinutes(), st2.getTimeAsMinutes());
@@ -55,6 +55,16 @@ public class SimpleTimeTest {
         assertFalse(st.getHours() == st2.getHours());
         assertFalse(st.getMinutes() == st2.getMinutes());
         assertFalse(st.getTimeAsMinutes() == st2.getTimeAsMinutes());
+
+        String[] parts = st.toString().split(":");
+        assertEquals(2, parts.length);
+        for (int i = 0; i < 2; i++)
+            try {
+                Integer.parseInt(parts[i]);
+            } catch (NumberFormatException nfe) {
+                assertTrue(false);
+            }
+
     }
 
 }//class

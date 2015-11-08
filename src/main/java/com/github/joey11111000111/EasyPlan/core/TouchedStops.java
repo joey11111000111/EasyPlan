@@ -108,18 +108,10 @@ public class TouchedStops {
                     throw new IllegalArgumentException("given stop '" + id + "' is not "
                             + "reachable from the stop '" + lastId + "'");
         }
-        // check reachable rule 2 if needed
-        if (stops.size() > 3) {
-            Node<Integer> node = stops.getTail();
-            int counter = 0;
-            while (node.hasPrevious()) {
-                node = node.previous();
-                if (id == node.getElement())
-                    if (++counter == 2)
-                        throw new IllegalArgumentException("given bus stop '" + id
-                                + "' has already appeared twice in the list");
-            }
-        }
+        // check reachable rule 2
+        if (addedTwiceAlready(id))
+            throw new IllegalArgumentException("given bus stop '" + id
+                + "' has already appeared twice in the list");
 
         // append bus stop and create the undo operation for this append operation
         stops.append(id);
@@ -127,9 +119,23 @@ public class TouchedStops {
         undoStack.push(UndoOperation.newDeleteInstance(new Integer(0)));
     }
 
+    private boolean addedTwiceAlready(int id) {
+        if (stops.size() > 3) {
+            Node<Integer> node = stops.getTail();
+            int counter = 0;
+            while (node.hasPrevious()) {
+                node = node.previous();
+                if (id == node.getElement())
+                    if (++counter == 2)
+                        return true;
+            }
+        }
+        return false;
+    }
+
     public int[] getStops() {
         if (isEmpty())
-            throw new IllegalStateException("list is empty, no stops to return");
+            return new int[0];
 
         int[] stopIds = new int[stops.size()];
         Node<Integer> node = stops.getHead();
@@ -167,6 +173,8 @@ public class TouchedStops {
             return;
         }
 
+        if (!modified)
+            modified = true;
         addUndoOfRemoval(chain);
         markAsModified();
     }
@@ -194,8 +202,6 @@ public class TouchedStops {
         if (type == UndoOperation.OperationType.OPEN) {
             closed = false;
         } else if (type == UndoOperation.OperationType.DELETE) {
-            if (closed)
-                closed = false;
             stops.removeLast();
         } else if (type == UndoOperation.OperationType.APPEND) {
             Node<Integer> chain = operation.getChain();
@@ -221,27 +227,21 @@ public class TouchedStops {
     public int[] getReachableStopIds() {
         if (isEmpty())
             return BusStop.getReachableIdsOfStation();
+        if (isClosed())
+            throw new IllegalStateException("service is closed, thus there are no reachable stops");
 
         int lastId = stops.getTail().getElement();
         int[] ids = BusStop.getReachableIdsOf(lastId);
-        if (stops.size() < 3)
-            return ids;
+//        if (stops.size() < 3)
+//            return ids;
 
         List<Integer> validIds = new ArrayList<Integer>(ids.length);
-        FOR:
         for (int i : ids) {
             // the bus station will not be included
             if (BusStop.isStation(i))
                 continue;
-            // iterate backwords to find one more appearance
-            Node<Integer> node = stops.getTail();
-            while (node.hasPrevious()) {
-                node = node.previous();
-                int id = node.getElement();
-                if (i == id)
-                    continue FOR;
-            }
-            validIds.add(i);
+            if (!addedTwiceAlready(i))
+                validIds.add(i);
         }
 
         int[] resultIds = new int[validIds.size()];

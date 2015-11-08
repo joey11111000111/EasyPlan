@@ -15,8 +15,8 @@ public class BasicServiceDataTest {
     public void init() {
         String name = "new service";
         int timeGap = 10;
-        SimpleTime firstLT = new SimpleTime(8, 0);
-        SimpleTime boundaryT = new SimpleTime(18, 0);
+        DayTime firstLT = new DayTime(8, 0);
+        DayTime boundaryT = new DayTime(18, 0);
         bsd = new BasicServiceData(name, timeGap, firstLT, boundaryT);
     }
 
@@ -72,9 +72,15 @@ public class BasicServiceDataTest {
         String name = "22Y";
         bsd.setName(name);
         assertEquals(name, bsd.getName());
+        // setting the same name again should not change the name reference in the object
+        assertTrue(name == bsd.getName());
+        String name2 = new String("22Y");
+        bsd.setName(name2);
+        assertFalse(name2 == bsd.getName());
         // set and get timeGap
         int timeGap = 12;
         bsd.setTimeGap(timeGap);
+        bsd.setTimeGap(timeGap);    // setting it again should have no effect
         assertEquals(timeGap, bsd.getTimeGap());
         // test getters and setters for firstLeaveTime
         int flHour = 9, flMinute = 56;
@@ -89,7 +95,15 @@ public class BasicServiceDataTest {
         bsd.setFirstLeaveMinutes(flMinute);
         assertEquals(flHour, bsd.getFirstLeaveHours());
         assertEquals(flMinute, bsd.getFirstLeaveMinutes());
-        // test getters for boundaryTime
+        // no exception, no effect should take place
+        bsd.setFirstLeaveTime(flHour, flMinute);
+        int setMinutes = new DayTime(flHour, flMinute).getTimeAsMinutes();
+        int receivedMinutes = bsd.getFirstLeaveTime().getTimeAsMinutes();
+        assertEquals(setMinutes, receivedMinutes);
+
+
+
+        // test getters/setters for boundaryTime
         int bHour = 9, bMinute = 56;
         bsd.setBoundaryTime(bHour, bMinute);
         assertEquals(bHour, bsd.getBoundaryHours());
@@ -102,10 +116,19 @@ public class BasicServiceDataTest {
         bsd.setBoundaryMinutes(bMinute);
         assertEquals(bHour, bsd.getBoundaryHours());
         assertEquals(bMinute, bsd.getBoundaryMinutes());
+        // no exception, no effect should take place
+        bsd.setBoundaryTime(bHour, bMinute);
+        setMinutes = new DayTime(bHour, bMinute).getTimeAsMinutes();
+        receivedMinutes = bsd.getBoundaryTime().getTimeAsMinutes();
+        assertEquals(setMinutes, receivedMinutes);
 
         assertTrue(bsd.isModified());
         bsd.markAsSaved();
         assertFalse(bsd.isModified());
+        // markAsSaved again should have no effect
+        bsd.markAsSaved();
+        assertFalse(bsd.isModified());
+
     }
 
 }//class

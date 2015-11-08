@@ -200,16 +200,16 @@ public final class BusStop implements Comparable<BusStop> {
         return this.id - otherStop.id;
     }
 
-    public String toString() {
-        String lnSep = System.getProperty("line.separator");
-        StringBuilder sb = new StringBuilder();
-        sb.append("id: ").append(id).append("  x: ").append(x).append("  y: ").append(y).append(lnSep);
-        for (Map.Entry<java.lang.Integer, java.lang.Integer> entry : reachableStops.entrySet()) {
-            sb.append("   ").append("id: ").append(entry.getKey())
-                    .append(" travel time: ").append(entry.getValue())
-                    .append(lnSep);
-        }
-        return sb.toString();
-    }
+//    public String toString() {
+//        String lnSep = System.getProperty("line.separator");
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("id: ").append(id).append("  x: ").append(x).append("  y: ").append(y).append(lnSep);
+//        for (Map.Entry<java.lang.Integer, java.lang.Integer> entry : reachableStops.entrySet()) {
+//            sb.append("   ").append("id: ").append(entry.getKey())
+//                    .append(" travel time: ").append(entry.getValue())
+//                    .append(lnSep);
+//        }
+//        return sb.toString();
+//    }
 
 }//class

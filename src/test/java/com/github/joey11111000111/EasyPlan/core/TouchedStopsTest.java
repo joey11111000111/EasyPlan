@@ -49,10 +49,7 @@ public class TouchedStopsTest {
         assertEquals(4, reachableIds[2]);
         assertEquals(6, reachableIds[3]);
 
-        try {
-            ts.getStops();
-            assertTrue(false);
-        } catch (IllegalStateException ise) {}
+        assertEquals(0, ts.getStops().length);
     }
 
     @Test
@@ -95,6 +92,10 @@ public class TouchedStopsTest {
             assertTrue(false);
         } catch (IllegalStateException ise) {}
 
+        try {
+            ts.removeChainFrom(19);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
         ts.removeChainFrom(4);
         assertFalse(ts.isClosed());
         int[] stops = ts.getStops();
@@ -139,7 +140,7 @@ public class TouchedStopsTest {
         assertEquals(2, stops.length);
         assertEquals(2, stops[0]);
         assertEquals(3, stops[1]);
-
+        // delete -undo in a closed state test
         ts.appendStop(5);
         ts.appendStop(6);
         ts.closeService();
@@ -183,6 +184,7 @@ public class TouchedStopsTest {
         ts.markAsSaved();
         assertFalse(ts.isClosed());
         assertFalse(ts.canUndo());
+        ts.markAsSaved();   // should have no effect
 
         ts.appendStop(1);
         ts.appendStop(4);
@@ -217,7 +219,6 @@ public class TouchedStopsTest {
         assertEquals(21, times[1]);
         assertEquals(31, times[2]);
         assertEquals(43, times[3]);
-
         // test an open service
         ts.undo();
         times = ts.getTravelTimes();
@@ -241,4 +242,54 @@ public class TouchedStopsTest {
         } catch (IllegalStateException ise) {}
     }
 
+    @Test
+    public void testOther() {
+        ts.clear();
+        ts.appendStop(1);
+        ts.appendStop(4);
+        ts.appendStop(7);
+        assertFalse(ts.isStationReachable());
+        ts.undo();
+        ts.closeService();
+        assertFalse(ts.isStationReachable());
+        try {
+            ts.getReachableStopIds();
+            assertTrue(false);
+        } catch (IllegalStateException ise) {}
+
+        ts.undo();
+        int[] reachStops = ts.getReachableStopIds();
+        Arrays.sort(reachStops);
+        assertEquals(3, reachStops.length);
+        assertEquals(1, reachStops[0]);
+        assertEquals(6, reachStops[1]);
+        assertEquals(7, reachStops[2]);
+
+        ts.appendStop(7);
+        ts.appendStop(8);
+        ts.appendStop(6);
+        ts.appendStop(9);
+        reachStops = ts.getReachableStopIds();
+        Arrays.sort(reachStops);
+        assertEquals(4, reachStops.length);
+        assertEquals(6, reachStops[0]);
+        assertEquals(8, reachStops[1]);
+        assertEquals(10, reachStops[2]);
+        assertEquals(12, reachStops[3]);
+
+        ts.appendStop(8);
+        ts.appendStop(9);
+        reachStops = ts.getReachableStopIds();
+        Arrays.sort(reachStops);
+        assertEquals(3, reachStops.length);
+        assertEquals(6, reachStops[0]);
+        assertEquals(10, reachStops[1]);
+        assertEquals(12, reachStops[2]);
+
+
+
+        ts.clear();
+
+
+    }
 }//class

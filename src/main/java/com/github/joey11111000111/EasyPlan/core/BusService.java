@@ -1,7 +1,5 @@
 package com.github.joey11111000111.EasyPlan.core;
 
-import com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +13,8 @@ public class BusService implements Serializable {
     private boolean closed;
     private String name;
     private int timeGap;
-    private SimpleTime firstLeaveTime;
-    private SimpleTime boundaryTime;
+    private DayTime firstLeaveTime;
+    private DayTime boundaryTime;
 
     transient private TouchedStops currentStops;
     transient private BasicServiceData currentServiceData;
@@ -26,8 +24,8 @@ public class BusService implements Serializable {
         closed = false;
         name = "new service";
         timeGap = 10;
-        firstLeaveTime = new SimpleTime(8, 0);
-        boundaryTime = new SimpleTime(18, 0);
+        firstLeaveTime = new DayTime(8, 0);
+        boundaryTime = new DayTime(18, 0);
         initCurrentStops();
         initCurrentServiceData();
     }
@@ -58,8 +56,8 @@ public class BusService implements Serializable {
     private void applyServiceData() {
         name = currentServiceData.getName();
         timeGap = currentServiceData.getTimeGap();
-        firstLeaveTime = new SimpleTime(currentServiceData.getFirstLeaveTime());
-        boundaryTime = new SimpleTime(currentServiceData.getBoundaryTime());
+        firstLeaveTime = new DayTime(currentServiceData.getFirstLeaveTime());
+        boundaryTime = new DayTime(currentServiceData.getBoundaryTime());
     }
 
     public void applyChanges() {
@@ -77,6 +75,18 @@ public class BusService implements Serializable {
     }
     public BasicServiceData getCurrentServiceData() {
         return currentServiceData;
+    }
+
+    public TimeTable getTimeTable() {
+        TimeTable.TimeTableArguments args = new TimeTable.TimeTableArguments();
+        args.setName(currentServiceData.getName());
+        args.setStopIds(currentStops.getStops());
+        args.setTravelTimes(currentStops.getTravelTimes());
+        args.setTimeGap(currentServiceData.getTimeGap());
+        args.setFirstLeaveTime(currentServiceData.getFirstLeaveTime());
+        args.setBoundaryTime(currentServiceData.getBoundaryTime());
+
+        return TimeTable.newInstance(args);
     }
 
 }//class

@@ -1,13 +1,15 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import java.io.Serializable;
+
 /**
  * Created by joey on 2015.11.06..
  */
-public class SimpleTime {
+public class DayTime implements Serializable {
     private int hours;
     private int minutes;
 
-    public SimpleTime(int minutes, boolean canOverflow) {
+    public DayTime(int minutes, boolean canOverflow) {
         if (!canOverflow)
             if (minutes < 0 || minutes > (23 * 60 + 59))
                 throw new IllegalArgumentException("time day-overflow is not allowed, must represent one day from "
@@ -16,16 +18,16 @@ public class SimpleTime {
         this.minutes = minutes - hours * 60;
         this.hours %= 24;
     }
-    public SimpleTime(int minutes) {
+    public DayTime(int minutes) {
         this(minutes, false);
     }
 
-    public SimpleTime(int hours, int minutes) {
+    public DayTime(int hours, int minutes) {
         setHours(hours);
         setMinutes(minutes);
     }
 
-    public SimpleTime(SimpleTime rhs) {
+    public DayTime(DayTime rhs) {
         hours = rhs.getHours();
         minutes = rhs.getMinutes();
     }
