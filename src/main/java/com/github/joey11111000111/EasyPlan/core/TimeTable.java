@@ -11,7 +11,9 @@ public class TimeTable {
         public final int id;
         public final List<SimpleTime> times;
 
-        private StopTimes(int id, List<SimpleTime> times) {
+        StopTimes(int id, List<SimpleTime> times) {
+            if (times.size() == 0)
+                throw new IllegalArgumentException("there must be at least one stop time for a stop or a station");
             try {
                 times.add(new SimpleTime(0, 0));
                 throw new IllegalArgumentException("given list must be unmodifiable");
@@ -19,6 +21,14 @@ public class TimeTable {
 
             this.id = id;
             this.times = times;
+        }
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append("id: ").append(id).append("  stop times: ");
+            for (SimpleTime st : times)
+                sb.append(st).append("  ");
+            return sb.toString();
         }
     }
 
@@ -48,10 +58,15 @@ public class TimeTable {
         public void setStopIds(int[] stopIds) {
             if (stopIds == null)
                 throw new NullPointerException("stopIds must not be null");
+
             for (int i = 0; i < stopIds.length; i++)
                 if (!BusStop.validId(stopIds[i]))
                     throw new IllegalArgumentException("invalid array element");
-            this.stopIds = stopIds;
+
+            // create deep copy
+            this.stopIds = new int[stopIds.length];
+            for (int i = 0; i < stopIds.length; i++)
+                this.stopIds[i] = stopIds[i];
         }
 
         public void setTravelTimes(int[] travelTimes) {
@@ -60,7 +75,11 @@ public class TimeTable {
             for (int i = 0; i < travelTimes.length; i++)
                 if (travelTimes[i] < 1)
                     throw new IllegalArgumentException("invalid array element");
-            this.travelTimes = travelTimes;
+
+            // create deep copy
+            this.travelTimes = new int[travelTimes.length];
+            for (int i = 0; i < travelTimes.length; i++)
+                this.travelTimes[i] = travelTimes[i];
         }
 
         public void setFirstLeaveTime(SimpleTime firstLeaveTime) {
@@ -85,7 +104,10 @@ public class TimeTable {
 
         public boolean isValid() {
             return name != null && stopIds != null && travelTimes != null
-                    && firstLeaveTime != null && boundaryTime != null && timeGap > 0;
+                    && travelTimes.length - stopIds.length < 2
+                    && travelTimes.length - stopIds.length >= 0
+                    && firstLeaveTime != null && boundaryTime != null
+                    && timeGap > 0;
         }
 
         @Override
@@ -103,6 +125,7 @@ public class TimeTable {
 
     public final String name;
     public final List<StopTimes> stopTimes;
+    public final SimpleTime totalTravelTime;
 
     public static TimeTable newInstance(TimeTableArguments tta) {
         if (!tta.isValid())
@@ -123,16 +146,20 @@ public class TimeTable {
         int size = travelTimes.length + 1;
         List<StopTimes> allStopTimes = new ArrayList<StopTimes>(size);
 
+
         // convert time to minutes
         int firstLeaveMinutes = firstLeaveTime.getTimeAsMinutes();
         int boundaryMinutes = boundaryTime.getTimeAsMinutes();
 
-        // calculate the number as buses to go since firstLeaveTime until boundaryTime
-        int busCount = boundaryMinutes - firstLeaveMinutes;
+        // calculate the number of buses to go since firstLeaveTime until boundaryTime
+        int busCount;
+        if (boundaryMinutes < firstLeaveMinutes)
+            busCount = (boundaryMinutes + 24 * 60) - firstLeaveMinutes;
+        else
+            busCount = boundaryMinutes - firstLeaveMinutes;
         busCount = Math.abs(busCount);
         busCount /= timeGap; // there must not be any bus after the boundaryTime, so the remaining is ignored
-        if (busCount == 0)   // at least one bus will go, the first bus is independent of the time gap
-            busCount = 1;
+        busCount += 1;       // because the first bus leaves at firstLeaveTime, with no time gap
 
         // add the starting times at the station
         StopTimes st = getStopTimes(BusStop.getIdOfStation(), busCount,
@@ -150,14 +177,21 @@ public class TimeTable {
             allStopTimes.add(st);
         }
 
+        // everything is added, the list is now completed
         stopTimes = Collections.unmodifiableList(allStopTimes);
+
+        // calculate the total travel time
+        int firstMinutes = stopTimes.get(0).times.get(0).getTimeAsMinutes();
+        int lastIndex = stopTimes.size() - 1;
+        int lastMinutes = stopTimes.get(lastIndex).times.get(0).getTimeAsMinutes();
+        totalTravelTime = new SimpleTime(lastMinutes - firstMinutes);
     }
 
     private StopTimes getStopTimes(int id, int busCount, int timeGap, int firstLeaveMinutes, int travelTime) {
         List<SimpleTime> list = new ArrayList<SimpleTime>(busCount);
         for (int i = 0; i < busCount; i++) {
             int minutes = i * timeGap + firstLeaveMinutes + travelTime;
-            list.add(new SimpleTime(minutes));
+            list.add(new SimpleTime(minutes, true));
         }
         list = Collections.unmodifiableList(list);
         return new StopTimes(id, list);

@@ -131,14 +131,12 @@ public class TouchedStops {
         if (isEmpty())
             throw new IllegalStateException("list is empty, no stops to return");
 
-        System.out.println("\tstops.size() = " + stops.size());
         int[] stopIds = new int[stops.size()];
         Node<Integer> node = stops.getHead();
         stopIds[0] = node.getElement();
         int counter = 1;
         while (node.hasNext()) {
             node = node.next();
-            System.out.println("\t\tcounter = " + counter);
             stopIds[counter++] = node.getElement();
         }
         return stopIds;
@@ -277,6 +275,11 @@ public class TouchedStops {
             from = to;
             times[++counter] = BusStop.travelTimeToStationFrom(from);
         }
+
+        // now I have to individual travel times, from stop to stop
+        // convert them to be relative to the station
+        for (int i = 1; i < times.length; i++)
+            times[i] += times[i-1];
 
         return times;
     }

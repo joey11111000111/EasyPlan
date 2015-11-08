@@ -7,17 +7,27 @@ public class SimpleTime {
     private int hours;
     private int minutes;
 
-    public SimpleTime(int hours, int minutes) {
-        this.hours = hours;
-        this.minutes = minutes;
+    public SimpleTime(int minutes, boolean canOverflow) {
+        if (!canOverflow)
+            if (minutes < 0 || minutes > (23 * 60 + 59))
+                throw new IllegalArgumentException("time day-overflow is not allowed, must represent one day from "
+                        + "0:0 to 23:59");
+        this.hours = minutes / 60;
+        this.minutes = minutes - hours * 60;
+        this.hours %= 24;
     }
+    public SimpleTime(int minutes) {
+        this(minutes, false);
+    }
+
+    public SimpleTime(int hours, int minutes) {
+        setHours(hours);
+        setMinutes(minutes);
+    }
+
     public SimpleTime(SimpleTime rhs) {
         hours = rhs.getHours();
         minutes = rhs.getMinutes();
-    }
-    public SimpleTime(int minutes) {
-        hours = minutes / 60;
-        this.minutes = minutes % 60;
     }
 
 
@@ -48,5 +58,9 @@ public class SimpleTime {
             return false;
         this.minutes = minutes;
         return true;
+    }
+
+    public String toString() {
+        return "" + hours + ':' + minutes;
     }
 }//class

@@ -214,17 +214,17 @@ public class TouchedStopsTest {
         int[] times = ts.getTravelTimes();
         assertEquals(4, times.length);
         assertEquals(8, times[0]);
-        assertEquals(13, times[1]);
-        assertEquals(10, times[2]);
-        assertEquals(12, times[3]);
+        assertEquals(21, times[1]);
+        assertEquals(31, times[2]);
+        assertEquals(43, times[3]);
 
         // test an open service
         ts.undo();
         times = ts.getTravelTimes();
         assertEquals(3, times.length);
         assertEquals(8, times[0]);
-        assertEquals(13, times[1]);
-        assertEquals(10, times[2]);
+        assertEquals(21, times[1]);
+        assertEquals(31, times[2]);
 
         // test a 1-stop-sized service
         ts.clear();

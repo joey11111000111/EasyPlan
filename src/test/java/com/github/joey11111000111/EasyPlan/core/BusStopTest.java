@@ -63,6 +63,34 @@ public class BusStopTest {
             BusStop.travelTimeToFrom(2, 1);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
+        try {
+            BusStop.getXCoordOf(-1);
+            assertTrue(false);
+        } catch(IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.getYCoordOf(19);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.isStation(18);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.isReachableFromStation(-1);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.isReachableToFrom(1, 19);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.travelTimeToStationFrom(19);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.travelTimeToStationFrom(9);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
 
     }
 
