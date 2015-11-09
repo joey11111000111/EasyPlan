@@ -236,15 +236,19 @@ public class TouchedStopsTest {
 
         // test an empty service
         ts.clear();
-        try {
-            times = ts.getTravelTimes();
-            assertTrue(false);
-        } catch (IllegalStateException ise) {}
+        times = ts.getTravelTimes();
+        assertEquals(0, times.length);
     }
 
     @Test
     public void testOther() {
         ts.clear();
+        ts.appendStop(1);
+        assertTrue(ts.isModified());
+        ts.markAsSaved();
+        assertFalse(ts.isModified());
+        ts.clear();
+        assertTrue(ts.isModified());
         ts.appendStop(1);
         ts.appendStop(4);
         ts.appendStop(7);

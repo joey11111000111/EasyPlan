@@ -1,4 +1,4 @@
-package com.github.joey11111000111.EasyPlan.core;
+package com.github.joey11111000111.EasyPlan.core.util;
 
 import java.io.Serializable;
 
@@ -6,6 +6,8 @@ import java.io.Serializable;
  * Created by joey on 2015.11.06..
  */
 public class DayTime implements Serializable {
+    static final long serialVersionUID = 100L;
+
     private int hours;
     private int minutes;
 

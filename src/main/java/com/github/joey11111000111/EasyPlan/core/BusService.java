@@ -1,5 +1,7 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.List;
  * Created by joey on 2015.11.01..
  */
 public class BusService implements Serializable {
+
+    static final long serialVersionUID = 0L;
 
     private List<Integer> savedStops;
     private boolean closed;
@@ -26,15 +30,13 @@ public class BusService implements Serializable {
         timeGap = 10;
         firstLeaveTime = new DayTime(8, 0);
         boundaryTime = new DayTime(18, 0);
-        initCurrentStops();
-        initCurrentServiceData();
+        initTransientFields();
     }
 
-    void initCurrentServiceData() {
+    void initTransientFields() {
+        // init CurrentServiceDate
         currentServiceData = new BasicServiceData(name, timeGap, firstLeaveTime, boundaryTime);
-    }
-
-    void initCurrentStops() {
+        // init currentStops
         currentStops = new TouchedStops();
         if (savedStops.isEmpty())
             return;
@@ -43,6 +45,31 @@ public class BusService implements Serializable {
         if (closed)
             currentStops.closeService();
         currentStops.markAsSaved();
+    }
+
+    public boolean discardChanged() {
+        boolean restoreHappened = false;
+        // discard basic data changes, if there were any
+        if (currentServiceData.isModified()) {
+            currentServiceData.setName(name);
+            currentServiceData.setTimeGap(timeGap);
+            currentServiceData.setFirstLeaveTime(firstLeaveTime);
+            currentServiceData.setBoundaryTime(boundaryTime);
+            currentServiceData.markAsSaved();
+            restoreHappened = true;
+        }
+        // discard stop changes, if there were any
+        if (currentStops.isModified()) {
+            currentStops.clear();
+            for (int i : savedStops)
+                currentStops.appendStop(i);
+            if (closed)
+                currentStops.closeService();
+            currentStops.markAsSaved();
+            if (!restoreHappened)
+                restoreHappened = true;
+        }
+        return restoreHappened;
     }
 
     private void applyStops() {
@@ -77,8 +104,8 @@ public class BusService implements Serializable {
         return currentServiceData;
     }
 
-    public TimeTable getTimeTable() {
-        TimeTable.TimeTableArguments args = new TimeTable.TimeTableArguments();
+    public Timetable getTimeTable() {
+        Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
         args.setName(currentServiceData.getName());
         args.setStopIds(currentStops.getStops());
         args.setTravelTimes(currentStops.getTravelTimes());
@@ -86,7 +113,7 @@ public class BusService implements Serializable {
         args.setFirstLeaveTime(currentServiceData.getFirstLeaveTime());
         args.setBoundaryTime(currentServiceData.getBoundaryTime());
 
-        return TimeTable.newInstance(args);
+        return Timetable.newInstance(args);
     }
 
 }//class

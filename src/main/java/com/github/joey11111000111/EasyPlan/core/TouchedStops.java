@@ -65,7 +65,7 @@ public class TouchedStops {
 
     private void markAsModified() {
         if (!modified)
-            modified = false;
+            modified = true;
     }
     void markAsSaved() {
         if (modified)
@@ -252,7 +252,7 @@ public class TouchedStops {
 
     public int[] getTravelTimes() {
         if (isEmpty())
-            throw new IllegalStateException("stop list is empty, cannot get any travel time");
+            return new int[0];
 
         int size = (closed) ? stops.size() + 1 : stops.size();
         int[] times = new int[size];

@@ -1,11 +1,13 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+
 import java.util.*;
 
 /**
  * Created by joey on 2015.11.06..
  */
-public class TimeTable {
+public class Timetable {
 
     public static class StopTimes {
         public final int id;
@@ -129,19 +131,19 @@ public class TimeTable {
     public final int timeGap;
     public final DayTime totalTravelTime;
 
-    public static TimeTable newInstance(TimeTableArguments tta) {
+    public static Timetable newInstance(TimeTableArguments tta) {
         if (!tta.isValid())
             throw new IllegalArgumentException("given arguments are not in a ready state: "
                     + System.getProperty("line.separator")
                     + tta.toString());
 
-        return new TimeTable(tta.name, tta.stopIds, tta.travelTimes, tta.firstLeaveTime,
+        return new Timetable(tta.name, tta.stopIds, tta.travelTimes, tta.firstLeaveTime,
                     tta.boundaryTime, tta.timeGap);
     }
 
 
-    private TimeTable(String name, int[] stopIds, int[] travelTimes,
-                     DayTime firstLeaveTime, DayTime boundaryTime, int timeGap) {
+    private Timetable(String name, int[] stopIds, int[] travelTimes,
+                      DayTime firstLeaveTime, DayTime boundaryTime, int timeGap) {
 
         this.name = name;
         boolean closed = travelTimes.length > stopIds.length;

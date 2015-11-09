@@ -1,5 +1,7 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+
 /**
  * Created by joey on 2015.11.04..
  */
@@ -64,6 +66,10 @@ class BasicServiceData {
         if (hoursModified || minutesModified)
             markAsModified();
     }
+    public void setFirstLeaveTime(DayTime time) {
+        firstLeaveTime.setHours(time.getHours());
+        firstLeaveTime.setMinutes(time.getMinutes());
+    }
 
     public void setFirstLeaveHour(int hours) {
         if (firstLeaveTime.setHours(hours))
@@ -93,6 +99,11 @@ class BasicServiceData {
         if (hoursModified || minutesModified)
             markAsModified();
     }
+    public void setBoundaryTime(DayTime time) {
+        boundaryTime.setHours(time.getHours());
+        boundaryTime.setMinutes(time.getMinutes());
+    }
+
     public void setBoundaryHours(int hours) {
         if (boundaryTime.setHours(hours))
             markAsModified();

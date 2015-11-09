@@ -1,5 +1,6 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import com.github.joey11111000111.EasyPlan.core.util.DayTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.Assert.*;
 /**
  * Created by joey on 2015.11.07..
  */
-public class TimeTableTest {
+public class TimetableTest {
 
     String name;
     int[] stopIds;
@@ -38,8 +39,8 @@ public class TimeTableTest {
         timeGap = 20;
     }
 
-    private TimeTable.TimeTableArguments createArgs() {
-        TimeTable.TimeTableArguments args = new TimeTable.TimeTableArguments();
+    private Timetable.TimeTableArguments createArgs() {
+        Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
         args.setTimeGap(timeGap);
         args.setName(name);
         args.setFirstLeaveTime(firstLeaveTime);
@@ -52,7 +53,7 @@ public class TimeTableTest {
 
     @Test
     public void testTimeTableArguments() {
-        TimeTable.TimeTableArguments args = createArgs();
+        Timetable.TimeTableArguments args = createArgs();
 
         int[] travelTimes = {-2, 1, 4};
         try {
@@ -104,19 +105,19 @@ public class TimeTableTest {
     public void testStopTimes() {
         int id = 1;
         List<DayTime> list = new ArrayList<DayTime>();
-        TimeTable.StopTimes st;
+        Timetable.StopTimes st;
         try {
-            st = new TimeTable.StopTimes(id, list);
+            st = new Timetable.StopTimes(id, list);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
 
         list.add(new DayTime(0, 0));
         try {
-            st = new TimeTable.StopTimes(id, list);
+            st = new Timetable.StopTimes(id, list);
         } catch (IllegalArgumentException iae) {}
 
         list = Collections.unmodifiableList(list);
-        st = new TimeTable.StopTimes(id, list);
+        st = new Timetable.StopTimes(id, list);
         assertEquals(id, st.id);
         assertEquals(list, st.times);
 
@@ -129,13 +130,13 @@ public class TimeTableTest {
     public void testOpenTimeTable() {
         int backupHours = boundaryTime.getHours();
         int backupMinutes = boundaryTime.getMinutes();
-        TimeTable.TimeTableArguments args;
+        Timetable.TimeTableArguments args;
         for (int i = 0; i < 2; i++) {
             args = createArgs();
-            TimeTable tt = TimeTable.newInstance(args);
+            Timetable tt = Timetable.newInstance(args);
 
             assertEquals("22Y", tt.name);
-            List<TimeTable.StopTimes> list = tt.stopTimes;
+            List<Timetable.StopTimes> list = tt.stopTimes;
             assertNotNull(list);
             assertEquals(6, list.size()); // 5 stops plus the station once
 
@@ -147,7 +148,7 @@ public class TimeTableTest {
             assertEquals(9, list.get(5).id);
 
             // test at the station
-            TimeTable.StopTimes st = list.get(0);
+            Timetable.StopTimes st = list.get(0);
             assertEquals(firstLeaveTime.getTimeAsMinutes(), st.times.get(0).getTimeAsMinutes());
             int lastTimeInMinutes = st.times.get(st.times.size() - 1).getTimeAsMinutes();
             int boundaryTimeInMinutes = boundaryTime.getTimeAsMinutes();
@@ -159,20 +160,14 @@ public class TimeTableTest {
         }
         boundaryTime.setHours(backupHours);
         boundaryTime.setMinutes(backupMinutes);
-
-//        System.out.println("---------------------------------");
-//        for (TimeTable.StopTimes st2 : list)
-//            System.out.println(st2);
     }
 
     @Test
     public void testClosedTimeTable() {
         int backupHours = boundaryTime.getHours();
         int backupMinutes = boundaryTime.getMinutes();
-        TimeTable.TimeTableArguments args;
+        Timetable.TimeTableArguments args;
         for (int k = 0; k < 2; k++) {
-            System.out.println("*stopIds.length = " + stopIds.length);
-            System.out.println("*travelTimes.length = " + travelTimes.length);
             if (stopIds.length == travelTimes.length) {
                 int[] temp = travelTimes;
                 travelTimes = new int[temp.length + 1];
@@ -182,9 +177,9 @@ public class TimeTableTest {
             }
 
             args = createArgs();
-            TimeTable tb = TimeTable.newInstance(args);
+            Timetable tb = Timetable.newInstance(args);
             int stationId = BusStop.getIdOfStation();
-            List<TimeTable.StopTimes> st = tb.stopTimes;
+            List<Timetable.StopTimes> st = tb.stopTimes;
             int firstId = st.get(0).id;
             int lastId = st.get(st.size() - 1).id;
             assertEquals(firstId, lastId);
@@ -194,27 +189,23 @@ public class TimeTableTest {
         }
         boundaryTime.setHours(backupHours);
         boundaryTime.setMinutes(backupMinutes);
-
-//        System.out.println("------------------------");
-//        for (TimeTable.StopTimes st2 : st)
-//            System.out.println(st2);
     }
 
     @Test
     public void testEmptyTimeTable() {
         int backupHours = boundaryTime.getHours();
         int backupMinutes = boundaryTime.getMinutes();
-        TimeTable.TimeTableArguments args;
+        Timetable.TimeTableArguments args;
         for (int i = 0; i < 2; i++) {
             int[] travelTimesSave = travelTimes;
             int[] stopIdsSave = stopIds;
             travelTimes = new int[0];
             stopIds = new int[0];
-            TimeTable tt = TimeTable.newInstance(createArgs());
+            Timetable tt = Timetable.newInstance(createArgs());
             travelTimes = travelTimesSave;
             stopIds = stopIdsSave;
 
-            List<TimeTable.StopTimes> st = tt.stopTimes;
+            List<Timetable.StopTimes> st = tt.stopTimes;
             assertEquals(1, st.size());
 
             boundaryTime.setHours(23);
@@ -222,28 +213,24 @@ public class TimeTableTest {
         }
         boundaryTime.setHours(backupHours);
         boundaryTime.setMinutes(backupMinutes);
-
-//        System.out.println("------------------------");
-//        for (TimeTable.StopTimes st2 : st)
-//            System.out.println(st2);
     }
 
     @Test
     public void testWithInvalidArgs() {
-        TimeTable.TimeTableArguments args = new TimeTable.TimeTableArguments();
-        TimeTable tt;
+        Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
+        Timetable tt;
         try {
-            tt = TimeTable.newInstance(args);
+            tt = Timetable.newInstance(args);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         args.setName("22Y");
         try {
-            tt = TimeTable.newInstance(args);
+            tt = Timetable.newInstance(args);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         args.setStopIds(new int[] {1, 4, 6 ,9, 2});
         try {
-            tt = TimeTable.newInstance(args);
+            tt = Timetable.newInstance(args);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
     }

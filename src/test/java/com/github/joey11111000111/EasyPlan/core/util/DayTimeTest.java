@@ -1,12 +1,13 @@
-package com.github.joey11111000111.EasyPlan.core;
+package com.github.joey11111000111.EasyPlan.core.util;
 
+import com.github.joey11111000111.EasyPlan.core.util.DayTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  * Created by joey on 2015.11.07..
  */
-public class SimpleTimeTest {
+public class DayTimeTest {
 
     @Test
     public void testAll() {
