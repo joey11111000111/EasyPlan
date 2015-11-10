@@ -40,6 +40,8 @@ class BasicServiceData {
     public void setName(String name) {
         if (name == null)
             throw new NullPointerException("service name must not be null");
+        if (name.length() < 1)
+            throw new IllegalArgumentException("empty string must not be the name of a bus service");
         if (name.equals(this.name))
             return;
         this.name = name;
@@ -90,7 +92,7 @@ class BasicServiceData {
     }
 
     DayTime getFirstLeaveTime() {
-        return firstLeaveTime;
+        return new DayTime(firstLeaveTime);
     }
 
     public void setBoundaryTime(int hours, int minutes) {
@@ -121,6 +123,6 @@ class BasicServiceData {
     }
 
     DayTime getBoundaryTime() {
-        return boundaryTime;
+        return new DayTime(boundaryTime);
     }
 }//class

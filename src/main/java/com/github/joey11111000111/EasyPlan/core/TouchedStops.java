@@ -232,8 +232,6 @@ public class TouchedStops {
 
         int lastId = stops.getTail().getElement();
         int[] ids = BusStop.getReachableIdsOf(lastId);
-//        if (stops.size() < 3)
-//            return ids;
 
         List<Integer> validIds = new ArrayList<Integer>(ids.length);
         for (int i : ids) {

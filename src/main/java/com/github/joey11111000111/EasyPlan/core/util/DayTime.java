@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by joey on 2015.11.06..
  */
 public class DayTime implements Serializable {
-    static final long serialVersionUID = 100L;
+    static final long serialVersionUID = 0L;
 
     private int hours;
     private int minutes;

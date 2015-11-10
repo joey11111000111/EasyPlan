@@ -9,12 +9,24 @@ import java.util.List;
  */
 public class Core {
 
-    private final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
+    public static class NameConflictException extends Exception {
+        public NameConflictException(String message) {
+            super(message);
+        }
+    }
+
+    static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
     private List<BusService> services;
     private BusService currentService;
     private int currentServiceIndex;
 
-    public void readSavedServices() {
+    public Core() {
+        readSavedServices();
+        currentService = null;
+        currentServiceIndex = -1;
+    }
+
+    private void readSavedServices() {
         services = new ArrayList<BusService>();
         String lnSep = System.getProperty("line.separator");
         FileInputStream fis;
@@ -47,7 +59,7 @@ public class Core {
     }//readSavedServices
 
     public void saveServices() {
-        // Whe there are no services, the reader will know that by not finding the save file
+        // When there are no services, the reader will know that by not finding the save file
         String lnSep = System.getProperty("line.separator");
         if (services.size() == 0) {
             File saveFile = new File(SAVE_PATH);
@@ -60,6 +72,10 @@ public class Core {
                     }
             return;
         }
+
+        // if the current service was modified, apply the changes
+        if (currentService != null)
+            currentService.applyChanges();
 
         FileOutputStream fos;
         ObjectOutputStream oos = null;
@@ -83,12 +99,30 @@ public class Core {
     }//writeServices
 
     public void createNewService() {
+        // if there already is a service called "new service" then do nothing
+        for (int i = 0; i < services.size(); i++)
+            if (services.get(i).getCurrentServiceData().getName().equals("new service"))
+                return;
+
         currentServiceIndex = services.size();
         currentService = new BusService();
         services.add(currentService);
     }
 
+    public void deleteCurrentService() {
+        if (currentService == null)
+            return;
+        services.remove(currentServiceIndex);
+        currentService = null;
+        currentServiceIndex = -1;
+    }
+
     public void selectService(String name) {
+        if (name == null)
+            throw new NullPointerException("the name of the selected service cannot be null");
+        if (currentService != null)
+            currentService.discardChanges();
+
         for (int i = 0; i < services.size(); i++) {
             BusService service = services.get(i);
             if (service.getCurrentServiceData().getName().equals(name)) {
@@ -99,6 +133,13 @@ public class Core {
         }
         throw new IllegalArgumentException("the bus service with the given name '"
                 + name + "' doesn't exist");
+    }
+
+    public String[] getServiceNames() {
+        String[] names = new String[services.size()];
+        for (int i = 0; i < names.length; i++)
+            names[i] = services.get(i).getCurrentServiceData().getName();
+        return names;
     }
 
     public TouchedStops getCurrentStops() {
@@ -113,13 +154,23 @@ public class Core {
         return currentService.getCurrentServiceData();
     }
 
-    public void applyChanges() {
-        if (currentService != null)
-            currentService.applyChanges();
+    public void applyChanges() throws NameConflictException{
+        if (currentService == null)
+            return;
+        String name = currentService.getCurrentServiceData().getName();
+        for (int i = 0; i < services.size(); i++) {
+            if (i == currentServiceIndex)
+                continue;
+            String serviceName = services.get(i).getAppliedName();
+            if (name.equals(serviceName))
+                throw new NameConflictException("given name '" + name + "' is already in use");
+        }
+
+        currentService.applyChanges();
     }
     public boolean discardChanges() {
         if (currentService != null)
-            return currentService.discardChanged();
+            return currentService.discardChanges();
         return false;
     }
 

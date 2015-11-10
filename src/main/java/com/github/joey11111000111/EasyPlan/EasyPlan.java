@@ -6,7 +6,6 @@ public class EasyPlan {
 
     public static void main(String[] args) {
         Core c = new Core();
-        c.readSavedServices();
     }
 
 }

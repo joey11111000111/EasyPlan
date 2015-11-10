@@ -11,6 +11,12 @@ import java.util.List;
  */
 public class BusService implements Serializable {
 
+    public static class NotSelectedException extends RuntimeException {
+        public NotSelectedException(String message) {
+            super(message);
+        }
+    }
+
     static final long serialVersionUID = 0L;
 
     private List<Integer> savedStops;
@@ -47,7 +53,11 @@ public class BusService implements Serializable {
         currentStops.markAsSaved();
     }
 
-    public boolean discardChanged() {
+    public String getAppliedName() {
+        return name;
+    }
+
+    public boolean discardChanges() {
         boolean restoreHappened = false;
         // discard basic data changes, if there were any
         if (currentServiceData.isModified()) {

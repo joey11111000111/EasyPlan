@@ -51,8 +51,7 @@ public class BusServiceTest {
         BasicServiceData bsd = service.getCurrentServiceData();
         bsd.setName("22Y");
         // test init without apply
-        service.initCurrentStops();
-        service.initCurrentServiceData();
+        service.initTransientFields();
         ts = service.getCurrentStops();
         bsd = service.getCurrentServiceData();
         assertTrue(ts.isEmpty());
@@ -68,8 +67,7 @@ public class BusServiceTest {
         assertTrue(ts.isModified());
         assertTrue(bsd.isModified());
         service.applyChanges();
-        service.initCurrentStops();
-        service.initCurrentServiceData();
+        service.initTransientFields();
         ts = service.getCurrentStops();
         bsd = service.getCurrentServiceData();
         assertFalse(ts.isEmpty());
