@@ -1,5 +1,8 @@
 package com.github.joey11111000111.EasyPlan.core;
 
+import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
+import com.github.joey11111000111.EasyPlan.core.exceptions.NoSelectedServiceException;
+import com.github.joey11111000111.EasyPlan.core.util.DayTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +40,166 @@ public class CoreTest {
     }
 
     @Test
+    public void testWrappersInNullState() {
+        Core core = new Core();
+        // if there is no current service, the null state remains, and if there is, this will lead to a null state
+        core.deleteSelectedService();
+        // call all methods
+        assertFalse(core.hasSelectedService());
+        try {
+            core.isModified();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.discardChanges();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getCurrentTimetable();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getName();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.setName("22Y");
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getTimeGap();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.setTimeGap(99);
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getFirstLeaveTime();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.setFirstLeaveTime(new DayTime(0, 0));
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getBoundaryTime();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.setBoundaryTime(new DayTime(1, 1));
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.setTimeGap(99);
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.appendStop(1);
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.hasStops();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.isClosed();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.canUndo();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getStops();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.clearStops();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.removeChainFrom(1);
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.undo();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.isStationReachable();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getReachableStopIds();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+        try {
+            core.getTravelTimes();
+            assertTrue(false);
+        } catch (NoSelectedServiceException nsse) {}
+
+    }
+
+    @Test
+    public void testWrappersInNotNullState() {
+        Core core = new Core();
+        core.createNewService();
+        // call all methods
+        assertTrue(core.hasSelectedService());
+        assertFalse(core.isModified());
+        assertFalse(core.hasStops());
+        assertFalse(core.isClosed());
+
+        assertFalse(core.isModified());
+        assertFalse(core.isClosed());
+        core.appendStop(1);
+        assertTrue(core.hasStops());
+        assertTrue(core.getTravelTimes().length == 1);
+        assertTrue(core.getReachableStopIds().length > 0);
+        assertTrue(core.isStationReachable());
+
+        core.appendStop(4);
+        assertTrue(core.canUndo());
+        assertTrue(core.isModified());
+        core.undo();
+
+        assertNotNull(core.getCurrentTimetable());
+        core.setName("22Y");
+        assertTrue("22Y" == core.getName());
+        core.setTimeGap(99);
+        assertEquals(99, core.getTimeGap());
+        core.setFirstLeaveTime(new DayTime(0, 0));
+        assertEquals(0, core.getFirstLeaveTime().getTimeAsMinutes());
+        core.setBoundaryTime(new DayTime(0, 0));
+        assertEquals(0, core.getBoundaryTime().getTimeAsMinutes());
+        assertTrue(core.hasStops());
+
+        assertTrue(core.getStops().length > 0);
+        core.removeChainFrom(1);
+        assertFalse(core.hasStops());
+
+        core.appendStop(2);
+        core.appendStop(3);
+        core.clearStops();
+        assertFalse(core.hasStops());
+        assertTrue(core.isModified());
+
+        assertTrue(core.discardChanges());
+        assertFalse(core.isModified());
+        core.appendStop(1);
+        assertTrue(core.hasStops());
+        assertEquals(1, core.getStops()[0]);
+
+        core.clearStops();
+        core.appendStop(1);
+        core.closeService();
+        assertTrue(core.isClosed());
+        assertTrue(core.isModified());
+    }
+
+
+    @Test
     public void testEmptyState() {
         Core core = new Core();
         Timetable[] tables = core.getAllTimetables();
@@ -46,11 +209,11 @@ public class CoreTest {
         try {
             core.applyChanges();
             core.applyChanges();
-        } catch (Core.NameConflictException nce) {
+        } catch (NameConflictException nce) {
             System.err.println("nce happened: " + nce);
             assertTrue(false);
         }
-        core.deleteCurrentService();
+        core.deleteSelectedService();
 
         String[] serviceNames = core.getServiceNames();
         assertEquals(0, serviceNames.length);
@@ -83,65 +246,64 @@ public class CoreTest {
     @Test
     public void testServiceManagement() {
         Core core = new Core();
-        ServiceData sd = core.getServiceData();
         core.createNewService();
         core.createNewService();
         assertEquals(1, core.getServiceNames().length);
-        assertTrue(sd.hasSelectedService());
-        assertTrue("new service".equals(sd.getName()));
+        assertTrue(core.hasSelectedService());
+        assertTrue("new service".equals(core.getName()));
 
-        sd.setName("22Y");
+        core.setName("22Y");
         try {
             core.applyChanges();
             // without actual modification it should have no effect
             core.applyChanges();
-        } catch (Core.NameConflictException e) {
+        } catch (NameConflictException e) {
             assertTrue(false);
         }
 
         core.createNewService();
-        assertTrue("new service".equals(sd.getName()));
+        assertTrue("new service".equals(core.getName()));
         String[] names = core.getServiceNames();
         assertEquals(2, names.length);
         assertTrue(names[0].equals("22Y"));
         assertTrue(names[1].equals("new service"));
         // this one should have no effect
         core.selectService("new service");
-        assertTrue("new service".equals(sd.getName()));
+        assertTrue("new service".equals(core.getName()));
 
         core.selectService("22Y");
-        assertTrue("22Y".equals(sd.getName()));
-        sd.appendStop(1);
-        sd.appendStop(4);
-        sd.appendStop(6);
-        sd.appendStop(4);
-        sd.closeService();
+        assertTrue("22Y".equals(core.getName()));
+        core.appendStop(1);
+        core.appendStop(4);
+        core.appendStop(6);
+        core.appendStop(4);
+        core.closeService();
         core.selectService("new service");
-        assertFalse(sd.isClosed());
+        assertFalse(core.isClosed());
         core.selectService("22Y");
-        assertTrue(sd.isClosed());
+        assertTrue(core.isClosed());
 
         core.selectService("new service");
-        core.deleteCurrentService();
+        core.deleteSelectedService();
         assertEquals(1, core.getServiceNames().length);
-        assertFalse(sd.hasSelectedService());
+        assertFalse(core.hasSelectedService());
 
         // should have no effect
-        core.deleteCurrentService();
-        core.deleteCurrentService();
-        core.deleteCurrentService();
+        core.deleteSelectedService();
+        core.deleteSelectedService();
+        core.deleteSelectedService();
         assertEquals(1, core.getServiceNames().length);
 
         core.selectService("22Y");
-        core.deleteCurrentService();
+        core.deleteSelectedService();
         assertEquals(0, core.getServiceNames().length);
 
         for (int i = 0; i < 3; i++) {
             core.createNewService();
-            sd.setName("1" + i);
+            core.setName("8" + i);
             try {
                 core.applyChanges();
-            } catch (Core.NameConflictException nce) {
+            } catch (NameConflictException nce) {
                 assertTrue(false);
             }
         }
@@ -151,30 +313,30 @@ public class CoreTest {
         assertEquals(3, tables.length);
 
         core.createNewService();
-        sd.setName("10");
+        core.setName("80");
+
         try {
             core.applyChanges();
             assertTrue(false);
-        } catch (Core.NameConflictException nce) {}
+        } catch (NameConflictException nce) {}
     }
 
     @Test
     public void saveAndReadTest() {
         Core core = new Core();
-        ServiceData sd = core.getServiceData();
         for (int i = 0; i < 3; i++) {
             core.createNewService();
-            sd.setName("1" + i);
-            sd.setTimeGap((i + 3) * 2);
-            sd.appendStop(1);
-            sd.appendStop(4);
-            sd.appendStop(6);
-            sd.appendStop(4);
+            core.setName("1" + i);
+            core.setTimeGap((i + 3) * 2);
+            core.appendStop(1);
+            core.appendStop(4);
+            core.appendStop(6);
+            core.appendStop(4);
             if (i == 0)
-                sd.closeService();
+                core.closeService();
             try {
                 core.applyChanges();
-            } catch (Core.NameConflictException nce) {
+            } catch (NameConflictException nce) {
                 assertTrue(false);
             }
         }
@@ -183,14 +345,13 @@ public class CoreTest {
 
         core = new Core();
         assertEquals(3, core.getServiceCount());
-        sd = core.getServiceData();
         for (String name : core.getServiceNames()) {
             core.selectService(name);
             System.out.println("--------------------");
             System.out.println("name: " + name);
-            System.out.println("time gap: " + sd.getTimeGap());
-            System.out.println("closed: " + sd.isClosed());
-            System.out.println("stops: " + Arrays.toString(sd.getStops()));
+            System.out.println("time gap: " + core.getTimeGap());
+            System.out.println("closed: " + core.isClosed());
+            System.out.println("stops: " + Arrays.toString(core.getStops()));
         }
     }
 
