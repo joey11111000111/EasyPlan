@@ -126,4 +126,19 @@ public class BusService implements Serializable {
         return Timetable.newInstance(args);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BusService service = (BusService) o;
+
+        return name.equals(service.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
 }//class

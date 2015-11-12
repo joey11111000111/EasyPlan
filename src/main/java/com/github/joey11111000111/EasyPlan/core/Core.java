@@ -17,13 +17,18 @@ public class Core {
 
     static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
     private List<BusService> services;
-    private BusService currentService;
-    private int currentServiceIndex;
+    private final ServiceData serviceData;
 
     public Core() {
+        serviceData = new ServiceData();
         readSavedServices();
-        currentService = null;
-        currentServiceIndex = -1;
+    }
+
+    public ServiceData getServiceData() {
+        return serviceData;
+    }
+    public int getServiceCount() {
+        return services.size();
     }
 
     private void readSavedServices() {
@@ -35,9 +40,11 @@ public class Core {
             fis = new FileInputStream(SAVE_PATH);
             ois = new ObjectInputStream(fis);
             try {
-                BusService service = (BusService)ois.readObject();
-                service.initTransientFields();
-                services.add(service);
+                while (true) {
+                    BusService service = (BusService)ois.readObject();
+                    service.initTransientFields();
+                    services.add(service);
+                }
             } catch (EOFException eofe) {
             } catch (ClassNotFoundException cnfe) {
                 cnfe.printStackTrace();
@@ -73,9 +80,6 @@ public class Core {
             return;
         }
 
-        // if the current service was modified, apply the changes
-        if (currentService != null)
-            currentService.applyChanges();
 
         FileOutputStream fos;
         ObjectOutputStream oos = null;
@@ -101,33 +105,32 @@ public class Core {
     public void createNewService() {
         // if there already is a service called "new service" then do nothing
         for (int i = 0; i < services.size(); i++)
-            if (services.get(i).getCurrentServiceData().getName().equals("new service"))
+            if (services.get(i).getAppliedName().equals("new service"))
                 return;
 
-        currentServiceIndex = services.size();
-        currentService = new BusService();
-        services.add(currentService);
+        BusService newService = new BusService();
+        services.add(newService);
+        serviceData.setCurrentService(newService);
     }
 
     public void deleteCurrentService() {
-        if (currentService == null)
+        if (!serviceData.hasSelectedService())
             return;
-        services.remove(currentServiceIndex);
-        currentService = null;
-        currentServiceIndex = -1;
+        services.remove(serviceData.getSelectedService());
+        serviceData.setCurrentService(null);
     }
 
     public void selectService(String name) {
         if (name == null)
             throw new NullPointerException("the name of the selected service cannot be null");
-        if (currentService != null)
-            currentService.discardChanges();
+        if (serviceData.hasSelectedService())
+            if (name.equals(serviceData.getName()))
+                return;
 
         for (int i = 0; i < services.size(); i++) {
             BusService service = services.get(i);
-            if (service.getCurrentServiceData().getName().equals(name)) {
-                currentService = service;
-                currentServiceIndex = i;
+            if (service.getAppliedName().equals(name)) {
+                serviceData.setCurrentService(service);
                 return;
             }
         }
@@ -142,43 +145,27 @@ public class Core {
         return names;
     }
 
-    public TouchedStops getCurrentStops() {
-        if (currentService == null)
-            return null;
-        return currentService.getCurrentStops();
-    }
-
-    public BasicServiceData getCurrentServiceData() {
-        if (currentService == null)
-            return null;
-        return currentService.getCurrentServiceData();
-    }
-
-    public void applyChanges() throws NameConflictException{
-        if (currentService == null)
+    public void applyChanges() throws NameConflictException {
+        // if there is nothing to change or change to, then do nothing
+        if (!serviceData.hasSelectedService())
             return;
-        String name = currentService.getCurrentServiceData().getName();
+        if (!serviceData.isModified())
+            return;
+
+        String name = serviceData.getName();
+        BusService currentService = serviceData.getSelectedService();
         for (int i = 0; i < services.size(); i++) {
-            if (i == currentServiceIndex)
+            BusService service = services.get(i);
+            if (service == currentService)
                 continue;
-            String serviceName = services.get(i).getAppliedName();
+            String serviceName = service.getAppliedName();
             if (name.equals(serviceName))
                 throw new NameConflictException("given name '" + name + "' is already in use");
         }
 
         currentService.applyChanges();
     }
-    public boolean discardChanges() {
-        if (currentService != null)
-            return currentService.discardChanges();
-        return false;
-    }
 
-    public Timetable getCurrentTimetable() {
-        if (currentService == null)
-            return null;
-        return currentService.getTimeTable();
-    }
 
     public Timetable[] getAllTimetables() {
         Timetable[] tables = new Timetable[services.size()];

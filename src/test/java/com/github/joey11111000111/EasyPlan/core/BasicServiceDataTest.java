@@ -28,6 +28,10 @@ public class BasicServiceDataTest {
             assertTrue(false);
         } catch (NullPointerException npe) {}
         try {
+            bsd.setName("");
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
+        try {
             bsd.setTimeGap(0);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}

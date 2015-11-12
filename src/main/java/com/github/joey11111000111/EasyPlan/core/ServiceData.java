@@ -13,31 +13,57 @@ public class ServiceData {
         }
     }
 
-    private BasicServiceData basicData = null;
-    private TouchedStops touchedStops = null;
+    private BusService currentService;
+    private BasicServiceData basicData;
+    private TouchedStops touchedStops;
+
+    public ServiceData() {
+        currentService = null;
+        basicData = null;
+        touchedStops = null;
+    }
 
     private void checkSelection() {
         if (!hasSelectedService())
             throw new NoSelectedServiceException();
     }
 
-    void setBasicData(BasicServiceData bsd) {
-        checkSelection();
-        basicData = bsd;
+    void setCurrentService(BusService service) {
+        currentService = service;
+        if (service == null) {
+            basicData = null;
+            touchedStops = null;
+            return;
+        }
+        basicData = service.getCurrentServiceData();
+        touchedStops = service.getCurrentStops();
     }
-    void setTouchedStops(TouchedStops ts) {
-        checkSelection();
-        touchedStops = ts;
+    BusService getSelectedService() {
+        return currentService;
     }
 
     public boolean hasSelectedService() {
-        return basicData == null || touchedStops == null;
+        return currentService != null && basicData != null && touchedStops != null;
     }
 
     public void markAsSaved() {
         checkSelection();
         basicData.markAsSaved();
         touchedStops.markAsSaved();
+    }
+    public boolean isModified() {
+        checkSelection();
+        return basicData.isModified() || touchedStops.isModified();
+    }
+
+    public boolean discardChanges() {
+        checkSelection();
+        return currentService.discardChanges();
+    }
+
+    public Timetable getCurrentTimetable() {
+        checkSelection();
+        return currentService.getTimeTable();
     }
 
     // basic service data wrapper methods
@@ -82,9 +108,14 @@ public class ServiceData {
         touchedStops.appendStop(i);
     }
 
+    public void closeService() {
+        checkSelection();
+        touchedStops.closeService();
+    }
+
     public boolean hasStops() {
         checkSelection();
-        return touchedStops.isEmpty();
+        return !touchedStops.isEmpty();
     }
 
     public boolean isClosed() {
