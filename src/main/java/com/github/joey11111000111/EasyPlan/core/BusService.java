@@ -11,12 +11,6 @@ import java.util.List;
  */
 public class BusService implements Serializable {
 
-    public static class NotSelectedException extends RuntimeException {
-        public NotSelectedException(String message) {
-            super(message);
-        }
-    }
-
     static final long serialVersionUID = 0L;
     static final String DEFAULT_NAME = "new service";
 
