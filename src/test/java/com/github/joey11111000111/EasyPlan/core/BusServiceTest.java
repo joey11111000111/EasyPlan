@@ -1,6 +1,6 @@
 package com.github.joey11111000111.EasyPlan.core;
 
-import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+import com.github.joey11111000111.EasyPlan.util.DayTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

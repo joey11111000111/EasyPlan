@@ -1,13 +1,12 @@
 package com.github.joey11111000111.EasyPlan.core;
 
-import com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList;
+import com.github.joey11111000111.EasyPlan.util.OpenLinkedList;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import static com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList.Node;
+import static com.github.joey11111000111.EasyPlan.util.OpenLinkedList.Node;
 
 /**
  * Created by joey on 2015.11.04..

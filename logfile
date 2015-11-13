@@ -1,118 +1,118 @@
-18:32:05.728 DEBUG: creating Core instance...
-18:32:05.731 DEBUG: there aren't any saved bus services
-18:32:05.732 DEBUG: core instance successfully created
-18:32:05.732 WARN : cannot apply changes, there isn't a selected bus service
-18:32:05.735 WARN : cannot apply changes, there isn't a selected bus service
-18:32:05.735 WARN : there isn't a selected service to delete
-18:32:05.736 WARN : given name is null
-18:32:05.736 WARN : a bus service with the given name 'some random name' doesn't exist
-18:32:05.737 INFO : saving 0 bus services
-18:32:05.737 INFO : saving 0 bus services
-18:32:05.740 DEBUG: creating Core instance...
-18:32:05.740 DEBUG: there aren't any saved bus services
-18:32:05.740 DEBUG: core instance successfully created
-18:32:05.741 WARN : there isn't a selected service to delete
-18:32:05.743 DEBUG: creating Core instance...
-18:32:05.744 DEBUG: there aren't any saved bus services
-18:32:05.744 DEBUG: core instance successfully created
-18:32:05.744 INFO : selected the 'new service' bus service
-18:32:05.744 INFO : added and selected a new bus service
-18:32:05.744 INFO : the bus stop '1' was added to the service
-18:32:05.745 INFO : the bus stop '4' was added to the service
-18:32:05.745 INFO : the last bus stop modification operation was withdrawn
-18:32:05.745 DEBUG: tried to undo, but there is nothing to undo
-18:32:05.745 INFO : the name was set to '22Y'
-18:32:05.746 INFO : the time gap was set to 99
-18:32:05.746 INFO : the first leave time of was set to 0:0
-18:32:05.746 INFO : the boundary time was set to 0:0
-18:32:05.746 INFO : removed the latest bus stop (1) from the bus service
-18:32:05.746 INFO : the bus stop '2' was added to the service
-18:32:05.747 INFO : the bus stop '3' was added to the service
-18:32:05.747 INFO : all bus stops was removed from the bus service
-18:32:05.747 INFO : discarded changes of the 'new service' bus service
-18:32:05.747 INFO : the bus stop '1' was added to the service
-18:32:05.747 INFO : all bus stops was removed from the bus service
-18:32:05.749 INFO : the bus stop '1' was added to the service
-18:32:05.749 INFO : the service is now closed, it ends at the station
-18:32:05.750 DEBUG: creating Core instance...
-18:32:05.751 DEBUG: there aren't any saved bus services
-18:32:05.751 DEBUG: core instance successfully created
-18:32:05.751 INFO : selected the 'new service' bus service
-18:32:05.751 INFO : added and selected a new bus service
-18:32:05.751 WARN : there is already one 'new service', cannot add another now
-18:32:05.752 INFO : the name was set to '22Y'
-18:32:05.752 INFO : applying changes to the service 'new service' (old name)
-18:32:05.752 INFO : selected the 'new service' bus service
-18:32:05.752 INFO : added and selected a new bus service
-18:32:05.752 DEBUG: the new selected service is the same as the currently selected service
-18:32:05.753 INFO : selected the '22Y' bus service
-18:32:05.753 INFO : the bus stop '1' was added to the service
-18:32:05.753 INFO : the bus stop '4' was added to the service
-18:32:05.753 INFO : the bus stop '6' was added to the service
-18:32:05.753 INFO : the bus stop '4' was added to the service
-18:32:05.754 INFO : the service is now closed, it ends at the station
-18:32:05.754 INFO : selected the 'new service' bus service
-18:32:05.754 INFO : selected the '22Y' bus service
-18:32:05.754 INFO : selected the 'new service' bus service
-18:32:05.754 INFO : removing the bus service 'new service' and selecting the 'null service'
-18:32:05.754 DEBUG: 'null service' is selected
-18:32:05.755 WARN : there isn't a selected service to delete
-18:32:05.755 WARN : there isn't a selected service to delete
-18:32:05.755 WARN : there isn't a selected service to delete
-18:32:05.755 INFO : selected the '22Y' bus service
-18:32:05.755 INFO : removing the bus service '22Y' and selecting the 'null service'
-18:32:05.755 DEBUG: 'null service' is selected
-18:32:05.756 INFO : selected the 'new service' bus service
-18:32:05.756 INFO : added and selected a new bus service
-18:32:05.756 INFO : the name was set to '80'
-18:32:05.756 INFO : applying changes to the service 'new service' (old name)
-18:32:05.756 INFO : selected the 'new service' bus service
-18:32:05.757 INFO : added and selected a new bus service
-18:32:05.757 INFO : the name was set to '81'
-18:32:05.757 INFO : applying changes to the service 'new service' (old name)
-18:32:05.757 INFO : selected the 'new service' bus service
-18:32:05.757 INFO : added and selected a new bus service
-18:32:05.757 INFO : the name was set to '82'
-18:32:05.758 INFO : applying changes to the service 'new service' (old name)
-18:32:05.759 INFO : selected the 'new service' bus service
-18:32:05.759 INFO : added and selected a new bus service
-18:32:05.759 INFO : the name was set to '80'
-18:32:05.760 WARN : name conflict, the new name '80' is already in use
-18:32:05.761 DEBUG: creating Core instance...
-18:32:05.761 DEBUG: there aren't any saved bus services
-18:32:05.761 DEBUG: core instance successfully created
-18:32:05.762 INFO : selected the 'new service' bus service
-18:32:05.762 INFO : added and selected a new bus service
-18:32:05.762 INFO : the name was set to '10'
-18:32:05.762 INFO : the time gap was set to 6
-18:32:05.762 INFO : the bus stop '1' was added to the service
-18:32:05.762 INFO : the bus stop '4' was added to the service
-18:32:05.763 INFO : the bus stop '6' was added to the service
-18:32:05.763 INFO : the bus stop '4' was added to the service
-18:32:05.763 INFO : the service is now closed, it ends at the station
-18:32:05.763 INFO : applying changes to the service 'new service' (old name)
-18:32:05.763 INFO : selected the 'new service' bus service
-18:32:05.763 INFO : added and selected a new bus service
-18:32:05.764 INFO : the name was set to '11'
-18:32:05.764 INFO : the time gap was set to 8
-18:32:05.764 INFO : the bus stop '1' was added to the service
-18:32:05.764 INFO : the bus stop '4' was added to the service
-18:32:05.764 INFO : the bus stop '6' was added to the service
-18:32:05.764 INFO : the bus stop '4' was added to the service
-18:32:05.765 INFO : applying changes to the service 'new service' (old name)
-18:32:05.765 INFO : selected the 'new service' bus service
-18:32:05.765 INFO : added and selected a new bus service
-18:32:05.765 INFO : the name was set to '12'
-18:32:05.765 INFO : the time gap was set to 10
-18:32:05.765 INFO : the bus stop '1' was added to the service
-18:32:05.765 INFO : the bus stop '4' was added to the service
-18:32:05.766 INFO : the bus stop '6' was added to the service
-18:32:05.766 INFO : the bus stop '4' was added to the service
-18:32:05.766 INFO : applying changes to the service 'new service' (old name)
-18:32:05.766 INFO : saving 3 bus services
-18:32:05.776 DEBUG: creating Core instance...
-18:32:05.779 DEBUG: read 3 bus services from the save file
-18:32:05.779 DEBUG: core instance successfully created
-18:32:05.779 INFO : selected the '10' bus service
-18:32:05.781 INFO : selected the '11' bus service
-18:32:05.782 INFO : selected the '12' bus service
+11:17:07.848 DEBUG: creating Core instance...
+11:17:07.853 DEBUG: there aren't any saved bus services
+11:17:07.853 DEBUG: core instance successfully created
+11:17:07.853 WARN : cannot apply changes, there isn't a selected bus service
+11:17:07.855 WARN : cannot apply changes, there isn't a selected bus service
+11:17:07.855 WARN : there isn't a selected service to delete
+11:17:07.856 WARN : given name is null
+11:17:07.856 WARN : a bus service with the given name 'some random name' doesn't exist
+11:17:07.856 INFO : saving 0 bus services
+11:17:07.857 INFO : saving 0 bus services
+11:17:07.859 DEBUG: creating Core instance...
+11:17:07.860 DEBUG: there aren't any saved bus services
+11:17:07.860 DEBUG: core instance successfully created
+11:17:07.860 WARN : there isn't a selected service to delete
+11:17:07.861 DEBUG: creating Core instance...
+11:17:07.862 DEBUG: there aren't any saved bus services
+11:17:07.862 DEBUG: core instance successfully created
+11:17:07.862 INFO : selected the 'new service' bus service
+11:17:07.862 INFO : added and selected a new bus service
+11:17:07.862 INFO : the bus stop '1' was added to the service
+11:17:07.863 INFO : the bus stop '4' was added to the service
+11:17:07.863 INFO : the last bus stop modification operation was withdrawn
+11:17:07.863 DEBUG: tried to undo, but there is nothing to undo
+11:17:07.863 INFO : the name was set to '22Y'
+11:17:07.863 INFO : the time gap was set to 99
+11:17:07.864 INFO : the first leave time of was set to 0:0
+11:17:07.864 INFO : the boundary time was set to 0:0
+11:17:07.864 INFO : removed the latest bus stop (1) from the bus service
+11:17:07.864 INFO : the bus stop '2' was added to the service
+11:17:07.864 INFO : the bus stop '3' was added to the service
+11:17:07.864 INFO : all bus stops was removed from the bus service
+11:17:07.864 INFO : discarded changes of the 'new service' bus service
+11:17:07.865 INFO : the bus stop '1' was added to the service
+11:17:07.865 INFO : all bus stops was removed from the bus service
+11:17:07.865 INFO : the bus stop '1' was added to the service
+11:17:07.865 INFO : the service is now closed, it ends at the station
+11:17:07.866 DEBUG: creating Core instance...
+11:17:07.866 DEBUG: there aren't any saved bus services
+11:17:07.866 DEBUG: core instance successfully created
+11:17:07.867 INFO : selected the 'new service' bus service
+11:17:07.867 INFO : added and selected a new bus service
+11:17:07.867 WARN : there is already one 'new service', cannot add another now
+11:17:07.867 INFO : the name was set to '22Y'
+11:17:07.867 INFO : applying changes to the service 'new service' (old name)
+11:17:07.868 INFO : selected the 'new service' bus service
+11:17:07.868 INFO : added and selected a new bus service
+11:17:07.868 DEBUG: the new selected service is the same as the currently selected service
+11:17:07.868 INFO : selected the '22Y' bus service
+11:17:07.868 INFO : the bus stop '1' was added to the service
+11:17:07.868 INFO : the bus stop '4' was added to the service
+11:17:07.869 INFO : the bus stop '6' was added to the service
+11:17:07.869 INFO : the bus stop '4' was added to the service
+11:17:07.869 INFO : the service is now closed, it ends at the station
+11:17:07.869 INFO : selected the 'new service' bus service
+11:17:07.869 INFO : selected the '22Y' bus service
+11:17:07.869 INFO : selected the 'new service' bus service
+11:17:07.869 INFO : removed the bus service 'new service' and selecting the 'null service'
+11:17:07.870 DEBUG: 'null service' is selected
+11:17:07.870 WARN : there isn't a selected service to delete
+11:17:07.870 WARN : there isn't a selected service to delete
+11:17:07.870 WARN : there isn't a selected service to delete
+11:17:07.870 INFO : selected the '22Y' bus service
+11:17:07.870 INFO : removed the bus service '22Y' and selecting the 'null service'
+11:17:07.870 DEBUG: 'null service' is selected
+11:17:07.871 INFO : selected the 'new service' bus service
+11:17:07.871 INFO : added and selected a new bus service
+11:17:07.871 INFO : the name was set to '80'
+11:17:07.871 INFO : applying changes to the service 'new service' (old name)
+11:17:07.871 INFO : selected the 'new service' bus service
+11:17:07.871 INFO : added and selected a new bus service
+11:17:07.872 INFO : the name was set to '81'
+11:17:07.872 INFO : applying changes to the service 'new service' (old name)
+11:17:07.872 INFO : selected the 'new service' bus service
+11:17:07.872 INFO : added and selected a new bus service
+11:17:07.872 INFO : the name was set to '82'
+11:17:07.873 INFO : applying changes to the service 'new service' (old name)
+11:17:07.873 INFO : selected the 'new service' bus service
+11:17:07.873 INFO : added and selected a new bus service
+11:17:07.873 INFO : the name was set to '80'
+11:17:07.873 WARN : name conflict, the new name '80' is already in use
+11:17:07.874 DEBUG: creating Core instance...
+11:17:07.875 DEBUG: there aren't any saved bus services
+11:17:07.875 DEBUG: core instance successfully created
+11:17:07.875 INFO : selected the 'new service' bus service
+11:17:07.875 INFO : added and selected a new bus service
+11:17:07.875 INFO : the name was set to '10'
+11:17:07.876 INFO : the time gap was set to 6
+11:17:07.876 INFO : the bus stop '1' was added to the service
+11:17:07.876 INFO : the bus stop '4' was added to the service
+11:17:07.876 INFO : the bus stop '6' was added to the service
+11:17:07.876 INFO : the bus stop '4' was added to the service
+11:17:07.876 INFO : the service is now closed, it ends at the station
+11:17:07.876 INFO : applying changes to the service 'new service' (old name)
+11:17:07.877 INFO : selected the 'new service' bus service
+11:17:07.877 INFO : added and selected a new bus service
+11:17:07.877 INFO : the name was set to '11'
+11:17:07.877 INFO : the time gap was set to 8
+11:17:07.877 INFO : the bus stop '1' was added to the service
+11:17:07.877 INFO : the bus stop '4' was added to the service
+11:17:07.877 INFO : the bus stop '6' was added to the service
+11:17:07.877 INFO : the bus stop '4' was added to the service
+11:17:07.878 INFO : applying changes to the service 'new service' (old name)
+11:17:07.878 INFO : selected the 'new service' bus service
+11:17:07.878 INFO : added and selected a new bus service
+11:17:07.878 INFO : the name was set to '12'
+11:17:07.878 INFO : the time gap was set to 10
+11:17:07.878 INFO : the bus stop '1' was added to the service
+11:17:07.878 INFO : the bus stop '4' was added to the service
+11:17:07.878 INFO : the bus stop '6' was added to the service
+11:17:07.879 INFO : the bus stop '4' was added to the service
+11:17:07.879 INFO : applying changes to the service 'new service' (old name)
+11:17:07.879 INFO : saving 3 bus services
+11:17:07.889 DEBUG: creating Core instance...
+11:17:07.892 DEBUG: read 3 bus services from the save file
+11:17:07.892 DEBUG: core instance successfully created
+11:17:07.892 INFO : selected the '10' bus service
+11:17:07.894 INFO : selected the '11' bus service
+11:17:07.895 INFO : selected the '12' bus service

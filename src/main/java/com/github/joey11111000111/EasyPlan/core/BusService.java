@@ -1,6 +1,6 @@
 package com.github.joey11111000111.EasyPlan.core;
 
-import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+import com.github.joey11111000111.EasyPlan.util.DayTime;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ public class BusService implements Serializable {
     }
 
     static final long serialVersionUID = 0L;
+    static final String DEFAULT_NAME = "new service";
 
     private List<Integer> savedStops;
     private boolean closed;
@@ -32,7 +33,7 @@ public class BusService implements Serializable {
     public BusService() {
         savedStops = new ArrayList<Integer>();
         closed = false;
-        name = "new service";
+        name = DEFAULT_NAME;
         timeGap = 10;
         firstLeaveTime = new DayTime(8, 0);
         boundaryTime = new DayTime(18, 0);

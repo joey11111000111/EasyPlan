@@ -1,9 +1,9 @@
-package com.github.joey11111000111.EasyPlan.core.util;
+package com.github.joey11111000111.EasyPlan.util;
 
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static com.github.joey11111000111.EasyPlan.core.util.OpenLinkedList.Node;
+import static com.github.joey11111000111.EasyPlan.util.OpenLinkedList.Node;
 
 /**
  * Created by joey on 2015.11.03..

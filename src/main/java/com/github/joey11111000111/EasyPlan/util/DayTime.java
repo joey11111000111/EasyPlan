@@ -1,4 +1,4 @@
-package com.github.joey11111000111.EasyPlan.core.util;
+package com.github.joey11111000111.EasyPlan.util;
 
 import java.io.Serializable;
 

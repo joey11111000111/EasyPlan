@@ -2,11 +2,11 @@ package com.github.joey11111000111.EasyPlan.core;
 
 import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
 import com.github.joey11111000111.EasyPlan.core.exceptions.NoSelectedServiceException;
-import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+import com.github.joey11111000111.EasyPlan.util.DayTime;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class Core {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Core.class);
     static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
-    private List<BusService> services;
+    private SortedMap<String, BusService> services;
     // the three below are for the selected service
     private BusService selectedService;
     private BasicServiceData basicData;
@@ -208,7 +208,7 @@ public class Core {
 
     private void readSavedServices() {
         LOGGER.trace("called readSavedServices");
-        services = new ArrayList<BusService>();
+        services = new TreeMap<String, BusService>();
         FileInputStream fis;
         ObjectInputStream ois = null;
         try {
@@ -218,7 +218,7 @@ public class Core {
                 while (true) {
                     BusService service = (BusService)ois.readObject();
                     service.initTransientFields();
-                    services.add(service);
+                    services.put(service.getAppliedName(), service);
                 }
             } catch (EOFException eofe) {
                 LOGGER.debug("read " + getServiceCount() + " bus services from the save file");
@@ -261,7 +261,7 @@ public class Core {
         try {
             fos = new FileOutputStream(SAVE_PATH);
             oos = new ObjectOutputStream(fos);
-            for (BusService service : services)
+            for (BusService service : services.values())
                 oos.writeObject(service);
         }
          catch (IOException ioe) {
@@ -278,15 +278,14 @@ public class Core {
 
     public void createNewService() {
         LOGGER.trace("called createNewService");
-        // if there already is a service called "new service" then do nothing
-        for (int i = 0; i < services.size(); i++)
-            if (services.get(i).getAppliedName().equals("new service")) {
-                LOGGER.warn("there is already one 'new service', cannot add another now");
-                return;
-            }
+        // if there already is a service with the default service name then do nothing
+        if (services.containsKey(BusService.DEFAULT_NAME)) {
+            LOGGER.warn("there is already one '" + BusService.DEFAULT_NAME + "', cannot add another now");
+            return;
+        }
 
         BusService newService = new BusService();
-        services.add(newService);
+        services.put(newService.getAppliedName(), newService);
         setSelectedService(newService);
         LOGGER.info("added and selected a new bus service");
     }
@@ -297,9 +296,14 @@ public class Core {
             LOGGER.warn("there isn't a selected service to delete");
             return;
         }
-        LOGGER.info("removing the bus service '" + selectedService.getAppliedName()
-                + "' and selecting the 'null service'");
-        services.remove(selectedService);
+
+        String name = selectedService.getAppliedName();
+        if (services.remove(name) != null)
+            LOGGER.info("removed the bus service '" + name
+                    + "' and selecting the 'null service'");
+        else
+            LOGGER.warn("could not remove the bus service '" + name + "'");
+
         setSelectedService(null);
     }
 
@@ -315,24 +319,18 @@ public class Core {
                 return;
             }
 
-        for (int i = 0; i < services.size(); i++) {
-            BusService service = services.get(i);
-            if (service.getAppliedName().equals(name)) {
-                setSelectedService(service);
-                return;
-            }
+        if (!services.containsKey(name)) {
+            LOGGER.warn("a bus service with the given name '" + name + "' doesn't exist");
+            throw new IllegalArgumentException("the bus service with the given name '"
+                    + name + "' doesn't exist");
         }
-        LOGGER.warn("a bus service with the given name '" + name + "' doesn't exist");
-        throw new IllegalArgumentException("the bus service with the given name '"
-                + name + "' doesn't exist");
+
+        setSelectedService(services.get(name));
     }
 
     public String[] getServiceNames() {
         LOGGER.trace("called getServiceNames");
-        String[] names = new String[services.size()];
-        for (int i = 0; i < names.length; i++)
-            names[i] = services.get(i).getAppliedName();
-        return names;
+        return services.keySet().toArray(new String[0]);
     }
 
     public void applyChanges() throws NameConflictException {
@@ -345,28 +343,29 @@ public class Core {
         if (!isModified())
             return;
 
-        String name = getName();
-        for (int i = 0; i < services.size(); i++) {
-            BusService service = services.get(i);
-            if (service == selectedService)
-                continue;
-            String serviceName = service.getAppliedName();
-            if (name.equals(serviceName)) {
-                LOGGER.warn("name conflict, the new name '" + name + "' is already in use");
-                throw new NameConflictException("given name '" + name + "' is already in use");
+        // if the old and new names are different, than the new name's uniqueness must be checked
+        String oldName = selectedService.getAppliedName();
+        String newName = getName();
+        if (!oldName.equals(newName)) {
+            if (services.containsKey(newName)) {
+                LOGGER.warn("name conflict, the new name '" + newName + "' is already in use");
+                throw new NameConflictException("given name '" + newName + "' is already in use");
             }
+            // change the key of the service
+            services.put(newName, services.remove(oldName));
         }
 
-        LOGGER.info("applying changes to the service '" + selectedService.getAppliedName()
-                + "' (old name)");
+        LOGGER.info("applying changes to the service '" + oldName + "' (old name)");
         selectedService.applyChanges();
     }
 
     public Timetable[] getAllTimetables() {
         LOGGER.trace("called getAllTimetables");
         Timetable[] tables = new Timetable[services.size()];
-        for (int i = 0; i < tables.length; i++)
-            tables[i] = services.get(i).getTimeTable();
+        BusService[] allServices = services.values().toArray(new BusService[0]);
+        for (int i = 0; i < tables.length; i++) {
+            tables[i] = allServices[i].getTimeTable();
+        }
         return tables;
     }
 

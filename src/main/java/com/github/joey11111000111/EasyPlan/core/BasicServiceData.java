@@ -1,6 +1,6 @@
 package com.github.joey11111000111.EasyPlan.core;
 
-import com.github.joey11111000111.EasyPlan.core.util.DayTime;
+import com.github.joey11111000111.EasyPlan.util.DayTime;
 
 /**
  * Created by joey on 2015.11.04..
