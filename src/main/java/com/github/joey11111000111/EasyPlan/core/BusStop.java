@@ -10,7 +10,10 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Created by joey on 2015.11.01..
+ * The BusStop class manages all the data and operations (including the xml parsing) that are related to bus stops.
+ * This class cannot be instantiated, nor modified in any way. Everything is handled through static methods.
+ * All the bus stops have a unique id, which start from 0 and are increasing one by one. Thus the 'id' and 'index'
+ * words are almost synonyms.
  */
 public final class BusStop implements Comparable<BusStop> {
 
@@ -44,8 +47,7 @@ public final class BusStop implements Comparable<BusStop> {
             }
         }
         catch (Exception e) {
-            // TODO: log the exception
-            System.out.println("exception happened " + e);
+            Core.LOGGER.error("cannot read the city.xml file, which is fatal", e);
             System.exit(1);
         }
 
@@ -94,23 +96,48 @@ public final class BusStop implements Comparable<BusStop> {
         return java.lang.Integer.parseInt(text);
     }
 
+    /**
+     * Returns the X coordinate of the specified bus stop
+     * @param id specifies the bus stops, whose X coordinate will be returned
+     * @return the X coordinate of the specified bus stop
+     * @throws IndexOutOfBoundsException if there isn't a bus stop with the given id
+     */
     public static int getXCoordOf(int id) {
         if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return allStops[id].x;
     }
+    /**
+     * Returns the Y coordinate of the specified bus stop
+     * @param id specifies the bus stops, whose Y coordinate will be returned
+     * @return the Y coordinate of the specified bus stop
+     * @throws IndexOutOfBoundsException if there isn't a bus stop with the given id
+     */
     public static int getYCoordOf(int id) {
         if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return allStops[id].y;
     }
+    /**
+     * Returns the X coordinate of the bus station
+     * @return the X coordinate of the bus station
+     */
     public static int getXCoordOfStation() {
         return allStops[0].x;
     }
+    /**
+     * Returns the Y coordinate of the bus station
+     * @return the Y coordinate of the bus station
+     */
     public static int getYCoordOfStation() {
         return allStops[0].y;
     }
 
+    /**
+     * Returns all the bus stop ids that can be the next stop after the given bus stop
+     * @param id the current bus stop, from which to go
+     * @return all the bus stop ids that can be the next stop after the given bus stop
+     */
     public static int[] getReachableIdsOf(int id) {
         Set<java.lang.Integer> keyIds = allStops[id].reachableStops.keySet();
         int[] reachableIds = new int[keyIds.size()];
@@ -120,17 +147,38 @@ public final class BusStop implements Comparable<BusStop> {
         return reachableIds;
     }
 
+    /**
+     * Returns the id of the bus station
+     * @return the id of the bus station
+     */
     public static int getIdOfStation() {
         return allStops[0].id;
     }
+
+    /**
+     * Returns all the bus stop ids that can be the first stop, starting from the bus station
+     * @return all the bus stop ids that can be the first stop, starting from the bus station
+     */
     public static int[] getReachableIdsOfStation() {
         return getReachableIdsOf(0);
     }
 
+    /**
+     * Returns true if there is a bus stop with the given id
+     * @param index the bus stop id whose validity will be checked
+     * @return true if there is a bus stop with the given id
+     */
     public static boolean validId(int index) {
         return index >= 0 && index < allStops.length;
     }
 
+    /**
+     * Returns true, if the bus stop at 'toId' can be the next from 'fromId'
+     * @param toId
+     * @param fromId
+     * @return true when the bus stop at 'toId' can be the next from 'fromId'
+     * @throws IndexOutOfBoundsException if either of the given ids are invalid
+     */
     public static boolean isReachableToFrom(int toId, int fromId) {
         if (!validId(toId))
             throw new IndexOutOfBoundsException("toId is out of range: " + toId);
@@ -139,24 +187,51 @@ public final class BusStop implements Comparable<BusStop> {
         return allStops[fromId].reachableStops.containsKey(toId);
     }
 
+    /**
+     * Returns true, if the bus station can be the next (and last) stop after
+     * the bus stop at 'fromId'
+     * @param fromId the current bus stop, from which to go
+     * @return true, if the bus station can be the next (and last) stop after
+     * the bus stop at 'fromId'
+     * @throws IndexOutOfBoundsException when the given id is invalid
+     */
     public static boolean isStationReachableFrom(int fromId) {
         if (!validId(fromId))
             throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
         return allStops[fromId].reachableStops.containsKey(0);
     }
 
+    /**
+     * Returns true, if the bus stop with the given id can be the first stop starting from the bus station
+     * @param id the bus stop to go from the bus station
+     * @return true, if the bus stop with the given id can be the first stop starting from the bus station
+     * @throws IndexOutOfBoundsException when the given id is invalid
+     */
     public static boolean isReachableFromStation(int id) {
         if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return allStops[0].reachableStops.containsKey(id);
     }
 
+    /**
+     * Returns true if the given id belongs to the bus station
+     * @param id the id to check
+     * @return true if the given id belongs to the bus station
+     */
     public static boolean isStation(int id) {
         if (!validId(id))
             throw new IndexOutOfBoundsException("id is out of range: " + id);
         return id == 0;
     }
 
+    /**
+     * Returns the time (in minutes) that it takes to go from the bus stop with 'fromId' to the
+     * bus stop with 'toId'
+     * @param toId the bus stop to go to
+     * @param fromId the bus stop to go from
+     * @return the travel time in minutes
+     * @throws IndexOutOfBoundsException if either of the given ids are invalid
+     */
     public static int travelTimeToFrom(int toId, int fromId) {
         if (!validId(fromId))
             throw new IndexOutOfBoundsException("fromId is out range: " + fromId);
@@ -168,6 +243,13 @@ public final class BusStop implements Comparable<BusStop> {
 
         return allStops[fromId].reachableStops.get(toId);
     }
+    /**
+     * Returns the time (in minutes) that it takes to go from the bus station to the
+     * bus stop with 'toId'
+     * @param toId the bus stop to go to
+     * @return the travel time in minutes
+     * @throws IndexOutOfBoundsException when to given id is invalid
+     */
     public static int travelTimeToFromStation(int toId) {
         if (!validId(toId))
             throw new IndexOutOfBoundsException("toId is out of range: " + toId);
@@ -175,6 +257,12 @@ public final class BusStop implements Comparable<BusStop> {
             throw new IllegalArgumentException("the bus stop at '" + toId + "' is not reachable from the station");
         return allStops[0].reachableStops.get(toId);
     }
+    /**
+     * Returns the time (in minutes) that it takes to go from the bus stop at 'fromId' to the bus station
+     * @param fromId the bus stop to go from
+     * @return the travel time in minutes
+     * @throws IndexOutOfBoundsException when to given id is invalid
+     */
     public static int travelTimeToStationFrom(int fromId) {
         if (!validId(fromId))
             throw new IndexOutOfBoundsException("fromId is out of range: " + fromId);
@@ -199,17 +287,5 @@ public final class BusStop implements Comparable<BusStop> {
     public int compareTo(BusStop otherStop) {
         return this.id - otherStop.id;
     }
-
-//    public String toString() {
-//        String lnSep = System.getProperty("line.separator");
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("id: ").append(id).append("  x: ").append(x).append("  y: ").append(y).append(lnSep);
-//        for (Map.Entry<java.lang.Integer, java.lang.Integer> entry : reachableStops.entrySet()) {
-//            sb.append("   ").append("id: ").append(entry.getKey())
-//                    .append(" travel time: ").append(entry.getValue())
-//                    .append(lnSep);
-//        }
-//        return sb.toString();
-//    }
 
 }//class
