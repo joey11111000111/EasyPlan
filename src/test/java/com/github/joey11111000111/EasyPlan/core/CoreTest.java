@@ -324,6 +324,7 @@ public class CoreTest {
     @Test
     public void saveAndReadTest() {
         Core core = new Core();
+        assertTrue(core.isSaved());
         for (int i = 0; i < 3; i++) {
             core.createNewService();
             core.setName("1" + i);
@@ -341,7 +342,9 @@ public class CoreTest {
             }
         }
 
+        assertFalse(core.isSaved());
         core.saveServices();
+        assertTrue(core.isSaved());
 
         core = new Core();
         assertEquals(3, core.getServiceCount());

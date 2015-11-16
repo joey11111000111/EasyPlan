@@ -18,6 +18,7 @@ public class Core {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Core.class);
     static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
+    private boolean saved;
     private SortedMap<String, BusService> services;
     // the three below are for the selected service
     private BusService selectedService;
@@ -25,6 +26,7 @@ public class Core {
     private TouchedStops touchedStops;
 
     public Core() {
+        saved = true;
         LOGGER.debug("creating Core instance...");
         selectedService = null;
         basicData = null;
@@ -61,6 +63,9 @@ public class Core {
         LOGGER.trace("called isModified");
         checkSelection();
         return basicData.isModified() || touchedStops.isModified();
+    }
+    public boolean isSaved() {
+        return saved;
     }
     public boolean discardChanges() {
         LOGGER.trace("called discardChanges");
@@ -274,7 +279,8 @@ public class Core {
                    LOGGER.error("cannot close ObjectOutputStream", ioe);
                }
         }
-    }//writeServices
+        saved = true;
+    }//saveServices
 
     public void createNewService() {
         LOGGER.trace("called createNewService");
@@ -355,8 +361,9 @@ public class Core {
             services.put(newName, services.remove(oldName));
         }
 
-        LOGGER.info("applying changes to the service '" + oldName + "' (old name)");
         selectedService.applyChanges();
+        saved = false;
+        LOGGER.info("applied changes to the service '" + oldName + "' (old name)");
     }
 
     public Timetable[] getAllTimetables() {

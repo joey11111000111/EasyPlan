@@ -5,14 +5,37 @@ import com.github.joey11111000111.EasyPlan.util.DayTime;
 import java.util.*;
 
 /**
- * Created by joey on 2015.11.06..
+ * A Timetable gives information about the schedules of a certain bus service.
+ * It shows all the time of all the touched stops when a bus of the service arrives.
+ * The bus station is also included.
+ * All instances are unmodifiable, and no instances can be created outside the package.
+ * However, every bus service can return its own timetable.
  */
 public class Timetable {
 
+    /**
+     * An instance of this class contains all the arrive times of the buses of the service
+     * to a certain bus stop (can be the station as well). Instances are unmodifiable, and
+     * cannot be created outside of the package. However, the returned TimeTable contains one
+     * StopTimes instance for all the touched bus stops of the bus service.
+     */
     public static class StopTimes {
+        /**
+         * the id of the bus stop, whose arrive times are recorded in the list
+         */
         public final int id;
+        /**
+         * Contains all the arrive times to this bus stop, starting with the time when
+         * the first bus leaves the station. This list always has at least one element.
+         */
         public final List<DayTime> times;
 
+        /**
+         * Creates an instance filled with the given data.
+         * @param id the id of the bus stop whose arrive times is stored in the instance
+         * @param times an unmodifiable list of the arrive times to the given bus stop
+         * @throws IllegalArgumentException when the list is empty or modifiable
+         */
         StopTimes(int id, List<DayTime> times) {
             if (times.size() == 0)
                 throw new IllegalArgumentException("there must be at least one stop time for a stop or a station");
@@ -34,7 +57,14 @@ public class Timetable {
         }
     }
 
-    public static class TimeTableArguments {
+    /**
+     * The sole purpose of this class is to help to create a Timetable instance.
+     * Since the constructor of the Timetable class requires quite a lot of arguments
+     * which can be hard to correctly dealt with, this class can make it easy and safe.
+     * It checks the validity of the arguments and whether all the arguments are given all or not.
+     * Also they can be given in any order, even more than once.
+     */
+    static class TimeTableArguments {
         private String name;
         private int[] stopIds;
         private int[] travelTimes;
@@ -125,13 +155,30 @@ public class Timetable {
         }
     }
 
+    /**
+     * name of the bus service
+     */
     public final String name;
+    /**
+     * Contains a StopTime instance for all the touched stops of the bus service (including the bus station).
+     * The order of the instances is the same as the order of the touched stops in the bus service.
+     */
     public final List<StopTimes> stopTimes;
+    /**
+     * contains the number of buses that will leave the station in one day
+     */
     public final int busCount;
+    /**
+     * the minutes before the next bus leaves the station after the previous one
+     */
     public final int timeGap;
+    /**
+     * the time that it takes for one bus of the service to go through all the bus stops
+     * (return to the station is included if happens in the service)
+     */
     public final DayTime totalTravelTime;
 
-    public static Timetable newInstance(TimeTableArguments tta) {
+    static Timetable newInstance(TimeTableArguments tta) {
         if (!tta.isValid())
             throw new IllegalArgumentException("given arguments are not in a ready state: "
                     + System.getProperty("line.separator")

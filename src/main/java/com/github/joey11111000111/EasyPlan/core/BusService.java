@@ -7,11 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by joey on 2015.11.01..
+ * The BusService class manages data associated with a certain bus service.
+ * It holds the data in two separate forms simultaneously, which allows new
+ * modifications to be discarded.
  */
 public class BusService implements Serializable {
 
     static final long serialVersionUID = 0L;
+    /**
+     * The name of a newly created, unmodified bus service
+     */
     static final String DEFAULT_NAME = "new service";
 
     private List<Integer> savedStops;
@@ -24,6 +29,15 @@ public class BusService implements Serializable {
     transient private TouchedStops currentStops;
     transient private BasicServiceData currentServiceData;
 
+    /**
+     * Creates a bus service filled with default values. These values are:
+     *   - default name
+     *   - empty stop list
+     *   - not closed
+     *   - 10 minutes time gap
+     *   - first leaves the station at 08:00
+     *   - no bus leaves after 18:00
+     */
     public BusService() {
         savedStops = new ArrayList<Integer>();
         closed = false;
@@ -48,10 +62,20 @@ public class BusService implements Serializable {
         currentStops.markAsSaved();
     }
 
+    /**
+     * Returns the applied name of the service. The applied name is not the newly
+     * modified name, it can not be discarded.
+     * @return the applied name of the bus service
+     */
     public String getAppliedName() {
         return name;
     }
 
+    /**
+     * Discards all the new modifications, and gets the service back to the last
+     * saved (applied) state
+     * @return true, if there were discarded changes
+     */
     public boolean discardChanges() {
         boolean restoreHappened = false;
         // discard basic data changes, if there were any
@@ -92,6 +116,9 @@ public class BusService implements Serializable {
         boundaryTime = new DayTime(currentServiceData.getBoundaryTime());
     }
 
+    /**
+     * Registers all the new modifications if there were any.
+     */
     public void applyChanges() {
         if (currentStops.isModified())
             applyStops();
@@ -102,13 +129,28 @@ public class BusService implements Serializable {
     }
 
     // getter methods
+
+    /**
+     * Returns the object that manages the modifications of the stop list of the bus service.
+     * @return the object that manages the modification of the stop list
+     */
     public TouchedStops getCurrentStops() {
         return currentStops;
     }
+
+    /**
+     * Returns the object that manages the modifications of the basic data of the bus service
+     * @return the object that manages the modifications of the basic data
+     */
     public BasicServiceData getCurrentServiceData() {
         return currentServiceData;
     }
 
+    /**
+     * Returns a Timetable object that shows the arrive times to all the touched
+     * stops of the bus service.
+     * @return the Timetable of the bus service
+     */
     public Timetable getTimeTable() {
         Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
         args.setName(currentServiceData.getName());
@@ -121,6 +163,11 @@ public class BusService implements Serializable {
         return Timetable.newInstance(args);
     }
 
+    /**
+     * Bus services must have unique names, so they are equal is their name are the same
+     * @param o the bus service to compare to
+     * @return true if the given bus service equals to this one
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -132,6 +179,10 @@ public class BusService implements Serializable {
 
     }
 
+    /**
+     * Returns the hash code of the name of the service
+     * @return the hash code of the name of the service
+     */
     @Override
     public int hashCode() {
         return name.hashCode();

@@ -9,7 +9,10 @@ import java.util.Stack;
 import static com.github.joey11111000111.EasyPlan.util.OpenLinkedList.Node;
 
 /**
- * Created by joey on 2015.11.04..
+ * The TouchedStops class manages the modifications to the bus stops of a certain bus service.
+ * Implements all the modification rules, so it promises that every state of bus stop list
+ * is valid. Also implements an undo function, to discard the last change. It is possible
+ * to undo the modification one by one until the last unapplied modification is withdrawn.
  */
 public class TouchedStops {
 
@@ -55,6 +58,10 @@ public class TouchedStops {
     private boolean modified;
     private boolean closed;
 
+    /**
+     * Creates a new instance with an empty bus stop list.
+     * It is not closed, not modified, and there is nothig to undo.
+     */
     public TouchedStops() {
         stops = new OpenLinkedList<Integer>();
         undoStack = new Stack<UndoOperation<Integer>>();
@@ -66,28 +73,61 @@ public class TouchedStops {
         if (!modified)
             modified = true;
     }
+
+    /**
+     * Informs the object that the current state was registered.
+     * After this method call all the modifications are considered to be saved,
+     * so there is nothing to undo.
+     */
     void markAsSaved() {
         if (modified)
             modified = false;
         undoStack.clear();
     }
 
+    /**
+     * Returns true is there aren't any added bus stops.
+     * @return true, if the bus stop list is empty
+     */
     public boolean isEmpty() {
         return stops.isEmpty();
     }
 
+    /**
+     * Returns true if there aren't any new modifications.
+     * @return true if there was at least one modification since the last save
+     */
     public boolean isModified() {
         return modified;
     }
 
+    /**
+     * Returns true if the bus service returns to the station at the end of the way, it is the last
+     * (but not only) bus stop.
+     * @return true, if there is it least one bus stop, and the last bus stop is the bus station
+     */
     public boolean isClosed() {
         return closed;
     }
 
+    /**
+     * Returns true if there are new, unsaved modifications
+     * @return true, if there are unsaved modification
+     */
     public boolean canUndo() {
         return !undoStack.isEmpty();
     }
 
+    /**
+     * Appends the bus stop with the given id to the bus stop list.
+     * @param id the id of the bus stop that should be appended.
+     * @throws IllegalStateException if the bus service is already closed (finished)
+     * @throws IllegalArgumentException if the bus stop with the given id:
+     *          - doesn't exist
+     *          - represents the bus station (it must be added in a separate way)
+     *          - is not reachable from the previous bus stop
+     *          - has already added twice
+     */
     public void appendStop(int id) {
         if (closed)
             throw new IllegalStateException("bus service is closed, cannot add new stop to the list");
@@ -132,6 +172,11 @@ public class TouchedStops {
         return false;
     }
 
+    /**
+     * Returns an array that contains the ids of the touched bus stops. The order
+     * is the same as in the bus stop list (order of append).
+     * @return an array containing the ids of the touched bus stops in the order of append
+     */
     public int[] getStops() {
         if (isEmpty())
             return new int[0];
@@ -147,6 +192,14 @@ public class TouchedStops {
         return stopIds;
     }
 
+    /**
+     * Appends the bus station to the bus service as the last bus stop. Closing a
+     * bus service also means finishing it, so appending any more bus stops is
+     * not possible.
+     * @throws IllegalStateException if the bus service can not be closed, because
+     *          the bus station is not reachable from te last bus stop, or the service
+     *          is already closed
+     */
     public void closeService() {
         if (!isStationReachable())
             throw new IllegalStateException("bus service cannot be closed now");
@@ -164,6 +217,10 @@ public class TouchedStops {
             undoStack.push(UndoOperation.newAppendInstance(chain));
     }
 
+    /**
+     * Removes all the bus stops from the list. Calling this method when there aren't
+     * any bus stops added has no effect.
+     */
     public void clear() {
         Node<Integer> chain;
         try {
@@ -178,6 +235,12 @@ public class TouchedStops {
         markAsModified();
     }
 
+    /**
+     * Removes the last occurence of a bus stop from the service with all the following
+     * bus stops.
+     * @param fromId the bus stop from which the removal starts (the given bus stop is
+     *               included too)
+     */
     public void removeChainFrom(int fromId) {
         Node<Integer> chain;
         try {
@@ -192,6 +255,10 @@ public class TouchedStops {
         markAsModified();
     }
 
+    /**
+     * Discards the latest modification, that is not saved already.
+     * @throws IllegalStateException if there aren't any unsaved modifications
+     */
     public void undo() {
         if (!canUndo())
             throw new IllegalStateException("undo stack is empty, there is nothing to undo");
@@ -212,6 +279,10 @@ public class TouchedStops {
         }
     }
 
+    /**
+     * Returns true if the bus station is reachable from the last bus stop of the bus service
+     * @return true if the bus station is reachable from the last bus stop of the bus service
+     */
     public boolean isStationReachable() {
         if (closed)
             return false;
@@ -223,6 +294,11 @@ public class TouchedStops {
         return true;
     }
 
+    /**
+     * Returns an array that contains the ids of all the bus stops that can be the
+     * next stop according to the rules
+     * @return an array with all the ids of all the reachable bus stops
+     */
     public int[] getReachableStopIds() {
         if (isEmpty())
             return BusStop.getReachableIdsOfStation();
@@ -247,6 +323,16 @@ public class TouchedStops {
         return resultIds;
     }
 
+    /**
+     * Returns an array that contains the minutes that it takes to travel to
+     * each bus stops. The station is included, when the bus service is closed.
+     * All the travel times are relative to when the bus leaves the bus station.
+     * So the travel to the second stop means the travel from the station to the
+     * first bus stop plus to travel time from the first bus stop to the second
+     * bus stop.
+     * @return an array with the travel times to each touched bus stops, relative
+     *           to when the bus leaves the station.
+     */
     public int[] getTravelTimes() {
         if (isEmpty())
             return new int[0];
