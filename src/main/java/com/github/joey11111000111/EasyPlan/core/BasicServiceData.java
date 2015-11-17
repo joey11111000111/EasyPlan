@@ -57,7 +57,7 @@ class BasicServiceData {
 
     /**
      * Returns the name of the bus service
-     * @return
+     * @return the name of the bus service
      */
     public String getName() {
         return name;
