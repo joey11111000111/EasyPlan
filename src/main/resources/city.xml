@@ -5,8 +5,8 @@
     <bus_station>
         <id>0</id>
         <position>
-            <x>9</x>
-            <y>5</y>
+            <x>5</x>
+            <y>9</y>
         </position>
 
         <connections>
@@ -40,8 +40,8 @@
         <!-- Alapadatok -->
         <id>1</id>
         <position>
-            <x>9</x>
-            <y>2</y>
+            <x>1</x>
+            <y>8</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -56,6 +56,10 @@
                 <refid>4</refid>
                 <travel_time>13</travel_time>
             </connection>
+            <connection>
+                <refid>7</refid>
+                <travel_time>16</travel_time>
+            </connection>
         </connections>
     </bus_stop>
 
@@ -65,7 +69,7 @@
         <!-- Alapadatok -->
         <id>2</id>
         <position>
-            <x>9</x>
+            <x>7</x>
             <y>8</y>
         </position>
 
@@ -95,8 +99,8 @@
         <!-- Alapadatok -->
         <id>3</id>
         <position>
-            <x>10</x>
-            <y>10</y>
+            <x>9</x>
+            <y>9</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -120,8 +124,8 @@
         <!-- Alapadatok -->
         <id>4</id>
         <position>
-            <x>7</x>
-            <y>4</y>
+            <x>3</x>
+            <y>6</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -155,8 +159,8 @@
         <!-- Alapadatok -->
         <id>5</id>
         <position>
-            <x>7</x>
-            <y>10</y>
+            <x>9</x>
+            <y>6</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -190,8 +194,8 @@
         <!-- Alapadatok -->
         <id>6</id>
         <position>
-            <x>6</x>
-            <y>6</y>
+            <x>5</x>
+            <y>5</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -235,8 +239,8 @@
         <!-- Alapadatok -->
         <id>7</id>
         <position>
-            <x>5</x>
-            <y>2</y>
+            <x>0</x>
+            <y>4</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -271,7 +275,7 @@
         <id>8</id>
         <position>
             <x>4</x>
-            <y>5</y>
+            <y>3</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -310,8 +314,8 @@
         <!-- Alapadatok -->
         <id>9</id>
         <position>
-            <x>4</x>
-            <y>7</y>
+            <x>6</x>
+            <y>3</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -345,8 +349,8 @@
         <!-- Alapadatok -->
         <id>10</id>
         <position>
-            <x>4</x>
-            <y>9</y>
+            <x>8</x>
+            <y>3</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -385,8 +389,8 @@
         <!-- Alapadatok -->
         <id>11</id>
         <position>
-            <x>3</x>
-            <y>3</y>
+            <x>2</x>
+            <y>2</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -420,8 +424,8 @@
         <!-- Alapadatok -->
         <id>12</id>
         <position>
-            <x>2</x>
-            <y>7</y>
+            <x>6</x>
+            <y>1</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -455,8 +459,8 @@
         <!-- Alapadatok -->
         <id>13</id>
         <position>
-            <x>1</x>
-            <y>5</y>
+            <x>4</x>
+            <y>0</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -496,7 +500,7 @@
         <id>14</id>
         <position>
             <x>1</x>
-            <y>2</y>
+            <y>0</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->
@@ -524,8 +528,8 @@
         <!-- Alapadatok -->
         <id>15</id>
         <position>
-            <x>1</x>
-            <y>10</y>
+            <x>9</x>
+            <y>0</y>
         </position>
 
         <!-- Elérhető megállók, és a hozzájuk tartozó menetidő -->

@@ -2,8 +2,13 @@ package com.github.joey11111000111.EasyPlan.gui;
 
 import com.github.joey11111000111.EasyPlan.core.Core;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -35,10 +40,16 @@ public class Start extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("EasyPlan ~ Bus Service Designer");
         GridPane root = new GridPane();
-        Scene scene = new Scene(root, 500, 500, Color.GAINSBORO);
+        root.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
+        ColumnConstraints c1 = new ColumnConstraints();
+
+        Scene scene = new Scene(root, 700, 700, Color.GAINSBORO);
+
+        DoubleProperty widthProperty = new SimpleDoubleProperty();
+        widthProperty.bind(scene.widthProperty().divide(2));
 
         DrawStack drawStack = new DrawStack(scene.widthProperty(), scene.heightProperty());
-        root.getChildren().add(drawStack.getRoot());
+        root.add(drawStack.getRoot(), 0, 0);
 
         primaryStage.setScene(scene);
         primaryStage.show();
