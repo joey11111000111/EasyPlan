@@ -96,6 +96,11 @@ public final class BusStop implements Comparable<BusStop> {
         return java.lang.Integer.parseInt(text);
     }
 
+    // TODO: javadoc
+    public static int getStopCount() {
+        return allStops.length - 1;
+    }
+
     /**
      * Returns the X coordinate of the specified bus stop
      * @param id specifies the bus stops, whose X coordinate will be returned

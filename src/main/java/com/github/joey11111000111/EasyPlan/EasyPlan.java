@@ -1,11 +1,14 @@
 package com.github.joey11111000111.EasyPlan;
 
 import com.github.joey11111000111.EasyPlan.core.Core;
+import com.github.joey11111000111.EasyPlan.gui.Start;
 
 public class EasyPlan {
 
     public static void main(String[] args) {
-        Core c = new Core();
+        Core controller = new Core();
+        Start.setController(controller);
+        Start.start();
     }
 
 }
