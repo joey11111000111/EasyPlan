@@ -242,12 +242,13 @@ public class OpenLinkedList<E> {
             throw new IllegalStateException("list is empty");
         // search for the last node that has the given element
         Node<E> node = tail;
-        if (node.getElement().equals(element))
-            return removeChainFrom(node);
-        while (node.hasPrevious()) {
+        while (true) {
             if (node.getElement().equals(element))
                 return removeChainFrom(node);
-            node = node.previous;
+            if (node.hasPrevious())
+                node = node.previous;
+            else
+                break;
         }
         throw new IllegalArgumentException("the element to remove is not in the list");
     }

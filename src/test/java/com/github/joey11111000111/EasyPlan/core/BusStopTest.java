@@ -12,8 +12,8 @@ public class BusStopTest {
     @Test
     public void testReturnedValues() {
         // test the bus station
-        assertEquals(9, BusStop.getXCoordOfStation());
-        assertEquals(5, BusStop.getYCoordOfStation());
+        assertEquals(5, BusStop.getXCoordOfStation());
+        assertEquals(9, BusStop.getYCoordOfStation());
         assertTrue(BusStop.isReachableFromStation(1));
         assertTrue(BusStop.isReachableFromStation(4));
         assertTrue(BusStop.isReachableFromStation(6));
@@ -25,10 +25,8 @@ public class BusStopTest {
         assertEquals(12, BusStop.travelTimeToFromStation(6));
         assertEquals(5, BusStop.travelTimeToFromStation(2));
 
-        assertEquals(1, BusStop.getXCoordOf(15));
-        assertEquals(10, BusStop.getYCoordOf(15));
-        assertEquals(9, BusStop.getXCoordOfStation());
-        assertEquals(5, BusStop.getYCoordOfStation());
+        assertEquals(9, BusStop.getXCoordOf(15));
+        assertEquals(0, BusStop.getYCoordOf(15));
 
         assertFalse(BusStop.isStationReachableFrom(12));
         assertTrue(BusStop.isStationReachableFrom(1));

@@ -303,7 +303,7 @@ public class TouchedStops {
         if (isEmpty())
             return BusStop.getReachableIdsOfStation();
         if (isClosed())
-            throw new IllegalStateException("service is closed, thus there are no reachable stops");
+            return new int[0];
 
         int lastId = stops.getTail().getElement();
         int[] ids = BusStop.getReachableIdsOf(lastId);

@@ -28,9 +28,11 @@ public class BusStopShape implements MarkableShape {
     public static final RadialGradient NEUTRAL_INDICATOR;
     public static final RadialGradient REACHABLE_INDICATOR;
     public static final RadialGradient CURRENT_INDICATOR;
+    private RadialGradient INDICATOR_COLOR;
     public static final Color NEUTRAL_TEXT;
     public static final Color REACHABLE_TEXT;
     public static final Color CURRENT_TEXT;
+    private Color TEXT_COLOR;
 
     private Group root;
     private Circle outerCircle;
@@ -83,6 +85,8 @@ public class BusStopShape implements MarkableShape {
 
 
     public BusStopShape(int id) {
+        TEXT_COLOR = NEUTRAL_TEXT;
+        INDICATOR_COLOR = NEUTRAL_INDICATOR;
         // create outer circle (indicator circle), bind and set fill to neutral
         outerCircle = new Circle();
         outerCircle.radiusProperty().bind(radiusProperty);
@@ -111,7 +115,7 @@ public class BusStopShape implements MarkableShape {
         radiusProperty.addListener((observable, oldValue, newValue) -> {
             idText.setFont(Font.font("Courier", FontWeight.BOLD, FontPosture.REGULAR, newValue.doubleValue() * 0.6));
         });
-        idText.setFill(NEUTRAL_TEXT);
+        idText.setFill(TEXT_COLOR);
         HBox textContainer = new HBox();
         textContainer.getChildren().add(idText);
         textContainer.setAlignment(Pos.CENTER);
@@ -139,18 +143,33 @@ public class BusStopShape implements MarkableShape {
 
     @Override
     public void markNeutral() {
-        outerCircle.setFill(NEUTRAL_INDICATOR);
-        idText.setFill(NEUTRAL_TEXT);
+        if (INDICATOR_COLOR == NEUTRAL_INDICATOR)
+            return;
+        INDICATOR_COLOR = NEUTRAL_INDICATOR;
+        TEXT_COLOR = NEUTRAL_TEXT;
+        markShapes();
     }
     @Override
     public void markReachable() {
-        outerCircle.setFill(REACHABLE_INDICATOR);
-        idText.setFill(REACHABLE_TEXT);
+        if (INDICATOR_COLOR == REACHABLE_INDICATOR)
+            return;
+        INDICATOR_COLOR = REACHABLE_INDICATOR;
+        TEXT_COLOR = REACHABLE_TEXT;
+        markShapes();
     }
     @Override
     public void markCurrent() {
-        outerCircle.setFill(CURRENT_INDICATOR);
-        idText.setFill(CURRENT_TEXT);
+        if (INDICATOR_COLOR == CURRENT_INDICATOR)
+            return;
+        INDICATOR_COLOR = CURRENT_INDICATOR;
+        TEXT_COLOR = CURRENT_TEXT;
+        TEXT_COLOR = CURRENT_TEXT;
+        markShapes();
+    }
+
+    private void markShapes() {
+        outerCircle.setFill(INDICATOR_COLOR);
+        idText.setFill(TEXT_COLOR);
     }
 
 }//class

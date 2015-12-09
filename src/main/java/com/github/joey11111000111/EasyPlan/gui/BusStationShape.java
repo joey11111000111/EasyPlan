@@ -22,6 +22,7 @@ public class BusStationShape implements MarkableShape {
     private final LinearGradient NEUTRAL;
     private final LinearGradient REACHABLE;
     private final LinearGradient CURRENT;
+    private LinearGradient INDICATOR_COLOR;
     private DoubleProperty widthProperty;
     private DoubleProperty heightProperty;
     private Group root;
@@ -60,12 +61,13 @@ public class BusStationShape implements MarkableShape {
                 new Stop(0, Color.rgb(242, 222, 100, .8)),
                 new Stop(1, Color.rgb(254, 214, 0, .8))
         );
+        INDICATOR_COLOR = NEUTRAL;
 
 
         root = new Group();
         // create and add background with neutral colors
         bkgRect = new Rectangle();
-        bkgRect.setFill(NEUTRAL);
+        bkgRect.setFill(INDICATOR_COLOR);
         bkgRect.widthProperty().bind(widthProperty);
         bkgRect.heightProperty().bind(heightProperty);
         bkgRect.arcWidthProperty().bind(widthProperty.divide(5));
@@ -122,16 +124,25 @@ public class BusStationShape implements MarkableShape {
 
     @Override
     public void markNeutral() {
-        bkgRect.setFill(NEUTRAL);
+        if (INDICATOR_COLOR == NEUTRAL)
+            return;
+        INDICATOR_COLOR = NEUTRAL;
+        bkgRect.setFill(INDICATOR_COLOR);
     }
 
     @Override
     public void markReachable() {
-        bkgRect.setFill(REACHABLE);
+        if (INDICATOR_COLOR == REACHABLE)
+            return;
+        INDICATOR_COLOR = REACHABLE;
+        bkgRect.setFill(INDICATOR_COLOR);
     }
 
     @Override
     public void markCurrent() {
-        bkgRect.setFill(CURRENT);
+        if (INDICATOR_COLOR == CURRENT)
+            return;
+        INDICATOR_COLOR = CURRENT;
+        bkgRect.setFill(INDICATOR_COLOR);
     }
 }//class

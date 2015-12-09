@@ -90,6 +90,10 @@
                 <refid>5</refid>
                 <travel_time>10</travel_time>
             </connection>
+            <connection>
+                <refid>6</refid>
+                <travel_time>19</travel_time>
+            </connection>
         </connections>
     </bus_stop>
 
@@ -304,6 +308,10 @@
             <connection>
                 <refid>13</refid>
                 <travel_time>10</travel_time>
+            </connection>
+            <connection>
+                <refid>4</refid>
+                <travel_time>12</travel_time>
             </connection>
         </connections>
     </bus_stop>
