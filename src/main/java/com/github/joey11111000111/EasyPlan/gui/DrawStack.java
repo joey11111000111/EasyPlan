@@ -138,8 +138,7 @@ public class DrawStack {
 
     private MarkableShape createStopShape(int id) {
         MarkableShape shape;
-        int stationId = BusStop.getIdOfStation();
-        if (id == stationId)
+        if (id == 0)
             shape = new BusStationShape();
         else
             shape = new BusStopShape(id);
@@ -150,7 +149,7 @@ public class DrawStack {
         System.out.println("x: " + x + "\ty: " + y);
         DoubleProperty shapeXProperty = new SimpleDoubleProperty();
         DoubleProperty shapeYProperty = new SimpleDoubleProperty();
-        if (id == stationId) {
+        if (id == 0) {
             shapeXProperty.bind(cellWidth.multiply(x).subtract(((BusStationShape)shape)
                     .widthProperty().divide(2))
                     .add(padding));
@@ -242,12 +241,6 @@ public class DrawStack {
         // mark new reachables and current
         for (int id : reachableIds)
             allStops[id].markReachable();
-        if (!controller.hasStops()) {
-            allStops[0].markCurrent();
-            return;
-        }
-        if (controller.isStationReachable())
-            allStops[0].markReachable();
 
         int[] stops = controller.getStops();
         if (!controller.isClosed())
@@ -343,7 +336,7 @@ public class DrawStack {
         try {
             // if the new stop is the station, than it needs to be handled differently
             if (id == 0) {
-                controller.closeService();
+                controller.appendStop(0);
                 int[] stops = controller.getStops();
                 markStops();
                 addLine(stops[stops.length - 1], 0);

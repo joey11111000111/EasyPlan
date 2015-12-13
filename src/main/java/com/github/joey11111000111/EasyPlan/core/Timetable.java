@@ -239,7 +239,10 @@ public class Timetable {
         this.timeGap = timeGap;
 
         // the travel time to the last stop is the total travel time
-        totalTravelTime = new DayTime(travelTimes[travelTimes.length - 1]);
+        if (travelTimes.length > 0)
+            totalTravelTime = new DayTime(travelTimes[travelTimes.length - 1]);
+        else
+            totalTravelTime = new DayTime(0, 0);
     }
 
     private StopTimes getStopTimes(int id, int busCount, int timeGap, int firstLeaveMinutes, int travelTime) {

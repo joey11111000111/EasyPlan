@@ -176,7 +176,7 @@ public class TouchedStopsTest {
         ts.undo();
         assertTrue(ts.isClosed());
         stops = ts.getStops();
-        assertEquals(9, stops.length);
+        assertEquals(10, stops.length);
 
         ts.clear();
         ts.markAsSaved();

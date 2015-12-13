@@ -69,7 +69,7 @@ public class BusServiceTest {
         service.initTransientFields();
         ts = service.getCurrentStops();
         bsd = service.getCurrentServiceData();
-        assertNotEquals(1, ts.getStopCount());
+        assertTrue(ts.getStopCount() > 1);
         assertTrue(ts.isClosed());
         assertTrue("22Y".equals(bsd.getName()));
         assertEquals(25, bsd.getTimeGap());

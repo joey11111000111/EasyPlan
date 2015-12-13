@@ -52,8 +52,8 @@ public class BusService implements Serializable {
         currentStops = new TouchedStops();
         if (savedStops.isEmpty())
             return;
-        for (Integer i : savedStops)
-            currentStops.appendStop(i);
+        for (int i = 1; i < savedStops.size(); i++)
+            currentStops.appendStop(savedStops.get(i));
         currentStops.markAsSaved();
     }
 
