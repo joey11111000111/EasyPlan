@@ -12,24 +12,24 @@ public class BusStopTest {
     @Test
     public void testReturnedValues() {
         // test the bus station
-        assertEquals(5, BusStop.getXCoordOfStation());
-        assertEquals(9, BusStop.getYCoordOfStation());
-        assertTrue(BusStop.isReachableFromStation(1));
-        assertTrue(BusStop.isReachableFromStation(4));
-        assertTrue(BusStop.isReachableFromStation(6));
-        assertTrue(BusStop.isReachableFromStation(2));
-        assertFalse(BusStop.isReachableFromStation(12));
-        assertFalse(BusStop.isReachableFromStation(3));
-        assertEquals(8, BusStop.travelTimeToFromStation(1));
-        assertEquals(6, BusStop.travelTimeToFromStation(4));
-        assertEquals(12, BusStop.travelTimeToFromStation(6));
-        assertEquals(5, BusStop.travelTimeToFromStation(2));
+        assertEquals(5, BusStop.getXCoordOf(0));
+        assertEquals(9, BusStop.getYCoordOf(0));
+        assertTrue(BusStop.isReachableToFrom(1, 0));
+        assertTrue(BusStop.isReachableToFrom(4, 0));
+        assertTrue(BusStop.isReachableToFrom(6, 0));
+        assertTrue(BusStop.isReachableToFrom(2, 0));
+        assertFalse(BusStop.isReachableToFrom(12, 0));
+        assertFalse(BusStop.isReachableToFrom(3, 0));
+        assertEquals(8, BusStop.travelTimeToFrom(1, 0));
+        assertEquals(6, BusStop.travelTimeToFrom(4, 0));
+        assertEquals(12, BusStop.travelTimeToFrom(6, 0));
+        assertEquals(5, BusStop.travelTimeToFrom(2, 0));
 
         assertEquals(9, BusStop.getXCoordOf(15));
         assertEquals(0, BusStop.getYCoordOf(15));
 
-        assertFalse(BusStop.isStationReachableFrom(12));
-        assertTrue(BusStop.isStationReachableFrom(1));
+        assertFalse(BusStop.isReachableToFrom(0, 12));
+        assertTrue(BusStop.isReachableToFrom(0, 1));
 
         assertEquals(13, BusStop.travelTimeToFrom(4, 1));
 
@@ -37,24 +37,28 @@ public class BusStopTest {
         assertFalse(BusStop.isReachableToFrom(8, 15));
 
 
-        int[] reachIds = BusStop.getReachableIdsOfStation();
+        int[] reachIds = BusStop.getReachableIdsOf(0);
         for (int id : reachIds)
-                assertTrue(BusStop.isReachableFromStation(id));
+                assertTrue(BusStop.isReachableToFrom(id, 0));
 
     }
 
     @Test
     public void testExceptions() {
         try {
-            BusStop.travelTimeToFromStation(15);
+            BusStop.travelTimeToFrom(15, 0);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         try {
-            BusStop.travelTimeToFromStation(19);
+            BusStop.travelTimeToFrom(19, 0);
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
         try {
-            BusStop.isStationReachableFrom(-1);
+            BusStop.isReachableToFrom(0, -1);
+            assertTrue(false);
+        } catch (IndexOutOfBoundsException ioobe) {}
+        try {
+            BusStop.isReachableToFrom(-1, 0);
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
         try {
@@ -70,14 +74,6 @@ public class BusStopTest {
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
         try {
-            BusStop.isStation(18);
-            assertTrue(false);
-        } catch (IndexOutOfBoundsException ioobe) {}
-        try {
-            BusStop.isReachableFromStation(-1);
-            assertTrue(false);
-        } catch (IndexOutOfBoundsException ioobe) {}
-        try {
             BusStop.isReachableToFrom(1, 19);
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
@@ -86,11 +82,11 @@ public class BusStopTest {
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
         try {
-            BusStop.travelTimeToStationFrom(19);
+            BusStop.travelTimeToFrom(19, 0);
             assertTrue(false);
         } catch (IndexOutOfBoundsException ioobe) {}
         try {
-            BusStop.travelTimeToStationFrom(9);
+            BusStop.travelTimeToFrom(0, 9);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         try {

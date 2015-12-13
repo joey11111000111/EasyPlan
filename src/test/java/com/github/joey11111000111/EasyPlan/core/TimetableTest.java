@@ -25,9 +25,8 @@ public class TimetableTest {
     @Before
     public void init() {
         name = "22Y";
-        stopIds = new int[] {1, 4, 6, 8 ,9};
-        travelTimes = new int[stopIds.length];
-        travelTimes[0] = BusStop.travelTimeToFromStation(stopIds[0]);
+        stopIds = new int[] {0, 1, 4, 6, 8 ,9};
+        travelTimes = new int[stopIds.length - 1];
         for (int i = 1; i < stopIds.length; i++)
             travelTimes[i] = BusStop.travelTimeToFrom(stopIds[i], stopIds[i-1]);
 
@@ -94,11 +93,11 @@ public class TimetableTest {
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
 
-        stopIds = new int[] {1, 4, 6, 8};
         travelTimes = new int[] {12, 5, 9, 23, 11, 6, 7};
-        args.setTravelTimes(travelTimes);
-        args.setStopIds(stopIds);
-        assertFalse(args.isValid());
+        try {
+            args.setTravelTimes(travelTimes);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
     }
 
     @Test
@@ -114,7 +113,9 @@ public class TimetableTest {
         list.add(new DayTime(0, 0));
         try {
             st = new Timetable.StopTimes(id, list);
-        } catch (IllegalArgumentException iae) {}
+        } catch (IllegalArgumentException iae) {
+            assertTrue(false);
+        }
 
         list = Collections.unmodifiableList(list);
         st = new Timetable.StopTimes(id, list);
@@ -140,7 +141,7 @@ public class TimetableTest {
             assertNotNull(list);
             assertEquals(6, list.size()); // 5 stops plus the station once
 
-            assertEquals(BusStop.getIdOfStation(), list.get(0).id);
+            assertEquals(0, list.get(0).id);
             assertEquals(1, list.get(1).id);
             assertEquals(4, list.get(2).id);
             assertEquals(6, list.get(3).id);
@@ -163,35 +164,6 @@ public class TimetableTest {
     }
 
     @Test
-    public void testClosedTimeTable() {
-        int backupHours = boundaryTime.getHours();
-        int backupMinutes = boundaryTime.getMinutes();
-        Timetable.TimeTableArguments args;
-        for (int k = 0; k < 2; k++) {
-            if (stopIds.length == travelTimes.length) {
-                int[] temp = travelTimes;
-                travelTimes = new int[temp.length + 1];
-                for (int i = 0; i < temp.length; i++)
-                    travelTimes[i] = temp[i];
-                travelTimes[travelTimes.length - 1] = 19 + travelTimes[travelTimes.length - 2];
-            }
-
-            args = createArgs();
-            Timetable tb = Timetable.newInstance(args);
-            int stationId = BusStop.getIdOfStation();
-            List<Timetable.StopTimes> st = tb.stopTimes;
-            int firstId = st.get(0).id;
-            int lastId = st.get(st.size() - 1).id;
-            assertEquals(firstId, lastId);
-
-            boundaryTime.setHours(23);
-            boundaryTime.setMinutes(50);
-        }
-        boundaryTime.setHours(backupHours);
-        boundaryTime.setMinutes(backupMinutes);
-    }
-
-    @Test
     public void testEmptyTimeTable() {
         int backupHours = boundaryTime.getHours();
         int backupMinutes = boundaryTime.getMinutes();
@@ -200,7 +172,7 @@ public class TimetableTest {
             int[] travelTimesSave = travelTimes;
             int[] stopIdsSave = stopIds;
             travelTimes = new int[0];
-            stopIds = new int[0];
+            stopIds = new int[]{0};
             Timetable tt = Timetable.newInstance(createArgs());
             travelTimes = travelTimesSave;
             stopIds = stopIdsSave;

@@ -18,7 +18,7 @@ public class TouchedStops {
 
     private static class UndoOperation<E> {
         public enum OperationType {
-            OPEN, DELETE, APPEND, APPEND_CLOSE
+            DELETE, APPEND
         }
 
         private OperationType operationType;
@@ -37,18 +37,11 @@ public class TouchedStops {
             return chain;
         }
 
-        public static <E> UndoOperation<E> newOpenInstance(E typeObject) {
-            return new UndoOperation<E>(OperationType.OPEN, null);
-        }
         public static <E> UndoOperation<E> newDeleteInstance(E typeObject) {
             return new UndoOperation<E>(OperationType.DELETE, null);
         }
         public static <E> UndoOperation<E> newAppendInstance(Node<E> chain) {
             return new UndoOperation<E>(OperationType.APPEND, chain);
-        }
-
-        public static <E> UndoOperation<E> newAppendCloseInstance(Node<E> chain) {
-            return new UndoOperation<E>(OperationType.APPEND_CLOSE, chain);
         }
     }//private static class
 
@@ -56,17 +49,16 @@ public class TouchedStops {
     private OpenLinkedList<Integer> stops;
     private Stack<UndoOperation<Integer>> undoStack;
     private boolean modified;
-    private boolean closed;
 
     /**
-     * Creates a new instance with an empty bus stop list.
-     * It is not closed, not modified, and there is nothig to undo.
+     * Creates a new instance with a bus stop list that only contains the bus station.
+     * It is not closed, not modified, and there is nothing to undo.
      */
     public TouchedStops() {
         stops = new OpenLinkedList<Integer>();
+        stops.append(0);
         undoStack = new Stack<UndoOperation<Integer>>();
         modified = false;
-        closed = false;
     }
 
     private void markAsModified() {
@@ -86,14 +78,6 @@ public class TouchedStops {
     }
 
     /**
-     * Returns true is there aren't any added bus stops.
-     * @return true, if the bus stop list is empty
-     */
-    public boolean isEmpty() {
-        return stops.isEmpty();
-    }
-
-    /**
      * Returns true if there aren't any new modifications.
      * @return true if there was at least one modification since the last save
      */
@@ -107,7 +91,7 @@ public class TouchedStops {
      * @return true, if there is it least one bus stop, and the last bus stop is the bus station
      */
     public boolean isClosed() {
-        return closed;
+        return stops.getTail().getElement() == 0 && stops.size() > 1;
     }
 
     /**
@@ -129,24 +113,16 @@ public class TouchedStops {
      *          - has already added twice
      */
     public void appendStop(int id) {
-        if (closed)
+        if (isClosed())
             throw new IllegalStateException("bus service is closed, cannot add new stop to the list");
         // id validation
         if (!BusStop.validId(id))
             throw new IllegalArgumentException("given id '" + id + "' is not valid");
-        if (BusStop.isStation(id))
-            throw new IllegalArgumentException("bus station must not be added like a simple stop");
         // check reachable rule 1
-        if (isEmpty()) {
-            if (!BusStop.isReachableFromStation(id))
-                throw new IllegalArgumentException("given stop '" + id + "' is not reachable from the station");
-        }
-        else {
-                int lastId = stops.getTail().getElement();
-                if (!BusStop.isReachableToFrom(id, lastId))
-                    throw new IllegalArgumentException("given stop '" + id + "' is not "
-                            + "reachable from the stop '" + lastId + "'");
-        }
+        int lastId = stops.getTail().getElement();
+        if (!BusStop.isReachableToFrom(id, lastId))
+            throw new IllegalArgumentException("given stop '" + id + "' is not "
+                    + "reachable from the stop '" + lastId + "'");
         // check reachable rule 2
         if (addedTwiceAlready(id))
             throw new IllegalArgumentException("given bus stop '" + id
@@ -159,7 +135,7 @@ public class TouchedStops {
     }
 
     private boolean addedTwiceAlready(int id) {
-        if (stops.size() > 3) {
+        if (stops.size() > 4) {
             Node<Integer> node = stops.getTail();
             int counter = 0;
             while (node.hasPrevious()) {
@@ -178,9 +154,6 @@ public class TouchedStops {
      * @return an array containing the ids of the touched bus stops in the order of append
      */
     public int[] getStops() {
-        if (isEmpty())
-            return new int[0];
-
         int[] stopIds = new int[stops.size()];
         Node<Integer> node = stops.getHead();
         stopIds[0] = node.getElement();
@@ -193,28 +166,21 @@ public class TouchedStops {
     }
 
     /**
-     * Appends the bus station to the bus service as the last bus stop. Closing a
-     * bus service also means finishing it, so appending any more bus stops is
-     * not possible.
-     * @throws IllegalStateException if the bus service can not be closed, because
-     *          the bus station is not reachable from te last bus stop, or the service
-     *          is already closed
+     * Returns the number of touched stops of the service. It can never be less then 0,
+     * because the bus station, as the starting point is always in the list, as the first stop.
+     * @return the number of touched bus stops, included the start from the bus station
      */
-    public void closeService() {
-        if (!isStationReachable())
-            throw new IllegalStateException("bus service cannot be closed now");
-        closed = true;
-        markAsModified();
-        undoStack.push(UndoOperation.newOpenInstance(new Integer(0)));
+    public int getStopCount() {
+        return stops.size();
     }
 
-    private void addUndoOfRemoval(Node<Integer> chain) {
-        if (closed) {
-            closed = false;
-            undoStack.push(UndoOperation.newAppendCloseInstance(chain));
-        }
-        else
-            undoStack.push(UndoOperation.newAppendInstance(chain));
+    /**
+     * Returns the id of the last bus stop of the bus service. If there are no bus stops added,
+     * it returns the id of the bus station
+     * @return the id of the last bus stop in the list
+     */
+    public int getLastStop() {
+        return stops.getTail().getElement();
     }
 
     /**
@@ -224,14 +190,14 @@ public class TouchedStops {
     public void clear() {
         Node<Integer> chain;
         try {
-            chain = stops.removeChainFrom(0);
+            chain = stops.removeChainFrom(1);
         } catch (IllegalStateException ise) {
             return;
         }
 
         if (!modified)
             modified = true;
-        addUndoOfRemoval(chain);
+        undoStack.push(UndoOperation.newAppendInstance(chain));
         markAsModified();
     }
 
@@ -243,15 +209,21 @@ public class TouchedStops {
      */
     public void removeChainFrom(int fromId) {
         Node<Integer> chain;
-        try {
-            chain = stops.removeChainFrom(new Integer(fromId));
-        } catch (IllegalStateException ise) {
-            throw new IllegalStateException("there is no bus stop to remove");
-        } catch (IllegalArgumentException iae) {
-            throw new IllegalArgumentException("the given id '" + fromId + "' is invalid");
+        if (!isClosed() && fromId == 0) {
+            if (stops.size() == 1)
+                return;
+            chain = stops.removeChainFrom(1);
+        } else {
+            try {
+                chain = stops.removeChainFrom(new Integer(fromId));
+            } catch (IllegalStateException ise) {
+                throw new IllegalStateException("there is no bus stop to remove");
+            } catch (IllegalArgumentException iae) {
+                throw new IllegalArgumentException("the given id '" + fromId + "' is invalid");
+            }
         }
 
-        addUndoOfRemoval(chain);
+        undoStack.push(UndoOperation.newAppendInstance(chain));
         markAsModified();
     }
 
@@ -265,33 +237,12 @@ public class TouchedStops {
 
         UndoOperation<Integer> operation = undoStack.pop();
         UndoOperation.OperationType type = operation.getOperationType();
-        if (type == UndoOperation.OperationType.OPEN) {
-            closed = false;
-        } else if (type == UndoOperation.OperationType.DELETE) {
+        if (type == UndoOperation.OperationType.DELETE) {
             stops.removeLast();
-        } else if (type == UndoOperation.OperationType.APPEND) {
+        } else {
             Node<Integer> chain = operation.getChain();
             stops.appendChain(chain);
-        } else { // (type == UndoOperation.OperationType.APPEND_CLOSE)
-            Node<Integer> chain = operation.getChain();
-            stops.appendChain(chain);
-            closed = true;
         }
-    }
-
-    /**
-     * Returns true if the bus station is reachable from the last bus stop of the bus service
-     * @return true if the bus station is reachable from the last bus stop of the bus service
-     */
-    public boolean isStationReachable() {
-        if (closed)
-            return false;
-        if (isEmpty())
-            return false;
-        int lastId = stops.getTail().getElement();
-        if (!BusStop.isStationReachableFrom(lastId))
-            return false;
-        return true;
     }
 
     /**
@@ -300,8 +251,6 @@ public class TouchedStops {
      * @return an array with all the ids of all the reachable bus stops
      */
     public int[] getReachableStopIds() {
-        if (isEmpty())
-            return BusStop.getReachableIdsOfStation();
         if (isClosed())
             return new int[0];
 
@@ -309,13 +258,9 @@ public class TouchedStops {
         int[] ids = BusStop.getReachableIdsOf(lastId);
 
         List<Integer> validIds = new ArrayList<Integer>(ids.length);
-        for (int i : ids) {
-            // the bus station will not be included
-            if (BusStop.isStation(i))
-                continue;
+        for (int i : ids)
             if (!addedTwiceAlready(i))
                 validIds.add(i);
-        }
 
         int[] resultIds = new int[validIds.size()];
         for (int i = 0; i < resultIds.length; i++)
@@ -334,29 +279,19 @@ public class TouchedStops {
      *           to when the bus leaves the station.
      */
     public int[] getTravelTimes() {
-        if (isEmpty())
+        if (stops.size() < 2)
             return new int[0];
 
-        int size = (closed) ? stops.size() + 1 : stops.size();
-        int[] times = new int[size];
+        int[] times = new int[stops.size() - 1];       // there is one more stop than travel time
         Node<Integer> node = stops.getHead();
-        int from;
-        int to;
-        // first from the station
-        to = node.getElement();
-        times[0] = BusStop.travelTimeToFromStation(to);
-
         int counter = 0;
-        while (node.hasNext()) {
+        while (true) {
+            int from = node.getElement();
             node = node.next();
-            from = to;
-            to = node.getElement();
+            int to = node.getElement();
             times[++counter] = BusStop.travelTimeToFrom(to, from);
-        }
-
-        if (closed) {
-            from = to;
-            times[++counter] = BusStop.travelTimeToStationFrom(from);
+            if (!node.hasNext())
+                break;
         }
 
         // now I have to individual travel times, from stop to stop

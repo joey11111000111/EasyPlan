@@ -99,10 +99,6 @@ public class CoreTest {
             assertTrue(false);
         } catch (NoSelectedServiceException nsse) {}
         try {
-            core.hasStops();
-            assertTrue(false);
-        } catch (NoSelectedServiceException nsse) {}
-        try {
             core.isClosed();
             assertTrue(false);
         } catch (NoSelectedServiceException nsse) {}
@@ -127,10 +123,6 @@ public class CoreTest {
             assertTrue(false);
         } catch (NoSelectedServiceException nsse) {}
         try {
-            core.isStationReachable();
-            assertTrue(false);
-        } catch (NoSelectedServiceException nsse) {}
-        try {
             core.getReachableStopIds();
             assertTrue(false);
         } catch (NoSelectedServiceException nsse) {}
@@ -148,16 +140,13 @@ public class CoreTest {
         // call all methods
         assertTrue(core.hasSelectedService());
         assertFalse(core.isModified());
-        assertFalse(core.hasStops());
         assertFalse(core.isClosed());
 
         assertFalse(core.isModified());
         assertFalse(core.isClosed());
         core.appendStop(1);
-        assertTrue(core.hasStops());
         assertTrue(core.getTravelTimes().length == 1);
         assertTrue(core.getReachableStopIds().length > 0);
-        assertTrue(core.isStationReachable());
 
         core.appendStop(4);
         assertTrue(core.canUndo());
@@ -173,27 +162,23 @@ public class CoreTest {
         assertEquals(0, core.getFirstLeaveTime().getTimeAsMinutes());
         core.setBoundaryTime(new DayTime(0, 0));
         assertEquals(0, core.getBoundaryTime().getTimeAsMinutes());
-        assertTrue(core.hasStops());
 
         assertTrue(core.getStops().length > 0);
         core.removeChainFrom(1);
-        assertFalse(core.hasStops());
 
         core.appendStop(2);
         core.appendStop(3);
         core.clearStops();
-        assertFalse(core.hasStops());
         assertTrue(core.isModified());
 
         assertTrue(core.discardChanges());
         assertFalse(core.isModified());
         core.appendStop(1);
-        assertTrue(core.hasStops());
         assertEquals(1, core.getStops()[0]);
 
         core.clearStops();
         core.appendStop(1);
-        core.closeService();
+        core.appendStop(0);
         assertTrue(core.isClosed());
         assertTrue(core.isModified());
     }
@@ -277,7 +262,7 @@ public class CoreTest {
         core.appendStop(4);
         core.appendStop(6);
         core.appendStop(4);
-        core.closeService();
+        core.appendStop(0);
         core.selectService("new service");
         assertFalse(core.isClosed());
         core.selectService("22Y");
@@ -334,7 +319,7 @@ public class CoreTest {
             core.appendStop(6);
             core.appendStop(4);
             if (i == 0)
-                core.closeService();
+                core.appendStop(0);
             try {
                 core.applyChanges();
             } catch (NameConflictException nce) {

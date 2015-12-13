@@ -20,7 +20,6 @@ public class BusService implements Serializable {
     static final String DEFAULT_NAME = "new service";
 
     private List<Integer> savedStops;
-    private boolean closed;
     private String name;
     private int timeGap;
     private DayTime firstLeaveTime;
@@ -33,14 +32,12 @@ public class BusService implements Serializable {
      * Creates a bus service filled with default values. These values are:
      *   - default name
      *   - empty stop list
-     *   - not closed
      *   - 10 minutes time gap
      *   - first leaves the station at 08:00
      *   - no bus leaves after 18:00
      */
     public BusService() {
         savedStops = new ArrayList<Integer>();
-        closed = false;
         name = DEFAULT_NAME;
         timeGap = 10;
         firstLeaveTime = new DayTime(8, 0);
@@ -57,8 +54,6 @@ public class BusService implements Serializable {
             return;
         for (Integer i : savedStops)
             currentStops.appendStop(i);
-        if (closed)
-            currentStops.closeService();
         currentStops.markAsSaved();
     }
 
@@ -92,8 +87,6 @@ public class BusService implements Serializable {
             currentStops.clear();
             for (int i : savedStops)
                 currentStops.appendStop(i);
-            if (closed)
-                currentStops.closeService();
             currentStops.markAsSaved();
             if (!restoreHappened)
                 restoreHappened = true;
@@ -106,7 +99,6 @@ public class BusService implements Serializable {
         int[] stops = currentStops.getStops();
         for (int i = 0; i < stops.length; i++)
             savedStops.add(stops[i]);
-        closed = currentStops.isClosed();
     }
 
     private void applyServiceData() {

@@ -119,7 +119,7 @@ public class Core {
         checkSelection();
         return selectedService.getTimeTable();
     }
-    // wrapper methods for the basicServiceData instance
+    // wrapper methods for the basicServiceData instance ---------------------------------
 
     /**
      * Returns the (possibly unapplied) name of the selected bus service. It can differ from the name
@@ -224,7 +224,7 @@ public class Core {
         LOGGER.info("the boundary time was set to " + time);
     }
 
-    // wrapper methods for the TouchedStops instance
+    // wrapper methods for the TouchedStops instance --------------------------
 
     /**
      * Appends the given bus stop at the end of the stop list of the selected bus service.
@@ -242,33 +242,6 @@ public class Core {
         checkSelection();
         touchedStops.appendStop(id);
         LOGGER.info("the bus stop '" + id + "' was added to the service");
-    }
-
-    /**
-     * Appends the bus station to the selected bus service as the last bus stop. Closing a
-     * bus service also means finishing it, so appending any more bus stops is
-     * not possible.
-     * @throws IllegalStateException if the bus service can not be closed, because
-     *          the bus station is not reachable from te last bus stop, or the service
-     *          is already closed
-     * @throws NoSelectedServiceException if there isn't a selected bus service
-     */
-    public void closeService() {
-        LOGGER.trace("called closeService");
-        checkSelection();
-        touchedStops.closeService();
-        LOGGER.info("the service is now closed, it ends at the station");
-    }
-
-    /**
-     * Returns true, if the stop list of the selected bus service is not empty
-     * @return true, if the stop list of the selected bus service is not empty
-     * @throws NoSelectedServiceException if there isn't a selected bus service
-     */
-    public boolean hasStops() {
-        LOGGER.trace("called hasStops");
-        checkSelection();
-        return !touchedStops.isEmpty();
     }
 
     /**
@@ -305,6 +278,28 @@ public class Core {
         LOGGER.trace("called getStops");
         checkSelection();
         return touchedStops.getStops();
+    }
+
+    /**
+     * Returns the number of touched stops of the service. It can never be less then 0,
+     * because the bus station, as the starting point is always in the list, as the first stop.
+     * @return the number of touched bus stops, included the start from the bus station
+     */
+    public int getStopCount() {
+        LOGGER.trace("called getStopCount");
+        checkSelection();
+        return touchedStops.getStopCount();
+    }
+
+    /**
+     * Returns the id of the last bus stop of the bus service. If there are no bus stops added,
+     * it returns the id of the bus station
+     * @return the id of the last bus stop in the list
+     */
+    public int getLastStop() {
+        LOGGER.trace("called getLastStop");
+        checkSelection();
+        return touchedStops.getLastStop();
     }
 
     /**
@@ -350,17 +345,6 @@ public class Core {
             LOGGER.info("the last bus stop modification operation was withdrawn");
         }
         LOGGER.debug("tried to undo, but there is nothing to undo");
-    }
-
-    /**
-     * Returns true if the bus station is reachable from the last added bus stops of the selected bus service.
-     * @return true if the bus station is reachable from the last added bus stops of the selected bus service
-     * @throws NoSelectedServiceException if there isn't a selected bus service
-     */
-    public boolean isStationReachable() {
-        LOGGER.trace("called isStationReachable");
-        checkSelection();
-        return touchedStops.isStationReachable();
     }
 
     /**
@@ -598,9 +582,8 @@ public class Core {
         LOGGER.trace("called getAllTimetables");
         Timetable[] tables = new Timetable[services.size()];
         BusService[] allServices = services.values().toArray(new BusService[0]);
-        for (int i = 0; i < tables.length; i++) {
+        for (int i = 0; i < tables.length; i++)
             tables[i] = allServices[i].getTimeTable();
-        }
         return tables;
     }
 
