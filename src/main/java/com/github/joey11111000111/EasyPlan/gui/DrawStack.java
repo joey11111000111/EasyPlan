@@ -89,7 +89,7 @@ public class DrawStack {
         // load image and create background in a different thread
         createBackground();
 
-        // bind the size of the illustrational shapes to the size of the root container
+        // bind the size of the illustration shapes to the size of the root container
         BusStopShape.radiusProperty().bind(widthProperty.divide(45)
                 .add(heightProperty.divide(40)));
         // init and fill allStops
@@ -102,6 +102,7 @@ public class DrawStack {
         showServiceData();
 
         root.getChildren().addAll(background, lines, directions, stops);
+//        root.getChildren().addAll(background, stops, lines, directions);
     }//constructor
 
     private void createBackground() {
@@ -114,12 +115,11 @@ public class DrawStack {
         bkgRect.setFill(Color.rgb(30, 30, 0));
         background.getChildren().add(bkgRect);
 
-        // load and add background image, if there is one
+        // use the background image if there is one, otherwise stick with only the rectangle
         Image bkgImage = loadImage();
-        if (bkgImage == null) {
-            System.out.println("null lett");
+        if (bkgImage == null)
             return;
-        }
+
         ImageView bkgImageView = new ImageView(bkgImage);
         bkgImageView.fitWidthProperty().bind(widthProperty);
         bkgImageView.fitHeightProperty().bind(heightProperty);
@@ -148,7 +148,6 @@ public class DrawStack {
         Group stop = shape.getRoot();
         int x = BusStop.getXCoordOf(id);
         int y = BusStop.getYCoordOf(id);
-        System.out.println("x: " + x + "\ty: " + y);
         DoubleProperty shapeXProperty = new SimpleDoubleProperty();
         DoubleProperty shapeYProperty = new SimpleDoubleProperty();
         if (id == 0) {
@@ -251,8 +250,8 @@ public class DrawStack {
     
     private void showPath() {
         int[] serviceStops = controller.getStops();
-        if (serviceStops.length > 0)
-            addLine(0, serviceStops[0]);
+//        if (serviceStops.length > 0)
+//            addLine(0, serviceStops[0]);
         for (int i = 0; i < serviceStops.length - 1; i++)
             addLine(serviceStops[i], serviceStops[i + 1]);
 
@@ -336,25 +335,10 @@ public class DrawStack {
 
     private void addStop(int id) {
         try {
-            // if the new stop is the station, than it needs to be handled differently
-            if (id == 0) {
-                controller.appendStop(0);
-                int[] stops = controller.getStops();
-                markStops();
-                addLine(stops[stops.length - 1], 0);
-                fadeInLastLine();
-                return;
-            }
-
+            int fromId = controller.getLastStop();
             controller.appendStop(id);
-            int[] stops = controller.getStops();
-            markStops();
-            int fromId;
-            if (stops.length == 1) {
-                fromId = 0;
-            } else
-                fromId = stops[stops.length - 2];
             addLine(fromId, id);
+            markStops();
             fadeInLastLine();
         } catch (RuntimeException re) {}
     }
@@ -456,21 +440,13 @@ public class DrawStack {
 
 
     private void removeStop(int id) {
-        if (id == 0) {
-            if (controller.isClosed())
-                return;
-            id = controller.getStops()[0];
-            removeStop(id);
-        }
         try {
             int stopCountBefore = controller.getStops().length;
-            int extraLine = controller.isClosed() ? 1 : 0;
             controller.removeChainFrom(id);
-            markStops();
             int stopCountAfter = controller.getStops().length;
-            fadeOutLastLines(stopCountBefore - stopCountAfter + extraLine);
-        } catch (RuntimeException re) {
-        }
+            fadeOutLastLines(stopCountBefore - stopCountAfter);
+            markStops();
+        } catch (RuntimeException re) {}
     }
     private void deleteLastLines(int lnCount) {
         int index = lines.getChildren().size() - 1;
