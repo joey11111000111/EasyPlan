@@ -188,6 +188,8 @@ public class TouchedStops {
      * any bus stops added has no effect.
      */
     public void clear() {
+        if (stops.size() == 1)
+            return;
         Node<Integer> chain;
         try {
             chain = stops.removeChainFrom(1);
@@ -289,7 +291,7 @@ public class TouchedStops {
             int from = node.getElement();
             node = node.next();
             int to = node.getElement();
-            times[++counter] = BusStop.travelTimeToFrom(to, from);
+            times[counter++] = BusStop.travelTimeToFrom(to, from);
             if (!node.hasNext())
                 break;
         }

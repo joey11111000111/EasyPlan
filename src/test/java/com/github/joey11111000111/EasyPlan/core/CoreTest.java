@@ -174,7 +174,7 @@ public class CoreTest {
         assertTrue(core.discardChanges());
         assertFalse(core.isModified());
         core.appendStop(1);
-        assertEquals(1, core.getStops()[0]);
+        assertEquals(0, core.getStops()[0]);
 
         core.clearStops();
         core.appendStop(1);

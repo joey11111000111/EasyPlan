@@ -27,22 +27,17 @@ public class TouchedStopsTest {
         assertFalse(ts.canUndo());
 
         try {
-            ts.removeChainFrom(1);
-            assertTrue(false);
-        } catch (IllegalStateException ise) {}
-        try {
             ts.undo();
             assertTrue(false);
         } catch (IllegalStateException ise) {}
 
         int[] reachableIds = ts.getReachableStopIds();
         Arrays.sort(reachableIds);
-        assertEquals(5, reachableIds.length);
-        assertEquals(0, reachableIds[0]);
-        assertEquals(1, reachableIds[1]);
-        assertEquals(2, reachableIds[2]);
-        assertEquals(4, reachableIds[3]);
-        assertEquals(6, reachableIds[4]);
+        assertEquals(4, reachableIds.length);
+        assertEquals(1, reachableIds[0]);
+        assertEquals(2, reachableIds[1]);
+        assertEquals(4, reachableIds[2]);
+        assertEquals(6, reachableIds[3]);
 
         assertEquals(1, ts.getStops().length);
     }
@@ -184,6 +179,7 @@ public class TouchedStopsTest {
         assertFalse(ts.canUndo());
         ts.markAsSaved();   // should have no effect
 
+
         ts.appendStop(1);
         ts.appendStop(4);
         ts.appendStop(6);
@@ -195,6 +191,7 @@ public class TouchedStopsTest {
         ts.appendStop(5);
         ts.removeChainFrom(5);
         ts.appendStop(0);
+
         // test "undo until there is nothing to undo"
         while (ts.canUndo())
             ts.undo();
@@ -207,23 +204,29 @@ public class TouchedStopsTest {
     @Test
     public void testTravelTimes() {
         // test a closed service
+        System.out.println("*0*");
         ts.appendStop(1);
         ts.appendStop(4);
         ts.appendStop(6);
         ts.appendStop(0);
+        System.out.println("*1*");
         int[] times = ts.getTravelTimes();
+        System.out.println("*2*");
         assertEquals(4, times.length);
         assertEquals(8, times[0]);
         assertEquals(21, times[1]);
         assertEquals(31, times[2]);
         assertEquals(43, times[3]);
+        System.out.println("*3*");
         // test an open service
         ts.undo();
+        System.out.println("*4*");
         times = ts.getTravelTimes();
         assertEquals(3, times.length);
         assertEquals(8, times[0]);
         assertEquals(21, times[1]);
         assertEquals(31, times[2]);
+        System.out.println("*5*");
 
         // test a 1-stop-sized service
         ts.clear();
@@ -231,10 +234,12 @@ public class TouchedStopsTest {
         times = ts.getTravelTimes();
         assertEquals(1, times.length);
         assertEquals(5, times[0]);
+        System.out.println("*6*");
 
         // test an empty service
         ts.clear();
         times = ts.getTravelTimes();
+        System.out.println("*7*");
         assertEquals(0, times.length);
     }
 

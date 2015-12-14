@@ -98,7 +98,7 @@ public final class BusStop implements Comparable<BusStop> {
 
     // TODO: javadoc
     public static int getStopCount() {
-        return allStops.length - 1;
+        return allStops.length;
     }
 
     /**

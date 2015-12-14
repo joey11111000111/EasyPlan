@@ -80,6 +80,7 @@ public class DrawStack {
         lines = new Group();
         directions = new Group();
         stops = new Group();
+        // commit undo if the middle mouse button is pressed
         root.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (event.getButton() == MouseButton.MIDDLE && !animating && controller.canUndo())
                 undo();
@@ -88,10 +89,11 @@ public class DrawStack {
         // load image and create background in a different thread
         createBackground();
 
-        // init and fill allStops
+        // bind the size of the illustrational shapes to the size of the root container
         BusStopShape.radiusProperty().bind(widthProperty.divide(45)
                 .add(heightProperty.divide(40)));
-        allStops = new MarkableShape[BusStop.getStopCount() + 1];   // the bus station is the +1
+        // init and fill allStops
+        allStops = new MarkableShape[BusStop.getStopCount()];
         for (int i = 0; i < allStops.length; i++) {
             allStops[i] = createStopShape(i);
             stops.getChildren().add(allStops[i].getRoot());
