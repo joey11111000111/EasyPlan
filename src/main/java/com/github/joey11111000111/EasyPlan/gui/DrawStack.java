@@ -5,6 +5,7 @@ import com.github.joey11111000111.EasyPlan.core.Core;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -148,24 +149,58 @@ public class DrawStack {
         Group stop = shape.getRoot();
         int x = BusStop.getXCoordOf(id);
         int y = BusStop.getYCoordOf(id);
-        DoubleProperty shapeXProperty = new SimpleDoubleProperty();
-        DoubleProperty shapeYProperty = new SimpleDoubleProperty();
+        DoubleBinding shapeXProperty;
+        DoubleBinding shapeYProperty;
+        // create coordinate binding for the bus station
         if (id == 0) {
-            shapeXProperty.bind(cellWidth.multiply(x).subtract(((BusStationShape)shape)
-                    .widthProperty().divide(2))
-                    .add(padding));
-            shapeYProperty.bind(cellHeight.multiply(y).subtract(((BusStationShape)shape)
-                    .heightProperty().divide(2))
-                    .add(padding));
-        } else {
-            shapeXProperty.bind(cellWidth.multiply(x)
-                    .add(cellWidth.divide(2).subtract(BusStopShape.radiusProperty()))
-                    .add(padding));
-            shapeYProperty.bind(cellHeight.multiply(y)
-                    .add(cellHeight.divide(2).subtract(BusStopShape.radiusProperty()))
-                    .add(padding));
+            shapeXProperty = new DoubleBinding() {
+                {
+                    super.bind(cellWidth, ((BusStationShape)(shape)).widthProperty());
+                }
+                @Override
+                protected double computeValue() {
+                    double cw = cellWidth.getValue();
+                    double stationWidth = ((BusStationShape)(shape)).widthProperty().getValue();
+                    return cw * x - stationWidth / 2;
+                }
+            };
+            shapeYProperty = new DoubleBinding() {
+                {
+                    super.bind(cellWidth, ((BusStationShape)(shape)).heightProperty());
+                }
+                @Override
+                protected double computeValue() {
+                    double ch = cellHeight.getValue();
+                    double stationHeight = ((BusStationShape)(shape)).heightProperty().getValue();
+                    return ch * y - stationHeight / 2;
+                }
+            };
+        } else {    // create coordinate binding for the bus stops
+            shapeXProperty = new DoubleBinding() {
+                {
+                    super.bind(cellWidth, BusStopShape.radiusProperty());
+                }
+                @Override
+                protected double computeValue() {
+                    double cw = cellWidth.getValue();
+                    double radius = BusStopShape.radiusProperty().getValue();
+                    return cw * x + cw / 2 - radius + padding;
+                }
+            };
+            shapeYProperty = new DoubleBinding() {
+                {
+                    super.bind(cellHeight, BusStopShape.radiusProperty());
+                }
+                @Override
+                protected double computeValue() {
+                    double ch = cellHeight.getValue();
+                    double radius = BusStopShape.radiusProperty().getValue();
+                    return ch * y + ch / 2 - radius + padding;
+                }
+            };
         }
 
+        // bind the current shape to the previously created coordinates
         stop.translateXProperty().bind(shapeXProperty);
         stop.translateYProperty().bind(shapeYProperty);
 
@@ -192,38 +227,10 @@ public class DrawStack {
         controller.appendStop(1);
         controller.appendStop(4);
         controller.appendStop(6);
-//        controller.appendStop(9);
-//        controller.appendStop(12);
-//        controller.appendStop(15);
-//        controller.appendStop(10);
-//        controller.appendStop(5);
-//        controller.appendStop(3);
-//        controller.appendStop(2);
-//        controller.appendStop(3);
-//        controller.appendStop(2);
-//        controller.appendStop(5);
-//        controller.appendStop(10);
-//        controller.appendStop(9);
-//        controller.appendStop(8);
-//        controller.appendStop(13);
-//        controller.appendStop(11);
-//        controller.appendStop(7);
-//        controller.appendStop(14);
-//        controller.appendStop(11);
-//        controller.appendStop(8);
-//        controller.appendStop(6);
-//        controller.appendStop(4);
-//        controller.appendStop(1);
-//        controller.appendStop(7);
-//        controller.appendStop(14);
-//        controller.appendStop(13);
-//        controller.appendStop(12);
-//        controller.appendStop(15);
 
         clear();
         markStops();
         showPath();
-        // create path - lines
     }
 
     private void clear() {
@@ -235,23 +242,22 @@ public class DrawStack {
     
     private void markStops() {
         int[] reachableIds = controller.getReachableStopIds();
-        // unmark previously marked stops
+        // mark natural all stops, including the station
         for (MarkableShape shape : allStops)
                 shape.markNeutral();
 
-        // mark new reachables and current
+        if (controller.isClosed())
+            return;
+
+        // mark new reachables
         for (int id : reachableIds)
             allStops[id].markReachable();
 
-        int[] stops = controller.getStops();
-        if (!controller.isClosed())
-            allStops[stops[stops.length - 1]].markCurrent();
+        allStops[controller.getLastStop()].markCurrent();
     }
     
     private void showPath() {
         int[] serviceStops = controller.getStops();
-//        if (serviceStops.length > 0)
-//            addLine(0, serviceStops[0]);
         for (int i = 0; i < serviceStops.length - 1; i++)
             addLine(serviceStops[i], serviceStops[i + 1]);
 
@@ -266,9 +272,29 @@ public class DrawStack {
                 .add(station.heightProperty().divide(2)));
     }
     private void bindToGridCenter(DoubleProperty xProperty, DoubleProperty yProperty, int xGrid, int yGrid) {
-        xProperty.bind(cellWidth.multiply(xGrid).add(cellWidth.divide(2)).add(padding));
-        yProperty.bind(cellHeight.multiply(yGrid).add(cellHeight.divide(2)).add(padding));
-    }
+        DoubleBinding xBind = new DoubleBinding() {
+            {
+                super.bind(cellWidth, xProperty);
+            }
+            @Override
+            protected double computeValue() {
+                double cw = cellWidth.getValue();
+                return cw * xGrid + cw / 2 + padding;
+            }
+        };
+        DoubleBinding yBind = new DoubleBinding() {
+            {
+                super.bind(cellHeight, yProperty);
+            }
+            @Override
+            protected double computeValue() {
+                double ch = cellHeight.getValue();
+                return ch * yGrid + ch / 2 + padding;
+            }
+        };
+        xProperty.bind(xBind);
+        yProperty.bind(yBind);
+    }//bindToGridCenter
 
     private void bindLineCoordinates(Line path, Line direction, int fromId, int toId) {
         int fromX = BusStop.getXCoordOf(fromId);
@@ -279,31 +305,25 @@ public class DrawStack {
         if (fromId == 0) {
             bindToStationCenter(path.startXProperty(), path.startYProperty());
             bindToStationCenter(direction.startXProperty(), direction.startYProperty());
-            bindToGridCenter(path.endXProperty(), path.endYProperty(), toX, toY);
-            bindToGridCenter(direction.endXProperty(), direction.endYProperty(), toX, toY);
-            return;
+        } else {
+            bindToGridCenter(path.startXProperty(), path.startYProperty(), fromX, fromY);
+            bindToGridCenter(direction.startXProperty(), direction.startYProperty(), fromX, fromY);
         }
         if (toId == 0) {
             bindToStationCenter(path.endXProperty(), path.endYProperty());
             bindToStationCenter(direction.endXProperty(), direction.endYProperty());
-            bindToGridCenter(path.startXProperty(), path.startYProperty(), fromX, fromY);
-            bindToGridCenter(direction.startXProperty(), direction.startYProperty(), fromX, fromY);
-            System.out.println("startX: " + path.getStartX() + "\tstartY: " + path.getStartY()
-                    + "\tendX: " + path.getEndX() + "\tendY: " + path.getEndY());
-            return;
+        } else {
+            bindToGridCenter(path.endXProperty(), path.endYProperty(), toX, toY);
+            bindToGridCenter(direction.endXProperty(), direction.endYProperty(), toX, toY);
         }
-
-        bindToGridCenter(path.startXProperty(), path.startYProperty(), fromX, fromY);
-        bindToGridCenter(path.endXProperty(), path.endYProperty(), toX, toY);
-        bindToGridCenter(direction.startXProperty(), direction.startYProperty(), fromX, fromY);
-        bindToGridCenter(direction.endXProperty(), direction.endYProperty(), toX, toY);
     }
 
-    private void addLine(int fromId, int toId) {
+    private void addLine(int fromId, int toId){
         Line path = new Line();
         Line direction = new Line();
         bindLineCoordinates(path, direction, fromId, toId);
 
+        // opacity is set to 0, so they can appear by a fade in effect
         path.setOpacity(0);
         direction.setOpacity(0);
         // create and set the gradient for the path line
@@ -340,7 +360,7 @@ public class DrawStack {
             addLine(fromId, id);
             markStops();
             fadeInLastLine();
-        } catch (RuntimeException re) {}
+        } catch (RuntimeException re) {}    // happens when the stop cannot be added, and that case is ignored
     }
 
     private void fadeInLastLine() {
@@ -388,9 +408,7 @@ public class DrawStack {
     }//fadeInLastLine
 
     private void fadeOutLastLines(int lnCount) {
-        ObservableList<Node> pathLineList = lines.getChildren();
-        ObservableList<Node> dirLineList = directions.getChildren();
-        if (pathLineList.size() < lnCount)
+        if (lines.getChildren().size() < lnCount)
             throw new IllegalArgumentException("there aren't " + lnCount + " lines");
 
         // create and play fade out animations
@@ -446,7 +464,7 @@ public class DrawStack {
             int stopCountAfter = controller.getStops().length;
             fadeOutLastLines(stopCountBefore - stopCountAfter);
             markStops();
-        } catch (RuntimeException re) {}
+        } catch (RuntimeException re) {}        // if the stop cannot be removed, and that case is ignored
     }
     private void deleteLastLines(int lnCount) {
         int index = lines.getChildren().size() - 1;
@@ -457,43 +475,28 @@ public class DrawStack {
     }
 
     private void undo() {
-         if (controller.isClosed()) {
-             controller.undo();
-             fadeOutLastLines(1);
-             markStops();
-             return;
-         }
-
         int[] stopsBefore = controller.getStops();
         controller.undo();
         int[] stopsAfter = controller.getStops();
-        System.out.println("before: " + stopsBefore.length + "\tafter: " + stopsAfter.length);
-        // if stop(s) was/were added
+        // if stop(s) was/were added by the undo operation
         if (stopsBefore.length < stopsAfter.length) {
-            // if the line from the bus stop is also missing
-            if (stopsBefore.length == 0) {
-                addLine(0, stopsAfter[0]);
-                fadeInLastLine();
-            }
-            int start = stopsBefore.length == 0 ? 1 : stopsBefore.length;
+            int start = stopsBefore.length;
             for (int i = start; i < stopsAfter.length; i++) {
                 addLine(stopsAfter[i - 1], stopsAfter[i]);
                 fadeInLastLine();
             }
             markStops();
         }
-        // if a stop was deleted
+        // if a stop was deleted by the undo operation
         else if (stopsBefore.length - stopsAfter.length == 1) {
             fadeOutLastLines(1);
             markStops();
         }
     }
-    
 
     public Group getRoot() {
         return root;
     }
-
 
 
 }//class
