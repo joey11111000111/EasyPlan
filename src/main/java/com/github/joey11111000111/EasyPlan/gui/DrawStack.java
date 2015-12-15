@@ -6,9 +6,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Group;
@@ -39,6 +37,7 @@ public class DrawStack {
     private DoubleProperty heightProperty;
     private DoubleProperty cellWidth;
     private DoubleProperty cellHeight;
+    private StringProperty stopsStringProperty;
 
     private int padding = 10;
     private Group root;
@@ -68,6 +67,8 @@ public class DrawStack {
         this.widthProperty.bind(widthProperty);
         this.heightProperty = new SimpleDoubleProperty();
         this.heightProperty.bind(heightProperty);
+
+        stopsStringProperty = new SimpleStringProperty();
 
         // init cell sizes
         cellWidth = new SimpleDoubleProperty();
@@ -359,6 +360,7 @@ public class DrawStack {
             controller.appendStop(id);
             addLine(fromId, id);
             markStops();
+            refreshStringProperty();
             fadeInLastLine();
         } catch (RuntimeException re) {}    // happens when the stop cannot be added, and that case is ignored
     }
@@ -462,7 +464,11 @@ public class DrawStack {
             int stopCountBefore = controller.getStops().length;
             controller.removeChainFrom(id);
             int stopCountAfter = controller.getStops().length;
-            fadeOutLastLines(stopCountBefore - stopCountAfter);
+            int difference = stopCountBefore - stopCountAfter;
+            if (difference > 0) {
+                refreshStringProperty();
+                fadeOutLastLines(difference);
+            }
             markStops();
         } catch (RuntimeException re) {}        // if the stop cannot be removed, and that case is ignored
     }
@@ -478,6 +484,8 @@ public class DrawStack {
         int[] stopsBefore = controller.getStops();
         controller.undo();
         int[] stopsAfter = controller.getStops();
+        if (stopsBefore.length - stopsAfter.length != 0)
+            refreshStringProperty();
         // if stop(s) was/were added by the undo operation
         if (stopsBefore.length < stopsAfter.length) {
             int start = stopsBefore.length;
@@ -494,9 +502,21 @@ public class DrawStack {
         }
     }
 
+    private void refreshStringProperty() {
+        StringBuilder sb = new StringBuilder();
+        int[] stops = controller.getStops();
+        for (int id = 0; id < stops.length - 1; id++)
+            sb.append(stops[id]).append(" => ");
+        sb.append(stops[stops.length - 1]);
+        stopsStringProperty.set(sb.toString());
+    }
+
     public Group getRoot() {
         return root;
     }
 
+    public ReadOnlyStringProperty stopsStringProperty() {
+        return stopsStringProperty;
+    }
 
 }//class

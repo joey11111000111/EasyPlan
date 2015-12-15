@@ -4,13 +4,17 @@ import com.github.joey11111000111.EasyPlan.core.Core;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,4 +58,30 @@ public class Start extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
+/*    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("EasyPlan ~ Bus Service Designer");
+        VBox root = new VBox(2);
+        root.setPadding(new Insets(5));
+        root.setAlignment(Pos.CENTER);
+        root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+        Scene scene = new Scene(root, 200, 700);
+
+        // aktuális járat jelölő
+        Text currentServiceLabel = new Text("Current Service");
+        currentServiceLabel.setFont(Font.font("IncisedBlackWide", FontWeight.NORMAL, FontPosture.REGULAR, 20));
+        currentServiceLabel.setFill(Color.rgb(150, 150, 230));
+        root.getChildren().add(currentServiceLabel);
+
+        // Járat név jelölő és az őt csomagoló hbox
+        HBox nameWrapper = new HBox();
+        nameWrapper.setBackground(new Background(new BackgroundFill(Color.WHEAT, null, null)));
+        currentServiceLabel.set
+
+
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }*/
 }//class
