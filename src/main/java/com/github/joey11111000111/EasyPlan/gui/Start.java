@@ -8,16 +8,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.*;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
 
 /**
  * Created by joey on 2015.12.07..
@@ -40,7 +48,7 @@ public class Start extends Application {
         Application.launch();
     }
 
-    @Override
+/*    @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("EasyPlan ~ Bus Service Designer");
         GridPane root = new GridPane();
@@ -57,31 +65,30 @@ public class Start extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
+    }*/
 
-/*    @Override
+    @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("EasyPlan ~ Bus Service Designer");
-        VBox root = new VBox(2);
-        root.setPadding(new Insets(5));
-        root.setAlignment(Pos.CENTER);
-        root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
-        Scene scene = new Scene(root, 200, 700);
+        GridPane gridPane = new GridPane();
+        Scene scene = new Scene(gridPane, 700, 700);
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(750);
 
-        // aktuális járat jelölő
-        Text currentServiceLabel = new Text("Current Service");
-        currentServiceLabel.setFont(Font.font("IncisedBlackWide", FontWeight.NORMAL, FontPosture.REGULAR, 20));
-        currentServiceLabel.setFill(Color.rgb(150, 150, 230));
-        root.getChildren().add(currentServiceLabel);
+        DoubleProperty widthProperty = new SimpleDoubleProperty();
+        widthProperty.bind(scene.widthProperty().multiply(2.0 / 3));
+        DrawStack drawStack = new DrawStack(widthProperty, scene.heightProperty());
+        DoubleProperty widthProperty2 = new SimpleDoubleProperty();
+        widthProperty2.bind(scene.widthProperty().multiply(1.0 / 3));
+        Pane controlPane = ControlPane.createControlPane(widthProperty2, drawStack.stopsStringProperty());
 
-        // Járat név jelölő és az őt csomagoló hbox
-        HBox nameWrapper = new HBox();
-        nameWrapper.setBackground(new Background(new BackgroundFill(Color.WHEAT, null, null)));
-        currentServiceLabel.set
+        gridPane.add(drawStack.getRoot(), 0, 0);
+        gridPane.add(controlPane, 1, 0);
 
-
+        controlPane.widthProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }*/
+    }
+
+
 }//class

@@ -506,7 +506,7 @@ public class DrawStack {
         StringBuilder sb = new StringBuilder();
         int[] stops = controller.getStops();
         for (int id = 0; id < stops.length - 1; id++)
-            sb.append(stops[id]).append(" => ");
+            sb.append(stops[id]).append(" > ");
         sb.append(stops[stops.length - 1]);
         stopsStringProperty.set(sb.toString());
     }
