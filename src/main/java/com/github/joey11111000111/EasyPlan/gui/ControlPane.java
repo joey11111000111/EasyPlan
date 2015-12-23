@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -72,11 +73,17 @@ public class ControlPane {
         comboShape1.setArcHeight(40);
         fromHour.setShape(comboShape1);
         fromHour.setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
-        ComboBox<Integer> toHour = new ComboBox<>();
-        for (int i = 0; i < 24; i++) {
-            fromHour.getItems().add(i);
-            toHour.getItems().add(i);
-        }
+
+        Spinner<Integer> toHour = new Spinner<>(0, 23, 18, 1);
+        toHour.setPrefWidth(100);
+        toHour.setEditable(true);
+//        Rectangle spinnerShape = new Rectangle(150, 40);
+//        spinnerShape.setArcWidth(40);
+//        spinnerShape.setArcHeight(40);
+        Circle spinnerShape = new Circle(60);
+        spinnerShape.setFill(Color.BLACK);
+        toHour.setShape(null);
+
         Text fromText = new Text("First leave hour: ");
         Text toText = new Text("Boundary hour:  ");
         fromText.setFill(Color.SILVER);

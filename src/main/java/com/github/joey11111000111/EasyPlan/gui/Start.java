@@ -68,7 +68,13 @@ public class Start extends Application {
     }*/
 
     @Override
+    public void init() throws Exception {
+        System.out.println("The init method has run!!!");
+    }
+
+    @Override
     public void start(Stage primaryStage) throws Exception {
+//        Application.setUserAgentStylesheet(STYLESHEET_CASPIAN);
         GridPane gridPane = new GridPane();
         Scene scene = new Scene(gridPane, 700, 700);
         primaryStage.setMinHeight(600);
