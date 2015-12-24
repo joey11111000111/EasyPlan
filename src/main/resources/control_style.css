@@ -1,0 +1,107 @@
+/* spinner --------------------------------------------------------------------------------- */
+.spinner .text-field {
+    -fx-background-color: rgba(8, 8, 0, .9);
+    -fx-text-fill: rgba(150, 200, 230, .9);
+    -fx-border-color: rgba(0, 0, 0, 1);
+}
+
+/* spinner buttons -------------------------------- */
+.spinner .increment-arrow-button {
+    -fx-background-color: rgba(0, 0, 0, .9);
+}
+
+.spinner .decrement-arrow-button {
+    -fx-background-color: rgba(0, 0, 0, .9);
+}
+
+
+/* spinner arrows --------------------------------- */
+.spinner .increment-arrow-button .increment-arrow {
+    -fx-background-color: rgba(150, 200, 230, .9);
+}
+
+.spinner .decrement-arrow-button .decrement-arrow {
+    -fx-background-color: rgba(150, 200, 230, .9);
+}
+
+
+/* combo box --------------------------------------------------------------------------------- */
+.combo-box {
+    -fx-background-color: rgba(33, 33, 26, 1);
+    -fx-border-color: rgba(0, 0, 0, 1);
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: rgba(150, 200, 230, 1);
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-background-color: rgba(150, 200, 230);
+}
+
+/* combo box pop up ------------------------------- */
+.combo-box .combo-box-popup .list-view {
+    -fx-background-color: rgba(33, 33, 26, 1);
+}
+
+.combo-box .combo-box-popup .list-view .list-cell {
+    -fx-background-color: rgba(33, 33, 26, 1);
+    -fx-text-fill: rgba(150, 200, 230);
+}
+
+.combo-box .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: rgb(0, 0, 0);
+}
+
+/* text controls ---------------------------------------------------------------------------- */
+.text-field {
+    -fx-background-color: rgba(33, 33, 26, 1);
+    -fx-text-fill: rgba(150, 200, 230, .9);
+    -fx-font-style: normal;
+    -fx-border-color: rgba(0, 0, 0, 1);
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: rgba(30, 30, 30, .6);
+}
+
+.text-area {
+    -fx-background-color: rgb(0, 0, 0);
+    -fx-text-fill: rgb(0, 0, 0);
+    -fx-text-alignment: center;
+}
+.text-area *.text {
+    -fx-text-alignment: center;
+}
+
+.explain-text {
+    -fx-font-family: Ubuntu;
+    -fx-font-size: 15;
+    -fx-font-style: italic;
+    -fx-fill: rgb(200, 200, 200);
+}
+
+.separator-text {
+    -fx-fill: rgb(254, 214, 0);
+    -fx-font-family: IncisedBlackWide;
+    -fx-font-size: 20;
+}
+
+/* button ------------------------------------------------------------------------------------ */
+.button {
+    -fx-background-color: rgba(0, 0, 0, 1);
+    -fx-text-fill: rgba(189, 189, 189, 1);
+    -fx-border-width: 1;
+    -fx-border-color: rgba(254, 214, 0, .4);
+}
+
+.button:canceled {
+    -fx-background-color: rgba(254, 214, 0, .4);
+}
+.button:default {
+    -fx-background-color: rgba(254, 0, 0, .4);
+}
+.button:armed {
+    -fx-background-color: rgba(254, 214, 0, .4);
+    -fx-text-fill: rgb(50, 214, 255);
+}

@@ -1,8 +1,10 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -44,50 +46,38 @@ public class ControlPane {
 
         // aktuális járat jelölő
         Text currentServiceLabel = new Text("Current Service");
-        currentServiceLabel.setFont(Font.font("IncisedBlackWide", FontWeight.NORMAL, FontPosture.REGULAR, 20));
-        currentServiceLabel.setFill(Color.rgb(150, 150, 230));
+        currentServiceLabel.getStyleClass().add("separator-text");
         root.getChildren().add(currentServiceLabel);
 
 
         // Járat név felirat
         Text nameLabel = new Text("Name of service");
-        nameLabel.setFont(Font.font("Monospaced", FontWeight.NORMAL, FontPosture.ITALIC, 15));
-        nameLabel.setFill(Color.SILVER);
+        nameLabel.getStyleClass().add("explain-text");
         root.getChildren().add(nameLabel);
 
         // járat név text field
         TextField serciveName = new TextField();
-        serciveName.setStyle("-fx-background-color: rgba(60, 65, 100, 0.9); " +
-                "-fx-text-fill: rgba(150, 150, 230, 0.9);");
         serciveName.setAlignment(Pos.CENTER);
-        serciveName.setPromptText("Name of service");
         root.getChildren().add(serciveName);
 
         HBox fromBox = new HBox(2);
         HBox toBox = new HBox(2);
         fromBox.setAlignment(Pos.CENTER_LEFT);
         toBox.setAlignment(Pos.CENTER_LEFT);
-        ComboBox<Integer> fromHour = new ComboBox<>();
-        Rectangle comboShape1 = new Rectangle(100, 40);
-        comboShape1.setArcWidth(40);
-        comboShape1.setArcHeight(40);
-        fromHour.setShape(comboShape1);
-        fromHour.setBackground(new Background(new BackgroundFill(Color.SILVER, null, null)));
+        Spinner<Integer> fromHour = new Spinner<>(0, 23, 6);
+        fromHour.setPrefWidth(100);
 
         Spinner<Integer> toHour = new Spinner<>(0, 23, 18, 1);
         toHour.setPrefWidth(100);
         toHour.setEditable(true);
-//        Rectangle spinnerShape = new Rectangle(150, 40);
-//        spinnerShape.setArcWidth(40);
-//        spinnerShape.setArcHeight(40);
         Circle spinnerShape = new Circle(60);
         spinnerShape.setFill(Color.BLACK);
         toHour.setShape(null);
 
         Text fromText = new Text("First leave hour: ");
+        fromText.getStyleClass().add("explain-text");
         Text toText = new Text("Boundary hour:  ");
-        fromText.setFill(Color.SILVER);
-        toText.setFill(Color.SILVER);
+        toText.getStyleClass().add("explain-text");
         fromBox.getChildren().addAll(fromText, fromHour);
         toBox.getChildren().addAll(toText, toHour);
         root.getChildren().addAll(fromBox, toBox);
@@ -96,7 +86,7 @@ public class ControlPane {
         HBox timeGapBox = new HBox(2);
         timeGapBox.setAlignment(Pos.CENTER_LEFT);
         Text timeGapText = new Text("Minutes between two buses: ");
-        timeGapText.setFill(Color.SILVER);
+        timeGapText.getStyleClass().add("explain-text");
         TextField timeGapField = new TextField();
         timeGapBox.getChildren().addAll(timeGapText, timeGapField);
         root.getChildren().add(timeGapBox);
@@ -104,28 +94,23 @@ public class ControlPane {
 
         HBox stopsLabelBox = new HBox();
         stopsLabelBox.setAlignment(Pos.CENTER);
-        Text stopsLabel = new Text("Stop of service:");
-        stopsLabel.setFill(Color.SILVER);
+        Text stopsLabel = new Text("Stops of service:");
+        stopsLabel.getStyleClass().add("explain-text");
         stopsLabelBox.getChildren().add(stopsLabel);
         root.getChildren().add(stopsLabelBox);
 
         TextArea stopsArea = new TextArea();
+        stopsArea.setPrefHeight(100);
         stopsArea.setEditable(false);
 
-        Label stops = new Label();
-        stops.setPrefHeight(100);
-        stops.setAlignment(Pos.TOP_LEFT);
-        stops.setBackground(new Background(new BackgroundFill(Color.DARKOLIVEGREEN, null, null)));
         stopsText.addListener((observable, oldValue, newValue) -> {
+            int maxLine = (int)stopsArea.getWidth() / 8;
             StringBuilder sb = new StringBuilder(newValue);
-            for (int i = 24; i < newValue.length(); i += 25) {
+            for (int i = maxLine - 1; i < newValue.length(); i += maxLine) {
                 sb.insert(i, "\n");
             }
-            stops.setText(sb.toString());
             stopsArea.setText(sb.toString());
         });
-        stops.setTextFill(Color.SILVER);
-//        root.getChildren().add(stops);
         root.getChildren().add(stopsArea);
 
         Rectangle rectangle4 = new Rectangle();
@@ -143,15 +128,18 @@ public class ControlPane {
 
         // All services -------------------
         Text allServiceLabel = new Text("All services");
-        allServiceLabel.setFont(Font.font("IncisedBlackWide", FontWeight.NORMAL, FontPosture.REGULAR, 20));
-        allServiceLabel.setFill(Color.rgb(150, 150, 230));
+        allServiceLabel.getStyleClass().add("separator-text");
         root.getChildren().add(allServiceLabel);
 
         HBox selectServiceBox = new HBox(2);
         selectServiceBox.setAlignment(Pos.CENTER_LEFT);
         Text selectLabel = new Text("Select service: ");
-        selectLabel.setFill(Color.SILVER);
+        selectLabel.getStyleClass().add("explain-text");
         ComboBox<String> selectBox = new ComboBox<>();
+        Rectangle comboShape1 = new Rectangle(100, 40);
+        comboShape1.setArcWidth(40);
+        comboShape1.setArcHeight(40);
+        selectBox.setShape(comboShape1);
         selectBox.getItems().addAll("22Y", "24", "24A", "4", "8", "Tesco");
         selectServiceBox.getChildren().addAll(selectLabel, selectBox);
         root.getChildren().add(selectServiceBox);
@@ -182,6 +170,11 @@ public class ControlPane {
         root.getChildren().add(deleteServiceButton);
 
 
+
+        Text othersText = new Text("Other");
+        othersText.getStyleClass().add("separator-text");
+        root.getChildren().add(othersText);
+
         Rectangle rectangle2 = new Rectangle();
         rectangle2.setArcWidth(50);
         rectangle2.setArcHeight(50);
@@ -193,6 +186,20 @@ public class ControlPane {
         timeTableButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
         timeTableButton.setShape(rectangle2);
         root.getChildren().add(timeTableButton);
+
+
+        Rectangle rectangle3 = new Rectangle();
+        rectangle3.setArcWidth(50);
+        rectangle3.setArcHeight(50);
+        rectangle3.widthProperty().bind(root.widthProperty().subtract(10));
+        rectangle3.setHeight(40);
+        Button exitButton = new Button("Exit");
+        exitButton.maxWidthProperty().bind(root.widthProperty().subtract(15));
+        exitButton.minWidthProperty().bind(root.widthProperty().subtract(15));
+        exitButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
+        exitButton.setShape(rectangle3);
+        exitButton.setOnAction(event -> Platform.exit());
+        root.getChildren().add(exitButton);
 
         return root;
     }

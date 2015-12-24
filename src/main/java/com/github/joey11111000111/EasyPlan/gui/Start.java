@@ -1,5 +1,6 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
+import com.github.joey11111000111.EasyPlan.EasyPlan;
 import com.github.joey11111000111.EasyPlan.core.Core;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
@@ -74,11 +75,20 @@ public class Start extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-//        Application.setUserAgentStylesheet(STYLESHEET_CASPIAN);
         GridPane gridPane = new GridPane();
         Scene scene = new Scene(gridPane, 700, 700);
+        try {
+            scene.getStylesheets().add(
+                    Start.class.getClassLoader().getResource("control_style.css").toExternalForm());
+        } catch (NullPointerException npe) {
+            System.err.println("nem sikerült betölteni a css-t");
+        }
         primaryStage.setMinHeight(600);
-        primaryStage.setMinWidth(750);
+        primaryStage.setMinWidth(770);
+
+
+        for (String family: Font.getFamilies())
+            System.out.println(family);
 
         DoubleProperty widthProperty = new SimpleDoubleProperty();
         widthProperty.bind(scene.widthProperty().multiply(2.0 / 3));
