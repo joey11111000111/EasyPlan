@@ -49,34 +49,11 @@ public class Start extends Application {
         Application.launch();
     }
 
-/*    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("EasyPlan ~ Bus Service Designer");
-        GridPane root = new GridPane();
-        root.setBackground(new Background(new BackgroundFill(Color.LIGHTBLUE, null, null)));
-        ColumnConstraints c1 = new ColumnConstraints();
-
-        Scene scene = new Scene(root, 700, 700, Color.GAINSBORO);
-
-        DoubleProperty widthProperty = new SimpleDoubleProperty();
-        widthProperty.bind(scene.widthProperty().divide(2));
-
-        DrawStack drawStack = new DrawStack(scene.widthProperty(), scene.heightProperty());
-        root.add(drawStack.getRoot(), 0, 0);
-
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }*/
-
-    @Override
-    public void init() throws Exception {
-        System.out.println("The init method has run!!!");
-    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         GridPane gridPane = new GridPane();
-        Scene scene = new Scene(gridPane, 700, 700);
+        Scene scene = new Scene(gridPane, 770, 700);
         try {
             scene.getStylesheets().add(
                     Start.class.getClassLoader().getResource("control_style.css").toExternalForm());
@@ -87,20 +64,17 @@ public class Start extends Application {
         primaryStage.setMinWidth(770);
 
 
-        for (String family: Font.getFamilies())
-            System.out.println(family);
-
         DoubleProperty widthProperty = new SimpleDoubleProperty();
         widthProperty.bind(scene.widthProperty().multiply(2.0 / 3));
         DrawStack drawStack = new DrawStack(widthProperty, scene.heightProperty());
         DoubleProperty widthProperty2 = new SimpleDoubleProperty();
         widthProperty2.bind(scene.widthProperty().multiply(1.0 / 3));
-        Pane controlPane = ControlPane.createControlPane(widthProperty2, drawStack.stopsStringProperty());
+        ControlPane controlPane = new ControlPane(widthProperty2, drawStack.stopsStringProperty());
+//        Pane controlPane = ControlPane.createControlPane(widthProperty2, drawStack.stopsStringProperty());
 
         gridPane.add(drawStack.getRoot(), 0, 0);
-        gridPane.add(controlPane, 1, 0);
+        gridPane.add(controlPane.getRoot(), 1, 0);
 
-        controlPane.widthProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
 
         primaryStage.setScene(scene);
         primaryStage.show();

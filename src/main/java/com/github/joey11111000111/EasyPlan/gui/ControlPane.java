@@ -1,7 +1,10 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
+import com.github.joey11111000111.EasyPlan.core.Core;
+import com.github.joey11111000111.EasyPlan.util.DayTime;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -25,6 +28,198 @@ import java.util.logging.FileHandler;
  * Created by joey on 2015.12.17..
  */
 public class ControlPane {
+
+    Core controller;
+    private VBox root;
+    // all the ui controls that need to be wired up later, in the order of appearance from the top
+    TextField nameField;
+    Spinner<Integer> fromHourSpinner;
+    Spinner<Integer> fromMinuteSpinner;
+    Spinner<Integer> toHourSpinner;
+    Spinner<Integer> toMinuteSpinner;
+    Spinner<Integer> timeGapSpinner;
+    TextArea stopsArea;
+    Button applyButton;
+    ComboBox<String> serviceComboBox;
+    Button addNewButton;
+    Button deleteButton;
+    Button timetableButton;
+    Button exitButton;
+
+    private enum TextType {SEPARATOR, EXPLAIN}
+
+    public ControlPane(ReadOnlyDoubleProperty widthProperty, ReadOnlyStringProperty stopsStringProperty) {
+        // if there is no service, create a new one, or if no service is selected, select the first
+        controller = Start.getController();
+
+        initTopPane(widthProperty);
+
+        // Current service part ------------------------------------------------
+        root.getChildren().add(createText(TextType.SEPARATOR, "Current Service"));
+        root.getChildren().add(createText(TextType.EXPLAIN, "Name of Service"));
+
+        nameField = new TextField();
+        nameField.setText(controller.getName());
+        nameField.setAlignment(Pos.CENTER);
+        root.getChildren().add(nameField);
+
+        // spinners
+        Text firstLeaveText = createText(TextType.EXPLAIN, "First leave time");
+        firstLeaveText.setUnderline(true);
+        Text boundaryText = createText(TextType.EXPLAIN, "Boundary time");
+        boundaryText.setUnderline(true);
+        HBox fromBox = createLeaveTimeRow(controller.getFirstLeaveTime(), fromHourSpinner, fromMinuteSpinner);
+        HBox toBox = createLeaveTimeRow(controller.getBoundaryTime(), toHourSpinner, toMinuteSpinner);
+        HBox gapBox = new HBox(2);
+        gapBox.setAlignment(Pos.CENTER_LEFT);
+        gapBox.getChildren().add(createText(TextType.EXPLAIN, "Minutes between buses:"));
+        timeGapSpinner = createSpinner(1, 23 * 60 + 59, controller.getTimeGap());
+        gapBox.getChildren().add(timeGapSpinner);
+
+        root.getChildren().addAll(firstLeaveText, fromBox, boundaryText, toBox, gapBox);
+
+        // show touched stops
+        Text stopsText = createText(TextType.EXPLAIN, "Stops of service");
+        stopsArea = new TextArea();
+        stopsArea.setPrefHeight(100);
+        stopsArea.setEditable(false);
+
+        stopsStringProperty.addListener((observable, oldValue, newValue) -> refreshStopsString(newValue));
+        widthProperty.addListener((observable, oldValue, newValue) -> refreshStopsString(stopsStringProperty.getValue()));
+        refreshStopsString(stopsStringProperty.getValue());
+        root.getChildren().addAll(stopsText, stopsArea);
+
+        // apply changes button
+        applyButton = createRoundedButton("Apply changes", widthProperty);
+        root.getChildren().add(applyButton);
+
+        // All services part ---------------------------------------------
+        Region firstSpacer = new Region();
+        VBox.setVgrow(firstSpacer, Priority.ALWAYS);
+        root.getChildren().add(firstSpacer);
+        root.getChildren().add(createText(TextType.SEPARATOR, "All Services"));
+
+        // the row of the service selector
+        HBox selectBox = new HBox(2);
+        selectBox.setAlignment(Pos.CENTER);
+        selectBox.getChildren().add(createText(TextType.EXPLAIN, "Select service:"));
+        serviceComboBox = createRoundedComboBox();
+        serviceComboBox.getItems().addAll(controller.getServiceNames());
+        serviceComboBox.setValue(controller.getName());
+        selectBox.getChildren().add(serviceComboBox);
+
+        addNewButton = createRoundedButton("Add new service", widthProperty);
+        deleteButton = createRoundedButton("Delete current service", widthProperty);
+        root.getChildren().addAll(selectBox, addNewButton, deleteButton);
+
+        // Other part -----------------------------------------------------
+        Region secondSpacer = new Region();
+        VBox.setVgrow(secondSpacer, Priority.ALWAYS);
+        root.getChildren().add(secondSpacer);
+        root.getChildren().add(createText(TextType.SEPARATOR, "Other"));
+        timetableButton = createRoundedButton("Show timetable", widthProperty);
+        exitButton = createRoundedButton("Exit", widthProperty);
+        root.getChildren().addAll(timetableButton, exitButton);
+
+        wireUpUiControls();
+
+    }//constructor
+
+    private void wireUpUiControls() {
+        // TODO
+    }
+
+    public Pane getRoot() {
+        return root;
+    }
+
+    private void refreshStopsString(String newValue) {
+        int maxLine = (int)root.getPrefWidth() / 8;
+        String ln = System.getProperty("line.separator");
+        StringBuilder sb = new StringBuilder(newValue);
+        for (int i = maxLine - 1; i < newValue.length(); i += maxLine)
+            sb.insert(i, ln);
+        stopsArea.setText(sb.toString());
+    }
+
+    private HBox createLeaveTimeRow(DayTime time, Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner) {
+        hourSpinner = createSpinner(0, 23, time.getHours());
+        minuteSpinner = createSpinner(0, 59, time.getMinutes());
+        Text hourText = createText(TextType.EXPLAIN, "hour: ");
+        Text minuteText = createText(TextType.EXPLAIN, "minute: ");
+
+
+        HBox row = new HBox(2);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        row.setAlignment(Pos.CENTER);
+        row.getChildren().addAll(hourText, hourSpinner, spacer, minuteText, minuteSpinner);
+        return row;
+    }
+
+    private void initTopPane(ReadOnlyDoubleProperty widthProperty) {
+        // create top pane and set its width, padding and alignment
+        root = new VBox(5);
+        root.prefWidthProperty().bind(widthProperty);
+        root.minWidthProperty().bind(widthProperty);
+        root.maxWidthProperty().bind(widthProperty);
+        root.setPadding(new Insets(5));
+        root.setAlignment(Pos.TOP_CENTER);
+        // set background of the root container
+        LinearGradient bgkGrad = new LinearGradient(
+                0, 0,
+                0, 700,
+                false,
+                CycleMethod.NO_CYCLE,
+                new Stop(.1, Color.rgb(50, 50, 30)),
+                new Stop(1, Color.rgb(50, 50, 15))
+        );
+        root.setBackground(new Background(new BackgroundFill(bgkGrad, null, null)));
+    }
+
+    private Button createRoundedButton(String text, ReadOnlyDoubleProperty widthProperty) {
+        int padding = 15;
+        Rectangle buttonShape = new Rectangle();
+        buttonShape.setArcWidth(50);
+        buttonShape.setArcHeight(50);
+        buttonShape.setHeight(40);
+        buttonShape.widthProperty().bind(widthProperty.subtract(padding));
+
+        Button button = new Button(text);
+        button.maxWidthProperty().bind(buttonShape.widthProperty());
+        button.minWidthProperty().bind(buttonShape.widthProperty());
+        button.prefWidthProperty().bind(buttonShape.widthProperty());
+        button.setShape(buttonShape);
+        return button;
+    }
+
+    private ComboBox<String> createRoundedComboBox() {
+        Rectangle comboShape = new Rectangle(150, 40);
+        comboShape.setArcWidth(40);
+        comboShape.setArcHeight(40);
+
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.setShape(comboShape);
+        return comboBox;
+    }
+
+    private Spinner<Integer> createSpinner(int min, int max, int initValue) {
+        Spinner<Integer> spinner = new Spinner<>(min, max, initValue);
+        spinner.setPrefWidth(100);
+        spinner.setEditable(true);
+        return spinner;
+    }
+
+    private Text createText(TextType type, String info) {
+        Text text = new Text(info);
+        if (type == TextType.EXPLAIN)
+            text.getStyleClass().add("explain-text");
+        else
+            text.getStyleClass().add("separator-text");
+        return text;
+    }
+
+
 
     public static Pane createControlPane(DoubleProperty widthProperty, ReadOnlyStringProperty stopsText) {
         VBox root = new VBox(5);

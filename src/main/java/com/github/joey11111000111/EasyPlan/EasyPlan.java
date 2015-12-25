@@ -7,6 +7,12 @@ public class EasyPlan {
 
     public static void main(String[] args) {
         Core controller = new Core();
+        if (controller.getServiceCount() == 0)
+            controller.createNewService();
+        else if (!controller.hasSelectedService())
+            controller.selectService(controller.getServiceNames()[0]);
+        controller.appendStop(1);
+        controller.appendStop(4);
         Start.setController(controller);
         Start.start();
     }

@@ -104,7 +104,6 @@ public class DrawStack {
         showServiceData();
 
         root.getChildren().addAll(background, lines, directions, stops);
-//        root.getChildren().addAll(background, stops, lines, directions);
     }//constructor
 
     private void createBackground() {
@@ -222,16 +221,13 @@ public class DrawStack {
     }
 
     public void showServiceData() {
-//        if (!controller.hasSelectedService())
-//            return;
-        controller.createNewService();
-        controller.appendStop(1);
-        controller.appendStop(4);
-        controller.appendStop(6);
-
         clear();
+        if (!controller.hasSelectedService())
+            return;
+
         markStops();
         showPath();
+        refreshStringProperty();
     }
 
     private void clear() {
