@@ -67,10 +67,12 @@ public class Start extends Application {
         DoubleProperty widthProperty = new SimpleDoubleProperty();
         widthProperty.bind(scene.widthProperty().multiply(2.0 / 3));
         DrawStack drawStack = new DrawStack(widthProperty, scene.heightProperty());
+
         DoubleProperty widthProperty2 = new SimpleDoubleProperty();
         widthProperty2.bind(scene.widthProperty().multiply(1.0 / 3));
         ControlPane controlPane = new ControlPane(widthProperty2, drawStack.stopsStringProperty());
-//        Pane controlPane = ControlPane.createControlPane(widthProperty2, drawStack.stopsStringProperty());
+        controlPane.addServiceChangeProperty(drawStack.serviceChangeProperty());
+        controlPane.addTimetableHandler(event -> switchToTimetable());
 
         gridPane.add(drawStack.getRoot(), 0, 0);
         gridPane.add(controlPane.getRoot(), 1, 0);
@@ -80,5 +82,12 @@ public class Start extends Application {
         primaryStage.show();
     }
 
+    private void switchToTimetable() {
+        System.err.println("meg lett hívva a kellő metódus");
+    }
+
+    private void switchToEditor() {
+        System.err.println("meg lett hívva az editorra váltás");
+    }
 
 }//class

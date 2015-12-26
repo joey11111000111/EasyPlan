@@ -38,6 +38,7 @@ public class DrawStack {
     private DoubleProperty cellWidth;
     private DoubleProperty cellHeight;
     private StringProperty stopsStringProperty;
+    private BooleanProperty serviceChangeProperty;
 
     private int padding = 10;
     private Group root;
@@ -49,6 +50,7 @@ public class DrawStack {
     private MarkableShape[] allStops;
     private Core controller;
     private boolean animating;
+    private Thread fadeInAllThread;
     
     // Colors
     private static Color PATH_START = Color.rgb(254, 214, 0, .9);
@@ -69,6 +71,8 @@ public class DrawStack {
         this.heightProperty.bind(heightProperty);
 
         stopsStringProperty = new SimpleStringProperty();
+        serviceChangeProperty = new SimpleBooleanProperty();
+        serviceChangeProperty.addListener((observable, oldValue, newValue) -> showServiceData());
 
         // init cell sizes
         cellWidth = new SimpleDoubleProperty();
@@ -231,6 +235,10 @@ public class DrawStack {
     }
 
     private void clear() {
+        // if there is already an ongoing "fadeInAllLines" animation thread, then interrupt it
+        if (fadeInAllThread != null && fadeInAllThread.isAlive())
+            fadeInAllThread.interrupt();
+
         lines.getChildren().clear();
         directions.getChildren().clear();
         for (MarkableShape shape : allStops)
@@ -372,18 +380,22 @@ public class DrawStack {
         Task fadeInTask = new Task() {
             @Override
             protected Object call() throws Exception {
-                animating = true;
-                for (int id = 0; id < lines.getChildren().size(); id++) {
-                    createFadeInTransition(id).play();
-                    Thread.sleep(300);
+                try {
+                    animating = true;
+                    for (int id = 0; id < lines.getChildren().size(); id++) {
+                        createFadeInTransition(id).play();
+                        Thread.sleep(300);
+                    }
+                    animating = false;
+                    return true;
+                } catch (InterruptedException e) {
+                    return false;
                 }
-                animating = false;
-                return true;
             }
         };
-        Thread fadeInThread = new Thread(fadeInTask);
-        fadeInThread.setDaemon(true);
-        fadeInThread.start();
+        fadeInAllThread = new Thread(fadeInTask);
+        fadeInAllThread.setDaemon(true);
+        fadeInAllThread.start();
     }
 
     private Transition createFadeInTransition(int lineIndex) {
@@ -515,4 +527,7 @@ public class DrawStack {
         return stopsStringProperty;
     }
 
+    public BooleanProperty serviceChangeProperty() {
+        return serviceChangeProperty;
+    }
 }//class

@@ -196,7 +196,19 @@ public class Core {
         LOGGER.trace("called setFirstLeaveTime with time: " + time);
         checkSelection();
         basicData.setFirstLeaveTime(time);
-        LOGGER.info("the first leave time of was set to " + time);
+        LOGGER.info("the first leave time was set to " + time);
+    }
+    public void setFirstLeaveHour(int hour) {
+        LOGGER.trace("called setFirstLeaveHour with hour: " + hour);
+        checkSelection();
+        basicData.setFirstLeaveHour(hour);
+        LOGGER.info("the first leave hour was set to: " + hour);
+    }
+    public void setFirstLeaveMinute(int minute) {
+        LOGGER.trace("called setFirstLeaveMinute with minute: " + minute);
+        checkSelection();
+        basicData.setFirstLeaveMinutes(minute);
+        LOGGER.info("the first leave minute was set to: " + minute);
     }
 
     /**
@@ -222,6 +234,18 @@ public class Core {
         checkSelection();
         basicData.setBoundaryTime(time);
         LOGGER.info("the boundary time was set to " + time);
+    }
+    public void setBoundaryHour(int hour) {
+        LOGGER.trace("called setBoundaryHour with hour: " + hour);
+        checkSelection();
+        basicData.setBoundaryHours(hour);
+        LOGGER.info("the boundary hour was set to " + hour);
+    }
+    public void setBoundaryMinute(int minute) {
+        LOGGER.trace("called setBoundaryMinute with minute: " + minute);
+        checkSelection();
+        basicData.setBoundaryMinutes(minute);
+        LOGGER.info("the boundary minute was set to " + minute);
     }
 
     // wrapper methods for the TouchedStops instance --------------------------
@@ -467,19 +491,21 @@ public class Core {
      * and since all applied service names must be unique, it is not possible to create more new bus services
      * without modifying the name of the previous bus services.
      * Trying to do it has no effect.
+     * @return true, if a new service was created
      */
     public void createNewService() {
         LOGGER.trace("called createNewService");
-        // if there already is a service with the default service name then do nothing
-        if (services.containsKey(BusService.DEFAULT_NAME)) {
-            LOGGER.warn("there is already one '" + BusService.DEFAULT_NAME + "', cannot add another now");
-            return;
-        }
 
         BusService newService = new BusService();
+        StringBuilder sb = new StringBuilder(newService.getCurrentServiceData().getName());
+        while (services.containsKey(sb.toString()))
+            sb.append('*');
+        newService.getCurrentServiceData().setName(sb.toString());
+        newService.applyChanges();
         services.put(newService.getAppliedName(), newService);
+        LOGGER.info("added a new bus service");
         setSelectedService(newService);
-        LOGGER.info("added and selected a new bus service");
+        saved = false;
     }
 
     /**
@@ -487,21 +513,36 @@ public class Core {
      * After deletion, the null service is selected.
      * Does nothing when there isn't a selected service.
      */
-    public void deleteSelectedService() {
+    public boolean deleteSelectedService() {
         LOGGER.trace("called deleteSelectedService");
         if (!hasSelectedService()) {
             LOGGER.warn("there isn't a selected service to delete");
-            return;
+            return false;
         }
 
         String name = selectedService.getAppliedName();
         if (services.remove(name) != null)
-            LOGGER.info("removed the bus service '" + name
-                    + "' and selecting the 'null service'");
-        else
+            LOGGER.info("removed the bus service '" + name + "'");
+        else {
             LOGGER.warn("could not remove the bus service '" + name + "'");
+            return false;
+        }
 
         setSelectedService(null);
+        saved = false;
+        return true;
+    }
+
+    public boolean deleteService(String name) {
+        LOGGER.trace("called deleteService");
+        if (!services.containsKey(name))
+            return false;
+        if (getName().equals(name))
+            return deleteSelectedService();
+        services.remove(name);
+        saved = false;
+        LOGGER.info("removed the bus service '" + name + "'");
+        return true;
     }
 
     /**
@@ -517,10 +558,8 @@ public class Core {
             throw new NullPointerException("the name of the selected service cannot be null");
         }
         if (hasSelectedService())
-            if (name.equals(selectedService.getAppliedName())) {
-                LOGGER.debug("the new selected service is the same as the currently selected service");
+            if (name.equals(selectedService.getAppliedName()))
                 return;
-            }
 
         if (!services.containsKey(name)) {
             LOGGER.warn("a bus service with the given name '" + name + "' doesn't exist");

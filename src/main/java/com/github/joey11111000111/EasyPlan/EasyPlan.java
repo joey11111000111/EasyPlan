@@ -11,8 +11,6 @@ public class EasyPlan {
             controller.createNewService();
         else if (!controller.hasSelectedService())
             controller.selectService(controller.getServiceNames()[0]);
-        controller.appendStop(1);
-        controller.appendStop(4);
         Start.setController(controller);
         Start.start();
     }

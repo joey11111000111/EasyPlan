@@ -1,13 +1,16 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
 import com.github.joey11111000111.EasyPlan.core.Core;
+import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
 import com.github.joey11111000111.EasyPlan.util.DayTime;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -15,14 +18,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-
-import java.util.logging.FileHandler;
 
 /**
  * Created by joey on 2015.12.17..
@@ -32,19 +29,21 @@ public class ControlPane {
     Core controller;
     private VBox root;
     // all the ui controls that need to be wired up later, in the order of appearance from the top
-    TextField nameField;
-    Spinner<Integer> fromHourSpinner;
-    Spinner<Integer> fromMinuteSpinner;
-    Spinner<Integer> toHourSpinner;
-    Spinner<Integer> toMinuteSpinner;
-    Spinner<Integer> timeGapSpinner;
-    TextArea stopsArea;
-    Button applyButton;
-    ComboBox<String> serviceComboBox;
-    Button addNewButton;
-    Button deleteButton;
-    Button timetableButton;
-    Button exitButton;
+    private TextField nameField;
+    private Spinner<Integer> fromHourSpinner;
+    private Spinner<Integer> fromMinuteSpinner;
+    private Spinner<Integer> toHourSpinner;
+    private Spinner<Integer> toMinuteSpinner;
+    private Spinner<Integer> timeGapSpinner;
+    private TextArea stopsArea;
+    private Button applyButton;
+    private ComboBox<String> serviceComboBox;
+    private Button addNewButton;
+    private Button deleteButton;
+    private Button timetableButton;
+    private Button exitButton;
+
+    private BooleanProperty serviceChangeProperty;
 
     private enum TextType {SEPARATOR, EXPLAIN}
 
@@ -68,11 +67,11 @@ public class ControlPane {
         firstLeaveText.setUnderline(true);
         Text boundaryText = createText(TextType.EXPLAIN, "Boundary time");
         boundaryText.setUnderline(true);
-        HBox fromBox = createLeaveTimeRow(controller.getFirstLeaveTime(), fromHourSpinner, fromMinuteSpinner);
-        HBox toBox = createLeaveTimeRow(controller.getBoundaryTime(), toHourSpinner, toMinuteSpinner);
+        HBox fromBox = createLeaveTimeRow(controller.getFirstLeaveTime(), "from");
+        HBox toBox = createLeaveTimeRow(controller.getBoundaryTime(), "to");
         HBox gapBox = new HBox(2);
         gapBox.setAlignment(Pos.CENTER_LEFT);
-        gapBox.getChildren().add(createText(TextType.EXPLAIN, "Minutes between buses:"));
+        gapBox.getChildren().add(createText(TextType.EXPLAIN, "Minutes between buses: "));
         timeGapSpinner = createSpinner(1, 23 * 60 + 59, controller.getTimeGap());
         gapBox.getChildren().add(timeGapSpinner);
 
@@ -126,7 +125,114 @@ public class ControlPane {
     }//constructor
 
     private void wireUpUiControls() {
-        // TODO
+        nameField.setOnAction(event -> controller.setName(nameField.getText().trim()));
+
+        // spinners
+        fromHourSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                controller.setFirstLeaveHour(newValue));
+        fromMinuteSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                controller.setFirstLeaveMinute(newValue));
+        toHourSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                controller.setBoundaryHour(newValue));
+        toMinuteSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                controller.setBoundaryMinute(newValue));
+        timeGapSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                controller.setTimeGap(newValue));
+
+        applyButton.setOnAction(event -> applyChanges());
+        serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            controller.selectService(newValue);
+            for (String name : controller.getServiceNames())
+                if (name.equals(oldValue)) {
+                    showService();
+                    return;
+                }
+        });
+
+        addNewButton.setOnAction(event -> {
+            controller.createNewService();
+            String newServiceName = controller.getName();
+            serviceComboBox.getItems().add(newServiceName);
+            serviceComboBox.setValue(newServiceName);
+        });
+        deleteButton.setOnAction(event -> {
+            String deleteName = controller.getName();
+            if (controller.getServiceCount() == 1)
+                addNewButton.fire();
+            else {
+                String[] names = controller.getServiceNames();
+                if (names[0].equals(deleteName))
+                    serviceComboBox.setValue(names[1]);
+                else
+                    serviceComboBox.setValue(names[0]);
+            }
+            controller.deleteService(deleteName);
+            serviceComboBox.getItems().remove(deleteName);
+        });
+
+
+
+        exitButton.setOnAction(event -> {
+            if (!controller.isSaved())
+                controller.saveServices();
+            Platform.exit();
+        });
+
+
+    }
+
+    private void showService() {
+        if (serviceChangeProperty != null)
+            serviceChangeProperty.set(!serviceChangeProperty.get());
+        String name = controller.getName();
+        nameField.setText(name);
+        serviceComboBox.setValue(name);
+        // spinners
+        DayTime firstLeaveTime = controller.getFirstLeaveTime();
+        DayTime boundaryTime = controller.getBoundaryTime();
+        fromHourSpinner.getValueFactory().setValue(firstLeaveTime.getHours());
+        fromMinuteSpinner.getValueFactory().setValue(firstLeaveTime.getMinutes());
+        toHourSpinner.getValueFactory().setValue(boundaryTime.getHours());
+        toMinuteSpinner.getValueFactory().setValue(boundaryTime.getMinutes());
+        timeGapSpinner.getValueFactory().setValue(controller.getTimeGap());
+    }
+
+    private void applyChanges() {
+        try {
+            controller.applyChanges();
+            // if the name was changed, that the service chooser combo box must change too
+            String newName = controller.getName();
+            String oldName = serviceComboBox.getValue();
+            System.out.println("old name: " + oldName + "\tnew name: " + newName);
+            if (!oldName.equals(newName)) {
+                serviceComboBox.getItems().add(newName);
+                serviceComboBox.setValue(newName);
+                serviceComboBox.getItems().remove(oldName);
+            }
+        } catch (NameConflictException nce) {
+            // set the background of the name text field to red for 3 seconds
+            nameField.getStyleClass().add("error-field");
+            Task<Void> sleeper = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ie) {
+                    }
+
+                    return null;
+                }
+            };
+            sleeper.setOnSucceeded(event -> {
+                if (nameField.getStyleClass().contains("error-field"))
+                    nameField.getStyleClass().remove("error-field");
+                System.err.println("lefutott");
+            });
+
+            Thread thd = new Thread(sleeper);
+            thd.setDaemon(true);
+            thd.start();
+        }
     }
 
     public Pane getRoot() {
@@ -142,12 +248,21 @@ public class ControlPane {
         stopsArea.setText(sb.toString());
     }
 
-    private HBox createLeaveTimeRow(DayTime time, Spinner<Integer> hourSpinner, Spinner<Integer> minuteSpinner) {
-        hourSpinner = createSpinner(0, 23, time.getHours());
-        minuteSpinner = createSpinner(0, 59, time.getMinutes());
+    private HBox createLeaveTimeRow(DayTime time, String type) {
+        SpinnerValueFactory<Integer> hourFactory = new SpinnerValueFactory.
+                IntegerSpinnerValueFactory(0, 23, time.getHours());
+        Spinner<Integer> hourSpinner = createSpinner(0, 23, time.getHours());
+        Spinner<Integer> minuteSpinner = createSpinner(0, 59, time.getMinutes());
+        if (type.equals("from")) {
+            fromHourSpinner = hourSpinner;
+            fromMinuteSpinner = minuteSpinner;
+        } else {
+            toHourSpinner = hourSpinner;
+            toMinuteSpinner = minuteSpinner;
+        }
+
         Text hourText = createText(TextType.EXPLAIN, "hour: ");
         Text minuteText = createText(TextType.EXPLAIN, "minute: ");
-
 
         HBox row = new HBox(2);
         Region spacer = new Region();
@@ -219,184 +334,16 @@ public class ControlPane {
         return text;
     }
 
+    public void addServiceChangeProperty(BooleanProperty changeProperty) {
+        if (changeProperty == null)
+            throw new NullPointerException("service change property must not be null");
+        serviceChangeProperty = changeProperty;
+    }
 
-
-    public static Pane createControlPane(DoubleProperty widthProperty, ReadOnlyStringProperty stopsText) {
-        VBox root = new VBox(5);
-        root.prefWidthProperty().bind(widthProperty);
-        root.minWidthProperty().bind(widthProperty);
-        root.maxWidthProperty().bind(widthProperty);
-        root.setPadding(new Insets(5));
-        root.setAlignment(Pos.TOP_CENTER);
-
-        LinearGradient bgkGrad = new LinearGradient(
-                0, 0,
-                0, 700,
-                false,
-                CycleMethod.NO_CYCLE,
-                new Stop(.1, Color.rgb(50, 50, 30)),
-                new Stop(1, Color.rgb(50, 50, 15))
-        );
-        root.setBackground(new Background(new BackgroundFill(bgkGrad, null, null)));
-
-        // aktuális járat jelölő
-        Text currentServiceLabel = new Text("Current Service");
-        currentServiceLabel.getStyleClass().add("separator-text");
-        root.getChildren().add(currentServiceLabel);
-
-
-        // Járat név felirat
-        Text nameLabel = new Text("Name of service");
-        nameLabel.getStyleClass().add("explain-text");
-        root.getChildren().add(nameLabel);
-
-        // járat név text field
-        TextField serciveName = new TextField();
-        serciveName.setAlignment(Pos.CENTER);
-        root.getChildren().add(serciveName);
-
-        HBox fromBox = new HBox(2);
-        HBox toBox = new HBox(2);
-        fromBox.setAlignment(Pos.CENTER_LEFT);
-        toBox.setAlignment(Pos.CENTER_LEFT);
-        Spinner<Integer> fromHour = new Spinner<>(0, 23, 6);
-        fromHour.setPrefWidth(100);
-
-        Spinner<Integer> toHour = new Spinner<>(0, 23, 18, 1);
-        toHour.setPrefWidth(100);
-        toHour.setEditable(true);
-        Circle spinnerShape = new Circle(60);
-        spinnerShape.setFill(Color.BLACK);
-        toHour.setShape(null);
-
-        Text fromText = new Text("First leave hour: ");
-        fromText.getStyleClass().add("explain-text");
-        Text toText = new Text("Boundary hour:  ");
-        toText.getStyleClass().add("explain-text");
-        fromBox.getChildren().addAll(fromText, fromHour);
-        toBox.getChildren().addAll(toText, toHour);
-        root.getChildren().addAll(fromBox, toBox);
-
-        // Time gap text
-        HBox timeGapBox = new HBox(2);
-        timeGapBox.setAlignment(Pos.CENTER_LEFT);
-        Text timeGapText = new Text("Minutes between two buses: ");
-        timeGapText.getStyleClass().add("explain-text");
-        TextField timeGapField = new TextField();
-        timeGapBox.getChildren().addAll(timeGapText, timeGapField);
-        root.getChildren().add(timeGapBox);
-
-
-        HBox stopsLabelBox = new HBox();
-        stopsLabelBox.setAlignment(Pos.CENTER);
-        Text stopsLabel = new Text("Stops of service:");
-        stopsLabel.getStyleClass().add("explain-text");
-        stopsLabelBox.getChildren().add(stopsLabel);
-        root.getChildren().add(stopsLabelBox);
-
-        TextArea stopsArea = new TextArea();
-        stopsArea.setPrefHeight(100);
-        stopsArea.setEditable(false);
-
-        stopsText.addListener((observable, oldValue, newValue) -> {
-            int maxLine = (int)stopsArea.getWidth() / 8;
-            StringBuilder sb = new StringBuilder(newValue);
-            for (int i = maxLine - 1; i < newValue.length(); i += maxLine) {
-                sb.insert(i, "\n");
-            }
-            stopsArea.setText(sb.toString());
-        });
-        root.getChildren().add(stopsArea);
-
-        Rectangle rectangle4 = new Rectangle();
-        rectangle4.setArcWidth(50);
-        rectangle4.setArcHeight(50);
-        rectangle4.widthProperty().bind(root.widthProperty().subtract(10));
-        rectangle4.setHeight(40);
-        Button applyChangesButton = new Button("Apply changes");
-        applyChangesButton.maxWidthProperty().bind(root.widthProperty().subtract(15));
-        applyChangesButton.minWidthProperty().bind(root.widthProperty().subtract(15));
-        applyChangesButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
-        applyChangesButton.setShape(rectangle4);
-        root.getChildren().add(applyChangesButton);
-
-
-        // All services -------------------
-        Text allServiceLabel = new Text("All services");
-        allServiceLabel.getStyleClass().add("separator-text");
-        root.getChildren().add(allServiceLabel);
-
-        HBox selectServiceBox = new HBox(2);
-        selectServiceBox.setAlignment(Pos.CENTER_LEFT);
-        Text selectLabel = new Text("Select service: ");
-        selectLabel.getStyleClass().add("explain-text");
-        ComboBox<String> selectBox = new ComboBox<>();
-        Rectangle comboShape1 = new Rectangle(100, 40);
-        comboShape1.setArcWidth(40);
-        comboShape1.setArcHeight(40);
-        selectBox.setShape(comboShape1);
-        selectBox.getItems().addAll("22Y", "24", "24A", "4", "8", "Tesco");
-        selectServiceBox.getChildren().addAll(selectLabel, selectBox);
-        root.getChildren().add(selectServiceBox);
-
-        Rectangle rect = new Rectangle();
-        rect.setArcWidth(50);
-        rect.setArcHeight(50);
-        rect.widthProperty().bind(root.widthProperty().subtract(10));
-        rect.setHeight(40);
-        Button newServiceButton = new Button("Add new service");
-        newServiceButton.maxWidthProperty().bind(root.widthProperty().subtract(15));
-        newServiceButton.minWidthProperty().bind(root.widthProperty().subtract(15));
-        newServiceButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
-        newServiceButton.setShape(rect);
-        root.getChildren().add(newServiceButton);
-
-
-        Rectangle rectangle = new Rectangle();
-        rectangle.setArcWidth(50);
-        rectangle.setArcHeight(50);
-        rectangle.widthProperty().bind(root.widthProperty().subtract(10));
-        rectangle.setHeight(40);
-        Button deleteServiceButton = new Button("Delete current service");
-        deleteServiceButton.maxWidthProperty().bind(root.widthProperty().subtract(15));
-        deleteServiceButton.minWidthProperty().bind(root.widthProperty().subtract(15));
-        deleteServiceButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
-        deleteServiceButton.setShape(rectangle);
-        root.getChildren().add(deleteServiceButton);
-
-
-
-        Text othersText = new Text("Other");
-        othersText.getStyleClass().add("separator-text");
-        root.getChildren().add(othersText);
-
-        Rectangle rectangle2 = new Rectangle();
-        rectangle2.setArcWidth(50);
-        rectangle2.setArcHeight(50);
-        rectangle2.widthProperty().bind(root.widthProperty().subtract(10));
-        rectangle2.setHeight(40);
-        Button timeTableButton = new Button("Show timetable");
-        timeTableButton.maxWidthProperty().bind(root.widthProperty().subtract(15));
-        timeTableButton.minWidthProperty().bind(root.widthProperty().subtract(15));
-        timeTableButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
-        timeTableButton.setShape(rectangle2);
-        root.getChildren().add(timeTableButton);
-
-
-        Rectangle rectangle3 = new Rectangle();
-        rectangle3.setArcWidth(50);
-        rectangle3.setArcHeight(50);
-        rectangle3.widthProperty().bind(root.widthProperty().subtract(10));
-        rectangle3.setHeight(40);
-        Button exitButton = new Button("Exit");
-        exitButton.maxWidthProperty().bind(root.widthProperty().subtract(15));
-        exitButton.minWidthProperty().bind(root.widthProperty().subtract(15));
-        exitButton.prefWidthProperty().bind(root.widthProperty().subtract(15));
-        exitButton.setShape(rectangle3);
-        exitButton.setOnAction(event -> Platform.exit());
-        root.getChildren().add(exitButton);
-
-        return root;
+    public void addTimetableHandler(EventHandler<ActionEvent> handler) {
+        if (handler == null)
+            throw new NullPointerException("timetable handler can not be null");
+        timetableButton.setOnAction(handler);
     }
 
 }//class
