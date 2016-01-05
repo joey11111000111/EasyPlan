@@ -64,9 +64,9 @@ public class ControlPane {
 
         // spinners
         Text firstLeaveText = createText(TextType.EXPLAIN, "First leave time");
-        firstLeaveText.setUnderline(true);
+//        firstLeaveText.setUnderline(true);
         Text boundaryText = createText(TextType.EXPLAIN, "Boundary time");
-        boundaryText.setUnderline(true);
+//        boundaryText.setUnderline(true);
         HBox fromBox = createLeaveTimeRow(controller.getFirstLeaveTime(), "from");
         HBox toBox = createLeaveTimeRow(controller.getBoundaryTime(), "to");
         HBox gapBox = new HBox(2);
@@ -203,7 +203,6 @@ public class ControlPane {
             // if the name was changed, that the service chooser combo box must change too
             String newName = controller.getName();
             String oldName = serviceComboBox.getValue();
-            System.out.println("old name: " + oldName + "\tnew name: " + newName);
             if (!oldName.equals(newName)) {
                 serviceComboBox.getItems().add(newName);
                 serviceComboBox.setValue(newName);
@@ -249,8 +248,6 @@ public class ControlPane {
     }
 
     private HBox createLeaveTimeRow(DayTime time, String type) {
-        SpinnerValueFactory<Integer> hourFactory = new SpinnerValueFactory.
-                IntegerSpinnerValueFactory(0, 23, time.getHours());
         Spinner<Integer> hourSpinner = createSpinner(0, 23, time.getHours());
         Spinner<Integer> minuteSpinner = createSpinner(0, 59, time.getMinutes());
         if (type.equals("from")) {

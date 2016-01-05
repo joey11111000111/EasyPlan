@@ -119,6 +119,15 @@ public class Core {
         checkSelection();
         return selectedService.getTimeTable();
     }
+    public Timetable getTimetableOf(String name) {
+        LOGGER.trace("called getTimetableOf");
+        if (name == null)
+            throw new NullPointerException("the given service name is null");
+        BusService service = services.get(name);
+        if (service == null)
+            throw new IllegalArgumentException("the bus service with the given name '" + name + "' does not exist");
+        return service.getTimeTable();
+    }
     // wrapper methods for the basicServiceData instance ---------------------------------
 
     /**

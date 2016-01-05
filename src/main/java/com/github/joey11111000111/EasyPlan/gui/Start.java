@@ -34,7 +34,10 @@ import java.io.InputStream;
 public class Start extends Application {
 
     static Logger LOGGER = LoggerFactory.getLogger(Start.class);
+    Stage stage;
     private static Core controller;
+    private Scene editorScene;
+    private String stylesheets;
 
     public static void setController(Core c) {
         if (c == null)
@@ -52,11 +55,13 @@ public class Start extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stage = primaryStage;
+        stage.setOnCloseRequest(event1 -> controller.saveServices());
         GridPane gridPane = new GridPane();
-        Scene scene = new Scene(gridPane, 770, 700);
+        editorScene = new Scene(gridPane, 770, 700);
         try {
-            scene.getStylesheets().add(
-                    Start.class.getClassLoader().getResource("control_style.css").toExternalForm());
+            stylesheets = Start.class.getClassLoader().getResource("control_style.css").toExternalForm();
+            editorScene.getStylesheets().add(stylesheets);
         } catch (NullPointerException npe) {
             System.err.println("nem sikerült betölteni a css-t");
         }
@@ -65,11 +70,11 @@ public class Start extends Application {
 
 
         DoubleProperty widthProperty = new SimpleDoubleProperty();
-        widthProperty.bind(scene.widthProperty().multiply(2.0 / 3));
-        DrawStack drawStack = new DrawStack(widthProperty, scene.heightProperty());
+        widthProperty.bind(editorScene.widthProperty().multiply(2.0 / 3));
+        DrawStack drawStack = new DrawStack(widthProperty, editorScene.heightProperty());
 
         DoubleProperty widthProperty2 = new SimpleDoubleProperty();
-        widthProperty2.bind(scene.widthProperty().multiply(1.0 / 3));
+        widthProperty2.bind(editorScene.widthProperty().multiply(1.0 / 3));
         ControlPane controlPane = new ControlPane(widthProperty2, drawStack.stopsStringProperty());
         controlPane.addServiceChangeProperty(drawStack.serviceChangeProperty());
         controlPane.addTimetableHandler(event -> switchToTimetable());
@@ -78,16 +83,17 @@ public class Start extends Application {
         gridPane.add(controlPane.getRoot(), 1, 0);
 
 
-        primaryStage.setScene(scene);
+        primaryStage.setScene(editorScene);
         primaryStage.show();
     }
 
     private void switchToTimetable() {
-        System.err.println("meg lett hívva a kellő metódus");
+        TimetableSceneCreator.setController(controller);
+        stage.setScene(TimetableSceneCreator.createScene(event -> switchToEditor()));
     }
 
     private void switchToEditor() {
-        System.err.println("meg lett hívva az editorra váltás");
+        stage.setScene(editorScene);
     }
 
 }//class

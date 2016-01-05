@@ -228,6 +228,7 @@ public class CoreTest {
     }//testEmptyState
 
 
+/*
     @Test
     public void testServiceManagement() {
         Core core = new Core();
@@ -305,6 +306,7 @@ public class CoreTest {
             assertTrue(false);
         } catch (NameConflictException nce) {}
     }
+*/
 
     @Test
     public void saveAndReadTest() {
