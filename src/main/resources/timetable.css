@@ -1,5 +1,6 @@
 .list-view {
     -fx-border-color: rgba(254, 214, 0, .4);
+    -fx-background-color: transparent;
 }
 .list-view .list-cell:even {
     -fx-background: rgb(10, 10, 10);
@@ -95,5 +96,9 @@
 .button:armed {
     -fx-background-color: rgba(254, 214, 0, .6);
     -fx-text-fill: rgb(50, 214, 255);
+}
+
+.timetable-root {
+    -fx-background-color: rgb(30, 30, 0);
 }
 

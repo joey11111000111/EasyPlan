@@ -149,8 +149,8 @@ public final class BusStop implements Comparable<BusStop> {
 
     /**
      * Returns true, if the bus stop at 'toId' can be the next from 'fromId'
-     * @param toId
-     * @param fromId
+     * @param toId the bus stop to go to
+     * @param fromId the bus stop to go from
      * @return true when the bus stop at 'toId' can be the next from 'fromId'
      * @throws IndexOutOfBoundsException if either of the given ids are invalid
      */

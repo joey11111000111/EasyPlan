@@ -7,17 +7,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.github.joey11111000111.EasyPlan.core.Timetable.StopTimes;
 
@@ -31,12 +29,11 @@ public class TimetableSceneCreator {
     private static String css;
 
     static {
-        css = TimetableSceneCreator.class.getClassLoader().getResource("timetable.css").toExternalForm();
-        // TEMP
-        System.out.println("font family names");
-        for (String name : Font.getFamilies())
-            System.out.println(name);
-        // TEMP
+        try {
+            css = TimetableSceneCreator.class.getClassLoader().getResource("timetable.css").toExternalForm();
+        } catch (Throwable t) {
+            Start.LOGGER.warn("could not read css file for the timetable scene");
+        }
     }
 
     public static Scene createScene(EventHandler<ActionEvent> backButtonAction) {
@@ -44,7 +41,7 @@ public class TimetableSceneCreator {
             return null;
 
         HBox root = new HBox(5);
-        root.setBackground(new Background(new BackgroundFill(Color.rgb(30, 30, 0), null, null)));
+        root.getStyleClass().add("timetable-root");
         Scene scene = new Scene(root, Color.BLUE);
         if (css != null)
             scene.getStylesheets().add(css);
@@ -59,7 +56,6 @@ public class TimetableSceneCreator {
         // create and wire up the list view
         ListView<String> namesView = new ListView<>(serviceNames);
         namesView.setMinWidth(200.0);
-        namesView.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
         namesView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> selectionChanged(newValue));
 
@@ -76,21 +72,22 @@ public class TimetableSceneCreator {
 
         // create the table for the first service in the list
         namesView.getSelectionModel().select(0);
-//        selectionChanged(controller.getServiceNames()[0]);
 
         return scene;
-    }
+    }//createScene
 
     private static void selectionChanged(String serviceName) {
         Timetable timetable = controller.getTimetableOf(serviceName);
         HBox allColumns = new HBox(10);
+
+        // create, fill and add all the stop columns
         for (int i = 0; i < timetable.stopTimes.size(); i++) {
             VBox column = new VBox(2);
             column.setAlignment(Pos.TOP_CENTER);
 
             // data for the current column
             StopTimes stopTimes = timetable.stopTimes.get(i);
-            // create title
+            // create and add title
             Text colTitle = new Text(Integer.toString(stopTimes.id));
             colTitle.getStyleClass().add("column-title");
             column.getChildren().add(colTitle);
@@ -111,9 +108,9 @@ public class TimetableSceneCreator {
         infoCol.setAlignment(Pos.TOP_LEFT);
         Text infoTitle = new Text("Info");
         infoTitle.getStyleClass().add("column-title");
-        Text nameText = new Text("service name: " + serviceName);
-        Text travelTimeText = new Text("total travel time: " + timetable.totalTravelTime);
-        Text busCountText = new Text("bus count: " + Integer.toString(timetable.busCount));
+        Text nameText = new Text("Service name: " + serviceName);
+        Text travelTimeText = new Text("Total travel time: " + timetable.totalTravelTime);
+        Text busCountText = new Text("Bus count: " + Integer.toString(timetable.busCount));
         nameText.getStyleClass().add("info-text");
         travelTimeText.getStyleClass().add("info-text");
         busCountText.getStyleClass().add("info-text");
@@ -122,7 +119,6 @@ public class TimetableSceneCreator {
         allColumns.getChildren().add(infoCol);
 
         table.setContent(allColumns);
-
     }//selectionChanged
 
 

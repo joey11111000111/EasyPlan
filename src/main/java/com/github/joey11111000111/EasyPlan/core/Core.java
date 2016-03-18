@@ -500,7 +500,6 @@ public class Core {
      * and since all applied service names must be unique, it is not possible to create more new bus services
      * without modifying the name of the previous bus services.
      * Trying to do it has no effect.
-     * @return true, if a new service was created
      */
     public void createNewService() {
         LOGGER.trace("called createNewService");
@@ -521,6 +520,7 @@ public class Core {
      * Removes the selected service, without a chance to bring it back.
      * After deletion, the null service is selected.
      * Does nothing when there isn't a selected service.
+     * @return true if the service was deleted successfully
      */
     public boolean deleteSelectedService() {
         LOGGER.trace("called deleteSelectedService");
