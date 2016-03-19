@@ -2,14 +2,15 @@ package com.github.joey11111000111.EasyPlan.core;
 
 import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
 import com.github.joey11111000111.EasyPlan.core.exceptions.NoSelectedServiceException;
+import com.github.joey11111000111.EasyPlan.core.exceptions.ObjectReadFailureException;
+import com.github.joey11111000111.EasyPlan.dao.iObjectIO;
 import com.github.joey11111000111.EasyPlan.util.DayTime;
-
-import java.io.*;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * The Core is the controller class for all the background actions of the application.
@@ -19,7 +20,8 @@ import org.slf4j.LoggerFactory;
 public class Core {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Core.class);
-    static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
+
+    private final iObjectIO objectIO;
     private boolean saved;
     private SortedMap<String, BusService> services;
     // the three below are for the selected service
@@ -33,13 +35,29 @@ public class Core {
      *   - the 'null service' is selected
      *   - the services are considered to be saved
      */
-    public Core() {
+    public Core(iObjectIO objectIO) {
+        LOGGER.trace("creating Core instance...");
+        if (objectIO == null)
+            throw new NullPointerException("DAO object must not be null");
+        this.objectIO = objectIO;
+
         saved = true;
-        LOGGER.debug("creating Core instance...");
         selectedService = null;
         basicData = null;
         touchedStops = null;
-        readSavedServices();
+
+        // If there are saved services read them, if not, create a new one. Then select a service
+        services = new TreeMap<>();
+        try {
+            List<BusService> serviceList = objectIO.readObjects(BusService.class);
+            for (BusService bs : serviceList) {
+                bs.initTransientFields();
+                services.put(bs.getAppliedName(), bs);
+            }
+            selectService(serviceList.get(0).getAppliedName());
+        } catch (ObjectReadFailureException orfe) {
+            createNewService();
+        }
         LOGGER.debug("core instance successfully created");
     }
 
@@ -420,79 +438,12 @@ public class Core {
         return services.size();
     }
 
-    private void readSavedServices() {
-        LOGGER.trace("called readSavedServices");
-        services = new TreeMap<String, BusService>();
-        FileInputStream fis;
-        ObjectInputStream ois = null;
-        try {
-            fis = new FileInputStream(SAVE_PATH);
-            ois = new ObjectInputStream(fis);
-            try {
-                while (true) {
-                    BusService service = (BusService)ois.readObject();
-                    service.initTransientFields();
-                    services.put(service.getAppliedName(), service);
-                }
-            } catch (EOFException eofe) {
-                LOGGER.debug("read " + getServiceCount() + " bus services from the save file");
-            } catch (ClassNotFoundException cnfe) {
-                services.clear();
-                LOGGER.error("save file is corrupted, ignoring saved bus services");
-                return;
-            }
-        } catch (FileNotFoundException fnfe) {
-            LOGGER.debug("there aren't any saved bus services");
-        } catch (IOException ioe) {
-            LOGGER.error("I/O exception happened while reading saves: ", ioe);
-        } finally {
-            if (ois != null)
-                try {
-                    ois.close();
-                } catch (IOException ioe) {
-                    LOGGER.error("I/O exception happened while trying to close the ObjectInputStream", ioe);
-                }
-        }
-    }//readSavedServices
-
     /**
      * Saves all the bus services into the save file. If a bus service was modified, than only the applied
      * changes are saved.
      */
     public void saveServices() {
-        LOGGER.trace("called saveServices");
-        // When there are no services, the reader will know that by not finding the save file
-        LOGGER.info("saving " + getServiceCount() + " bus services");
-        if (services.size() == 0) {
-            File saveFile = new File(SAVE_PATH);
-            if (saveFile.exists())
-                if (!saveFile.delete()) {
-                    LOGGER.error("couldn't delete save file");
-                    return;
-                }
-            return;
-        }
-
-
-        FileOutputStream fos;
-        ObjectOutputStream oos = null;
-        try {
-            fos = new FileOutputStream(SAVE_PATH);
-            oos = new ObjectOutputStream(fos);
-            for (BusService service : services.values())
-                oos.writeObject(service);
-        }
-         catch (IOException ioe) {
-             LOGGER.error("I/O exception happened while saving the services", ioe);
-        } finally {
-           if (oos != null)
-               try {
-                   oos.close();
-               } catch (IOException ioe) {
-                   LOGGER.error("cannot close ObjectOutputStream", ioe);
-               }
-        }
-        saved = true;
+        objectIO.saveObjects(services.values().toArray(new BusService[0]));
     }//saveServices
 
     /**

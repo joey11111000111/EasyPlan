@@ -2,6 +2,7 @@ package com.github.joey11111000111.EasyPlan.core;
 
 import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
 import com.github.joey11111000111.EasyPlan.core.exceptions.NoSelectedServiceException;
+import com.github.joey11111000111.EasyPlan.dao.ObjectIO;
 import com.github.joey11111000111.EasyPlan.util.DayTime;
 import org.junit.After;
 import org.junit.Before;
@@ -18,6 +19,12 @@ import java.util.Arrays;
 public class CoreTest {
 
     private boolean hasSaves = false;
+    private Core core;
+
+    @Before
+    public void setUp() {
+        core = new Core(new ObjectIO());
+    }
 
     @Before
     public void renameSaves() {
@@ -41,7 +48,6 @@ public class CoreTest {
 
     @Test
     public void testWrappersInNullState() {
-        Core core = new Core();
         // if there is no current service, the null state remains, and if there is, this will lead to a null state
         core.deleteSelectedService();
         // call all methods
@@ -135,7 +141,6 @@ public class CoreTest {
 
     @Test
     public void testWrappersInNotNullState() {
-        Core core = new Core();
         core.createNewService();
         // call all methods
         assertTrue(core.hasSelectedService());
@@ -184,9 +189,9 @@ public class CoreTest {
     }
 
 
+/*
     @Test
     public void testEmptyState() {
-        Core core = new Core();
         Timetable[] tables = core.getAllTimetables();
         assertEquals(0, tables.length);
 
@@ -226,6 +231,7 @@ public class CoreTest {
         assertFalse(tempFile.exists());
         core.saveServices();     // should have no effect
     }//testEmptyState
+*/
 
 
 /*
@@ -308,9 +314,8 @@ public class CoreTest {
     }
 */
 
-    @Test
+/*    @Test
     public void saveAndReadTest() {
-        Core core = new Core();
         assertTrue(core.isSaved());
         for (int i = 0; i < 3; i++) {
             core.createNewService();
@@ -333,7 +338,7 @@ public class CoreTest {
         core.saveServices();
         assertTrue(core.isSaved());
 
-        core = new Core();
+        core = new Core(new ObjectIO());
         assertEquals(3, core.getServiceCount());
         for (String name : core.getServiceNames()) {
             core.selectService(name);
@@ -343,7 +348,7 @@ public class CoreTest {
             System.out.println("closed: " + core.isClosed());
             System.out.println("stops: " + Arrays.toString(core.getStops()));
         }
-    }
+    }*/
 
 
 }//class
