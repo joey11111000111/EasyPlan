@@ -1,7 +1,6 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
-import com.github.joey11111000111.EasyPlan.core.Core;
-import com.github.joey11111000111.EasyPlan.core.Timetable;
+import com.github.joey11111000111.EasyPlan.core.iTimetable;
 import com.github.joey11111000111.EasyPlan.util.DayTime;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,19 +11,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-import static com.github.joey11111000111.EasyPlan.core.Timetable.StopTimes;
+import static com.github.joey11111000111.EasyPlan.core.iTimetable.iStopTimes;
+import static com.github.joey11111000111.EasyPlan.gui.Start.controller;
 
 /**
  * Created by joey on 2016.01.02..
  */
 public class TimetableSceneCreator {
 
-    private static Core controller;
     private static ScrollPane table;
     private static String css;
 
@@ -77,23 +77,23 @@ public class TimetableSceneCreator {
     }//createScene
 
     private static void selectionChanged(String serviceName) {
-        Timetable timetable = controller.getTimetableOf(serviceName);
+        iTimetable timetable = controller.getTimetableOf(serviceName);
         HBox allColumns = new HBox(10);
 
         // create, fill and add all the stop columns
-        for (int i = 0; i < timetable.stopTimes.size(); i++) {
+        for (int i = 0; i < timetable.getStopTimes().size(); i++) {
             VBox column = new VBox(2);
             column.setAlignment(Pos.TOP_CENTER);
 
             // data for the current column
-            StopTimes stopTimes = timetable.stopTimes.get(i);
+            iStopTimes stopTimes = timetable.getStopTimes().get(i);
             // create and add title
-            Text colTitle = new Text(Integer.toString(stopTimes.id));
+            Text colTitle = new Text(stopTimes.getID());
             colTitle.getStyleClass().add("column-title");
             column.getChildren().add(colTitle);
 
             // add all stop times
-            for (DayTime time : stopTimes.times) {
+            for (DayTime time : stopTimes.getTimes()) {
                 Text timeText = new Text(time.toString());
                 timeText.getStyleClass().add("time-text");
                 column.getChildren().add(timeText);
@@ -109,8 +109,8 @@ public class TimetableSceneCreator {
         Text infoTitle = new Text("Info");
         infoTitle.getStyleClass().add("column-title");
         Text nameText = new Text("Service name: " + serviceName);
-        Text travelTimeText = new Text("Total travel time: " + timetable.totalTravelTime);
-        Text busCountText = new Text("Bus count: " + Integer.toString(timetable.busCount));
+        Text travelTimeText = new Text("Total travel time: " + timetable.getTotalTravelTime());
+        Text busCountText = new Text("Bus count: " + Integer.toString(timetable.getBusCount()));
         nameText.getStyleClass().add("info-text");
         travelTimeText.getStyleClass().add("info-text");
         busCountText.getStyleClass().add("info-text");
@@ -121,9 +121,5 @@ public class TimetableSceneCreator {
         table.setContent(allColumns);
     }//selectionChanged
 
-
-    public static void setController(Core controller) {
-        TimetableSceneCreator.controller = controller;
-    }
 
 }//class

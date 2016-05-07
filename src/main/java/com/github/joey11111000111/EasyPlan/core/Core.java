@@ -2,8 +2,9 @@ package com.github.joey11111000111.EasyPlan.core;
 
 import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
 import com.github.joey11111000111.EasyPlan.core.exceptions.NoSelectedServiceException;
-import com.github.joey11111000111.EasyPlan.core.exceptions.ObjectReadFailureException;
+import com.github.joey11111000111.EasyPlan.dao.ObjectReadFailureException;
 import com.github.joey11111000111.EasyPlan.dao.iObjectIO;
+import com.github.joey11111000111.EasyPlan.gui.ControlPane;
 import com.github.joey11111000111.EasyPlan.util.DayTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import java.util.TreeMap;
  * Except for the user interface, every change is made through this class.
  * It offer methods to manage the bus services, including saving and reading them.
  */
-public class Core {
+public class Core implements Controller {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Core.class);
 
@@ -61,7 +62,7 @@ public class Core {
         LOGGER.debug("core instance successfully created");
     }
 
-    // Wrapper methods for the selected bus service -----------------------------------------------
+    // Methods for the selected bus service -----------------------------------------------
     private void setSelectedService(BusService service) {
         LOGGER.trace("called 'setSelectedService' with the service: "
                 + (service == null ? "null" : service.getAppliedName()) );
@@ -81,6 +82,7 @@ public class Core {
      * Returns true if there is an actual bus service selected
      * @return true if there is an actual bus service selected
      */
+    @Override
     public boolean hasSelectedService() {
         LOGGER.trace("called 'hasSelectedService");
         // if the selected service is not null, than the other two are not null too
@@ -96,6 +98,7 @@ public class Core {
      * @return true, if there are unapplied modifications
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public boolean isModified() {
         LOGGER.trace("called isModified");
         checkSelection();
@@ -106,6 +109,7 @@ public class Core {
      * Returns true, if there aren't any applied modifications, that are not saved to the save file
      * @return true, if there aren't any applied modifications, that are not saved to the save file
      */
+    @Override
     public boolean isSaved() {
         return saved;
     }
@@ -115,6 +119,7 @@ public class Core {
      * @return true, if there were any new changes to discard
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public boolean discardChanges() {
         LOGGER.trace("called discardChanges");
         checkSelection();
@@ -126,27 +131,18 @@ public class Core {
         LOGGER.debug("tried to discard changes, but there were no modifications");
         return false;
     }
-    /**
-     * Returns a Timetable object that shows the arrive times to all the touched
-     * stops of the selected bus service.
-     * @return the Timetable of the selected bus service
-     * @throws NoSelectedServiceException if there isn't a selected bus service
-     */
-    public Timetable getCurrentTimetable() {
-        LOGGER.trace("called getCurrentTimeTable");
-        checkSelection();
-        return selectedService.getTimeTable();
-    }
-    public Timetable getTimetableOf(String name) {
+
+    @Override
+    public iTimetable getTimetableOf(String serviceName) {
         LOGGER.trace("called getTimetableOf");
-        if (name == null)
+        if (serviceName == null)
             throw new NullPointerException("the given service name is null");
-        BusService service = services.get(name);
+        BusService service = services.get(serviceName);
         if (service == null)
-            throw new IllegalArgumentException("the bus service with the given name '" + name + "' does not exist");
-        return service.getTimeTable();
+            throw new IllegalArgumentException("the bus service with the given name '" + serviceName + "' does not exist");
+        return service.getTimetable();
     }
-    // wrapper methods for the basicServiceData instance ---------------------------------
+    // ---------------------------------
 
     /**
      * Returns the (possibly unapplied) name of the selected bus service. It can differ from the name
@@ -154,6 +150,7 @@ public class Core {
      * @return the latest name of the bus service
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public String getName() {
         LOGGER.trace("called getName");
         checkSelection();
@@ -165,16 +162,17 @@ public class Core {
      * bus service until the call of the "applyChanges" method.
      * If the new name is already among the applied names of the other bus services,
      * than the "applyChanges" will throw a NameConflictException.
-     * @param name the new name of the bus service
+     * @param serviceName the new name of the bus service
      * @throws NullPointerException when the given string is null
      * @throws IllegalArgumentException when received an empty string
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
-    public void setName(String name) {
-        LOGGER.trace("called setName with name: " + name);
+    @Override
+    public void setName(String serviceName) {
+        LOGGER.trace("called setName with name: " + serviceName);
         checkSelection();
-        basicData.setName(name);
-        LOGGER.info("the name was set to '" + name + "'");
+        basicData.setName(serviceName);
+        LOGGER.info("the name was set to '" + serviceName + "'");
     }
 
     /**
@@ -183,6 +181,7 @@ public class Core {
      * @return the time gap between two following buses in minutes
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public int getTimeGap() {
         LOGGER.trace("called getTimeGap");
         checkSelection();
@@ -195,6 +194,7 @@ public class Core {
      * @throws IllegalArgumentException when the given minutes are less then 1
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void setTimeGap(int timeGap) {
         LOGGER.trace("called setTimeGap with timeGap: " + timeGap);
         checkSelection();
@@ -208,6 +208,7 @@ public class Core {
      * @return the leave time of the first bus of the service
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public DayTime getFirstLeaveTime() {
         LOGGER.trace("called getFirstLeaveTime");
         checkSelection();
@@ -219,18 +220,21 @@ public class Core {
      * @param time the new time of the day when the first bus of the bus service leaves the station.
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void setFirstLeaveTime(DayTime time) {
         LOGGER.trace("called setFirstLeaveTime with time: " + time);
         checkSelection();
         basicData.setFirstLeaveTime(time);
         LOGGER.info("the first leave time was set to " + time);
     }
+    @Override
     public void setFirstLeaveHour(int hour) {
         LOGGER.trace("called setFirstLeaveHour with hour: " + hour);
         checkSelection();
         basicData.setFirstLeaveHour(hour);
         LOGGER.info("the first leave hour was set to: " + hour);
     }
+    @Override
     public void setFirstLeaveMinute(int minute) {
         LOGGER.trace("called setFirstLeaveMinute with minute: " + minute);
         checkSelection();
@@ -244,6 +248,7 @@ public class Core {
      * @return the time of the day after which no more buses will leave the station
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public DayTime getBoundaryTime() {
         LOGGER.trace("called getBoundaryTime");
         checkSelection();
@@ -256,18 +261,21 @@ public class Core {
      * @param time the new time of the day after which no more buses will leave the station
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void setBoundaryTime(DayTime time) {
         LOGGER.trace("called setBoundaryTime with time: " + time);
         checkSelection();
         basicData.setBoundaryTime(time);
         LOGGER.info("the boundary time was set to " + time);
     }
+    @Override
     public void setBoundaryHour(int hour) {
         LOGGER.trace("called setBoundaryHour with hour: " + hour);
         checkSelection();
         basicData.setBoundaryHours(hour);
         LOGGER.info("the boundary hour was set to " + hour);
     }
+    @Override
     public void setBoundaryMinute(int minute) {
         LOGGER.trace("called setBoundaryMinute with minute: " + minute);
         checkSelection();
@@ -288,6 +296,7 @@ public class Core {
      *          - has already added twice
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void appendStop(int id) {
         LOGGER.trace("called appendStop with id: " + id);
         checkSelection();
@@ -302,6 +311,7 @@ public class Core {
      * and the last bus stop is the bus station
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public boolean isClosed() {
         LOGGER.trace("called isClosed");
         checkSelection();
@@ -313,6 +323,7 @@ public class Core {
      * @return true, if there are unsaved modification in the selected bus service
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public boolean canUndo() {
         LOGGER.trace("called canUndo");
         checkSelection();
@@ -325,6 +336,7 @@ public class Core {
      * @return an array containing the ids of the touched bus stops in the order of append
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public int[] getStops() {
         LOGGER.trace("called getStops");
         checkSelection();
@@ -336,6 +348,7 @@ public class Core {
      * because the bus station, as the starting point is always in the list, as the first stop.
      * @return the number of touched bus stops, included the start from the bus station
      */
+    @Override
     public int getStopCount() {
         LOGGER.trace("called getStopCount");
         checkSelection();
@@ -347,6 +360,7 @@ public class Core {
      * it returns the id of the bus station
      * @return the id of the last bus stop in the list
      */
+    @Override
     public int getLastStop() {
         LOGGER.trace("called getLastStop");
         checkSelection();
@@ -358,6 +372,7 @@ public class Core {
      * Calling this method when there aren't any bus stops added has no effect.
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void clearStops() {
         LOGGER.trace("called clearStops");
         checkSelection();
@@ -372,6 +387,7 @@ public class Core {
      *               included too)
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void removeChainFrom(int fromId) {
         LOGGER.trace("called removeChainFrom with fromId: " + fromId);
         checkSelection();
@@ -388,6 +404,7 @@ public class Core {
      * @throws IllegalStateException if there aren't any unsaved modifications
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public void undo() {
         LOGGER.trace("called undo");
         checkSelection();
@@ -404,6 +421,7 @@ public class Core {
      * @return the ids of all the bus stops that can be the next bus stop of the selected bus service
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public int[] getReachableStopIds() {
         LOGGER.trace("called getReachableStopsIds");
         checkSelection();
@@ -421,6 +439,7 @@ public class Core {
      *           to when the bus leaves the station.
      * @throws NoSelectedServiceException if there isn't a selected bus service
      */
+    @Override
     public int[] getTravelTimes() {
         LOGGER.trace("called getTravelTimes");
         checkSelection();
@@ -433,6 +452,7 @@ public class Core {
      * Returns the number of bus services.
      * @return the number of bus services
      */
+    @Override
     public int getServiceCount() {
         LOGGER.trace("called getServiceCount");
         return services.size();
@@ -442,6 +462,7 @@ public class Core {
      * Saves all the bus services into the save file. If a bus service was modified, than only the applied
      * changes are saved.
      */
+    @Override
     public void saveServices() {
         objectIO.saveObjects(services.values().toArray(new BusService[0]));
     }//saveServices
@@ -452,6 +473,7 @@ public class Core {
      * without modifying the name of the previous bus services.
      * Trying to do it has no effect.
      */
+    @Override
     public void createNewService() {
         LOGGER.trace("called createNewService");
 
@@ -473,6 +495,7 @@ public class Core {
      * Does nothing when there isn't a selected service.
      * @return true if the service was deleted successfully
      */
+    @Override
     public boolean deleteSelectedService() {
         LOGGER.trace("called deleteSelectedService");
         if (!hasSelectedService()) {
@@ -493,41 +516,43 @@ public class Core {
         return true;
     }
 
-    public boolean deleteService(String name) {
+    @Override
+    public boolean deleteService(String serviceName) {
         LOGGER.trace("called deleteService");
-        if (!services.containsKey(name))
+        if (!services.containsKey(serviceName))
             return false;
-        if (getName().equals(name))
+        if (getName().equals(serviceName))
             return deleteSelectedService();
-        services.remove(name);
+        services.remove(serviceName);
         saved = false;
-        LOGGER.info("removed the bus service '" + name + "'");
+        LOGGER.info("removed the bus service '" + serviceName + "'");
         return true;
     }
 
     /**
      * Selects the service that has the given name.
-     * @param name the name of the service that should be selected.
+     * @param serviceName the name of the service that should be selected.
      * @throws NullPointerException when the given string is null
      * @throws IllegalArgumentException when there isn't a service with the given name
      */
-    public void selectService(String name) {
-        LOGGER.trace("called selectService with name: " + name);
-        if (name == null) {
+    @Override
+    public void selectService(String serviceName) {
+        LOGGER.trace("called selectService with name: " + serviceName);
+        if (serviceName == null) {
             LOGGER.warn("given name is null");
             throw new NullPointerException("the name of the selected service cannot be null");
         }
         if (hasSelectedService())
-            if (name.equals(selectedService.getAppliedName()))
+            if (serviceName.equals(selectedService.getAppliedName()))
                 return;
 
-        if (!services.containsKey(name)) {
-            LOGGER.warn("a bus service with the given name '" + name + "' doesn't exist");
+        if (!services.containsKey(serviceName)) {
+            LOGGER.warn("a bus service with the given name '" + serviceName + "' doesn't exist");
             throw new IllegalArgumentException("the bus service with the given name '"
-                    + name + "' doesn't exist");
+                    + serviceName + "' doesn't exist");
         }
 
-        setSelectedService(services.get(name));
+        setSelectedService(services.get(serviceName));
     }
 
     /**
@@ -535,6 +560,7 @@ public class Core {
      * The returned names are in alphabetic order.
      * @return the applied name of all the existing bus services.
      */
+    @Override
     public String[] getServiceNames() {
         LOGGER.trace("called getServiceNames");
         return services.keySet().toArray(new String[0]);
@@ -545,6 +571,7 @@ public class Core {
      * @throws NameConflictException when the new name of the bus service is
      *          already in use as an applied name of another bus service.
      */
+    @Override
     public void applyChanges() throws NameConflictException {
         LOGGER.trace("called applyChanges");
         // if there is nothing to change or change to, then do nothing
@@ -572,18 +599,5 @@ public class Core {
         LOGGER.info("applied changes to the service '" + oldName + "' (old name)");
     }
 
-    /**
-     * Returns a Timetable object for every bus service that shows the arrive times to all the touched
-     * stops of the bus services. If there aren't any bus services, then it returns a zero-length array.
-     * @return the Timetables of the bus services or a zero-length array if there aren't any
-     */
-    public Timetable[] getAllTimetables() {
-        LOGGER.trace("called getAllTimetables");
-        Timetable[] tables = new Timetable[services.size()];
-        BusService[] allServices = services.values().toArray(new BusService[0]);
-        for (int i = 0; i < tables.length; i++)
-            tables[i] = allServices[i].getTimeTable();
-        return tables;
-    }
 
 }//class

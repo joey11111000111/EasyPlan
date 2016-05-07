@@ -14,6 +14,7 @@ import static org.junit.Assert.*;
  * Created by joey on 2015.11.07..
  */
 public class TimetableTest {
+/*
 
     String name;
     int[] stopIds;
@@ -208,5 +209,6 @@ public class TimetableTest {
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
     }
+*/
 
 }//class

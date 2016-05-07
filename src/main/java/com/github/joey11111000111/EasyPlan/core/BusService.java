@@ -37,7 +37,7 @@ public class BusService implements Serializable {
      *   - no bus leaves after 18:00
      */
     public BusService() {
-        savedStops = new ArrayList<Integer>();
+        savedStops = new ArrayList<>();
         name = DEFAULT_NAME;
         timeGap = 10;
         firstLeaveTime = new DayTime(8, 0);
@@ -143,7 +143,7 @@ public class BusService implements Serializable {
      * stops of the bus service.
      * @return the Timetable of the bus service
      */
-    public Timetable getTimeTable() {
+    public Timetable getTimetable() {
         Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
         args.setName(currentServiceData.getName());
         args.setStopIds(currentStops.getStops());

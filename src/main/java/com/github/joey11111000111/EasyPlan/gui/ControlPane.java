@@ -1,6 +1,5 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
-import com.github.joey11111000111.EasyPlan.core.Core;
 import com.github.joey11111000111.EasyPlan.core.exceptions.NameConflictException;
 import com.github.joey11111000111.EasyPlan.util.DayTime;
 import javafx.application.Platform;
@@ -21,12 +20,13 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+import static com.github.joey11111000111.EasyPlan.gui.Start.controller;
+
 /**
  * Created by joey on 2015.12.17..
  */
 public class ControlPane {
 
-    Core controller;
     private VBox root;
     // all the ui controls that need to be wired up later, in the order of appearance from the top
     private TextField nameField;
@@ -49,8 +49,6 @@ public class ControlPane {
 
     public ControlPane(ReadOnlyDoubleProperty widthProperty, ReadOnlyStringProperty stopsStringProperty) {
         // if there is no service, create a new one, or if no service is selected, select the first
-        controller = Start.getController();
-
         initTopPane(widthProperty);
 
         // Current service part ------------------------------------------------

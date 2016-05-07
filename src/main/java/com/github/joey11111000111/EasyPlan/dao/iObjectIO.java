@@ -1,7 +1,5 @@
 package com.github.joey11111000111.EasyPlan.dao;
 
-import com.github.joey11111000111.EasyPlan.core.exceptions.ObjectReadFailureException;
-
 import java.io.Serializable;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.github.joey11111000111.EasyPlan.core.exceptions;
+package com.github.joey11111000111.EasyPlan.dao;
 
 /**
  * Created by joey on 3/18/16.

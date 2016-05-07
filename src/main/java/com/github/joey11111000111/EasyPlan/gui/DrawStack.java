@@ -1,13 +1,11 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
 import com.github.joey11111000111.EasyPlan.core.BusStop;
-import com.github.joey11111000111.EasyPlan.core.Core;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Transition;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -24,8 +22,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+
+import static com.github.joey11111000111.EasyPlan.gui.Start.controller;
 
 /**
  * Created by joey on 2015.12.06..
@@ -48,7 +46,6 @@ public class DrawStack {
     private Group stops;           // includes the bus station
 
     private MarkableShape[] allStops;
-    private Core controller;
     private boolean animating;
     private Thread fadeInAllThread;
     
@@ -61,7 +58,6 @@ public class DrawStack {
         if (widthProperty == null || heightProperty == null)
             throw new NullPointerException();
 
-        controller = Start.getController();
         animating = false;
 
         // save sizes

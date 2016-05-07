@@ -18,7 +18,7 @@ import java.util.Arrays;
  */
 public class CoreTest {
 
-    private boolean hasSaves = false;
+/*    private boolean hasSaves = false;
     private Core core;
 
     @Before
@@ -44,8 +44,9 @@ public class CoreTest {
             if (!saveFile.renameTo(new File(Core.SAVE_PATH)))
                 throw new RuntimeException("cannot re-rename save file");
         }
-    }
+    }*/
 
+/*
     @Test
     public void testWrappersInNullState() {
         // if there is no current service, the null state remains, and if there is, this will lead to a null state
@@ -187,6 +188,7 @@ public class CoreTest {
         assertTrue(core.isClosed());
         assertTrue(core.isModified());
     }
+*/
 
 
 /*

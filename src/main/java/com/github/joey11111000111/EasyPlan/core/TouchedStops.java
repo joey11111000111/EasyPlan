@@ -37,7 +37,7 @@ public class TouchedStops {
             return chain;
         }
 
-        public static <E> UndoOperation<E> newDeleteInstance(E typeObject) {
+        public static <E> UndoOperation<E> newDeleteInstance() {
             return new UndoOperation<E>(OperationType.DELETE, null);
         }
         public static <E> UndoOperation<E> newAppendInstance(Node<E> chain) {
@@ -57,7 +57,7 @@ public class TouchedStops {
     public TouchedStops() {
         stops = new OpenLinkedList<Integer>();
         stops.append(0);
-        undoStack = new Stack<UndoOperation<Integer>>();
+        undoStack = new Stack<>();
         modified = false;
     }
 
@@ -131,7 +131,7 @@ public class TouchedStops {
         // append bus stop and create the undo operation for this append operation
         stops.append(id);
         markAsModified();
-        undoStack.push(UndoOperation.newDeleteInstance(new Integer(0)));
+        undoStack.push(UndoOperation.newDeleteInstance());
     }
 
     private boolean addedTwiceAlready(int id) {

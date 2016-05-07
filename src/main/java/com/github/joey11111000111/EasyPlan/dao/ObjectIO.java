@@ -1,6 +1,5 @@
 package com.github.joey11111000111.EasyPlan.dao;
 
-import com.github.joey11111000111.EasyPlan.core.exceptions.ObjectReadFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

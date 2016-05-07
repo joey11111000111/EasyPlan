@@ -1,12 +1,12 @@
 package com.github.joey11111000111.EasyPlan.core;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import com.github.joey11111000111.EasyPlan.dao.CityReader;
+import com.github.joey11111000111.EasyPlan.dao.iBusStopData;
+import com.github.joey11111000111.EasyPlan.dao.iCityReader;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 /**
@@ -17,84 +17,75 @@ import java.util.*;
  */
 public final class BusStop implements Comparable<BusStop> {
 
+    static final Logger LOGGER = LoggerFactory.getLogger(BusStop.class);
+
     // static ----------------------------------------------------------
     private static final BusStop[] allStops;
 
     static {
-        List<BusStop> allStopsList = new LinkedList<BusStop>();
-        try {
-            // get the 'city.xml' file as an InputStream
-            InputStream is = BusStop.class.getClassLoader().getResourceAsStream("city.xml");
-            // create a document builder
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+        iCityReader cityReader = new CityReader();
+        List<iBusStopData> stopsData = cityReader.readCityStops();
 
-            // parse the xml file and normalize it
-            Document document = builder.parse(is);
-            document.getDocumentElement().normalize();
+        allStops = new BusStop[stopsData.size()];
+        for (int i = 0; i < allStops.length; i++) {
+            iBusStopData currentStopData = stopsData.get(i);
 
-            // create the bus station
-            NodeList stationNodes = document.getElementsByTagName("bus_station");
-            // there is only one element with the above tag name
-            Element stationElement = (Element)stationNodes.item(0);
-            allStopsList.add(createBusStopObject(stationElement));
+            // Check whether the data object is valid ---------------------------------------------
+            if (!currentStopData.isValid()) {
+                LOGGER.error("Invalid bus stop data object! Terminating...");
+                System.exit(1);
+            }
+            int id = currentStopData.getId();
+            if (id < 0 || id >= allStops.length) {
+                LOGGER.error("Invalid bus stop ID: " + id);
+                System.exit(1);
+            }
+            int x = currentStopData.getX();
+            if (x < 0 || x > 9) {
+                LOGGER.error("Invalid bus stop X coordinate: " + x + ". Terminating...");
+                System.exit(1);
+            }
+            int y = currentStopData.getY();
+            if (y < 0 || y > 9) {
+                LOGGER.error("Invalid bus stop Y coordinate: " + y + ". Terminating...");
+                System.exit(1);
+            }
 
-            // create all the bus stops
-            NodeList busStops = document.getElementsByTagName("bus_stop");
-            for (int i = 0; i < busStops.getLength(); i++) {
-                Element currentStop = (Element)busStops.item(i);
-                allStopsList.add(createBusStopObject(currentStop));
+            Map<Integer, Integer> reachables = currentStopData.getReachableStops();     // never null
+            if (reachables.size() < 1) {
+                LOGGER.error("No reachables for stop: " + id + ". Terminating...");
+                System.exit(1);
+            }
+            for (Map.Entry<Integer, Integer> entry : reachables.entrySet()) {
+                Integer rID = entry.getKey();
+                Integer travelMinutes = entry.getValue();
+                if (rID < 0 || rID >= allStops.length) {
+                    LOGGER.error("Invalid reachable stop ID: " + rID
+                            + " from the stop: " + id + ". Terminating...");
+                    System.exit(1);
+                }
+                if (travelMinutes < 1) {
+                    LOGGER.error("Invalid travel minutes: " + travelMinutes
+                            + "from the stop: " + id + " to the stop: " + rID + ". Terminating...");
+                    System.exit(1);
+                }
+            }
+
+            // At this point the individual data object is valid by itself, ready to create a BusStop object
+            allStops[i] = new BusStop(currentStopData);
+        }//for
+
+        Arrays.sort(allStops);
+        // At this point every bus stop ID must be equal to its array index
+        for (int i = 0; i < allStops.length; i++) {
+            if (allStops[i].id != i) {
+                LOGGER.error("Corrupt bus stop ID: " + allStops[i].id + ". Terminating...");
+                System.exit(1);
             }
         }
-        catch (Exception e) {
-            Core.LOGGER.error("cannot read the city.xml file, which is fatal", e);
-            System.exit(1);
-        }
 
-        allStops = allStopsList.toArray(new BusStop[0]);
-        Arrays.sort(allStops);
     }//static
 
-
-    private static BusStop createBusStopObject(Element bsElement) {
-        int id, x, y;
-        // get id
-        id = getNumericContentOfTag(bsElement, "id");
-        // get positions
-        Element posNode = (Element)bsElement.getElementsByTagName("position").item(0);
-        x = getNumericContentOfTag(posNode, "x");
-        y = getNumericContentOfTag(posNode, "y");
-
-        Map<java.lang.Integer, java.lang.Integer> reachables = getAllReachablesOf(bsElement);
-        return new BusStop(id, x, y, reachables);
-    }
-
-    private static Map<Integer, Integer> getAllReachablesOf(Element busStop) {
-        Map<Integer, Integer> reachables = new HashMap<Integer, Integer>();
-        NodeList connections = busStop.getElementsByTagName("connection");
-
-        // iterate through the list and fill the map
-        for (int i = 0; i < connections.getLength(); i++) {
-            Element connection = (Element)connections.item(i);
-            int refId = getNumericContentOfTag(connection, "refid");
-            int travelTime = getNumericContentOfTag(connection, "travel_time");
-            reachables.put(refId, travelTime);
-        }
-
-        return Collections.unmodifiableMap(reachables);
-    }
-
-    private static int getNumericContentOfTag(Element parent, String tagName) {
-        NodeList tags = parent.getElementsByTagName(tagName);
-        // there is only one appearance of a certain tag in a connection element, so the first one is the needed
-        Element neededElement = (Element)tags.item(0);
-        // get all child nodes (the content is also a child node)
-        NodeList childNodes = neededElement.getChildNodes();
-
-        // the parent node only has text-content, so there is only one child node; get the text
-        String text = childNodes.item(0).getNodeValue().trim();
-        return java.lang.Integer.parseInt(text);
-    }
 
     // TODO: javadoc
     public static int getStopCount() {
@@ -188,11 +179,11 @@ public final class BusStop implements Comparable<BusStop> {
     public final int y;
     private final Map<java.lang.Integer, java.lang.Integer> reachableStops;
 
-    private BusStop(int id, int x, int y, Map<java.lang.Integer, java.lang.Integer> reachableStops) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.reachableStops = reachableStops;
+    private BusStop(iBusStopData busStopData) {
+        id = busStopData.getId();
+        x = busStopData.getX();
+        y = busStopData.getY();
+        reachableStops = Collections.unmodifiableMap(busStopData.getReachableStops());
     }
 
     public int compareTo(BusStop otherStop) {

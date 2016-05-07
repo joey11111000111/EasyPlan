@@ -1,6 +1,6 @@
 package com.github.joey11111000111.EasyPlan.gui;
 
-import com.github.joey11111000111.EasyPlan.core.Core;
+import com.github.joey11111000111.EasyPlan.core.Controller;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -15,21 +15,20 @@ import org.slf4j.LoggerFactory;
  */
 public class Start extends Application {
 
-    private static Core controller;
+    static Controller controller;
     static Logger LOGGER = LoggerFactory.getLogger(Start.class);
     Stage stage;
     private Scene editorScene;
 
-    public static void setController(Core c) {
+    public static void setController(Controller c) {
         if (c == null)
             throw new NullPointerException("given controller is null");
         controller = c;
     }
-    public static Core getController() {
-        return controller;
-    }
 
     public static void start() {
+        if (controller == null)
+            throw new IllegalStateException("controller is null, no connection to the underlying layers");
         Application.launch();
     }
 
@@ -63,7 +62,6 @@ public class Start extends Application {
         controlPane.addServiceChangeProperty(drawStack.serviceChangeProperty());
         controlPane.addTimetableHandler(event -> switchToTimetable());
 
-        TimetableSceneCreator.setController(controller);
         root.add(drawStack.getRoot(), 0, 0);
         root.add(controlPane.getRoot(), 1, 0);
 

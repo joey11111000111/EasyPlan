@@ -11,7 +11,7 @@ import java.util.*;
  * All instances are unmodifiable, and no instances can be created outside the package.
  * However, every bus service can return its own timetable.
  */
-public class Timetable {
+public class Timetable implements iTimetable {
 
     /**
      * An instance of this class contains all the arrive times of the buses of the service
@@ -19,16 +19,26 @@ public class Timetable {
      * cannot be created outside of the package. However, the returned TimeTable contains one
      * StopTimes instance for all the touched bus stops of the bus service.
      */
-    public static class StopTimes {
+    public static class StopTimes implements iStopTimes {
         /**
          * the id of the bus stop, whose arrive times are recorded in the list
          */
-        public final int id;
+        private String id;
         /**
          * Contains all the arrive times to this bus stop, starting with the time when
          * the first bus leaves the station. This list always has at least one element.
          */
-        public final List<DayTime> times;
+        private List<DayTime> times;
+
+        @Override
+        public String getID() {
+            return id;
+        }
+
+        @Override
+        public List<DayTime> getTimes() {
+            return times;
+        }
 
         /**
          * Creates an instance filled with the given data.
@@ -44,7 +54,7 @@ public class Timetable {
                 throw new IllegalArgumentException("given list must be unmodifiable");
             } catch (UnsupportedOperationException uoe) {}
 
-            this.id = id;
+            this.id = Integer.toString(id);
             this.times = times;
         }
 
@@ -172,25 +182,50 @@ public class Timetable {
     /**
      * name of the bus service
      */
-    public final String name;
+    private String name;
     /**
      * Contains a StopTime instance for all the touched stops of the bus service (including the bus station).
      * The order of the instances is the same as the order of the touched stops in the bus service.
      */
-    public final List<StopTimes> stopTimes;
+    private List<iStopTimes> stopTimes;
     /**
      * contains the number of buses that will leave the station in one day
      */
-    public final int busCount;
+    private int busCount;
     /**
      * the minutes before the next bus leaves the station after the previous one
      */
-    public final int timeGap;
+    private int timeGap;
     /**
      * the time that it takes for one bus of the service to go through all the bus stops
      * (return to the station is included if happens in the service)
      */
-    public final DayTime totalTravelTime;
+    private DayTime totalTravelTime;
+
+    @Override
+    public String getServiceName() {
+        return name;
+    }
+
+    @Override
+    public List<iStopTimes> getStopTimes() {
+        return stopTimes;
+    }
+
+    @Override
+    public int getBusCount() {
+        return busCount;
+    }
+
+    @Override
+    public int getTimeGap() {
+        return timeGap;
+    }
+
+    @Override
+    public DayTime getTotalTravelTime() {
+        return totalTravelTime;
+    }
 
     static Timetable newInstance(TimeTableArguments tta) {
         if (!tta.isValid())
