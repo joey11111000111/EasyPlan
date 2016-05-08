@@ -16,15 +16,33 @@ import java.util.List;
 public class ObjectIO implements iObjectIO {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ObjectIO.class);
-    static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices.xml";
+    static final String SAVE_PATH;
+
+    static {
+        StringBuilder sb = new StringBuilder(System.getProperty("user.home"));
+	String sep = System.getProperty("file.separator");
+	sb.append(sep).append(".EasyPlan").append(sep).append("savedServices.xml");
+	SAVE_PATH = sb.toString();
+    }
 
     @Override
     public void saveObject(Object object, Class<?> clazz) throws ObjectSaveFailureException {
+	System.out.println("---------: " + SAVE_PATH + " :----------");
+        try {
+	    File saveFile = new File(SAVE_PATH);
+	    if (!saveFile.exists()) {
+		saveFile.getParentFile().mkdirs();
+	        saveFile.createNewFile();
+	    }
+	} catch (IOException e) {
+	    throw new ObjectSaveFailureException("cannot explicitely create save file: " + e.getMessage());
+	}
+
         OutputStream outputStream;
         try {
             outputStream = new FileOutputStream(SAVE_PATH);
         } catch (FileNotFoundException e) {
-            throw new ObjectSaveFailureException("save file cannot be created");
+            throw new ObjectSaveFailureException("save file cannot be created: " + e.getMessage());
         }
 
         try {
