@@ -8,8 +8,8 @@ import java.util.List;
  */
 public interface iObjectIO {
 
-    void saveObjects(Serializable[] objects);
-    <E> List<E> readObjects(Class<E> clazz) throws ObjectReadFailureException;
+    void saveObject(Object object, Class<?> clazz) throws ObjectSaveFailureException;
+    <E> E readObject(Class<E> clazz) throws ObjectReadFailureException;
 
 
 }//interface

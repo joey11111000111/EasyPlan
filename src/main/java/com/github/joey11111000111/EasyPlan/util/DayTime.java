@@ -1,17 +1,19 @@
 package com.github.joey11111000111.EasyPlan.util;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**
  * The DayTime class represents the time of one day in HH:MM format,
  * where HH is in range 0-23 and MM is in range 0-59
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DayTime implements Serializable {
 
-    static final long serialVersionUID = 0L;
-
-    private int hours;
-    private int minutes;
+    @XmlAttribute private int hours;
+    @XmlAttribute private int minutes;
 
     /**
      * Creates a DayTime instance by converting the given minutes into a HH:MM format.
@@ -30,6 +32,11 @@ public class DayTime implements Serializable {
         this.hours = minutes / 60;
         this.minutes = minutes - hours * 60;
         this.hours %= 24;
+    }
+
+    public DayTime() {
+        hours = 0;
+        minutes = 0;
     }
 
     /**

@@ -8,13 +8,14 @@ import com.github.joey11111000111.EasyPlan.util.DayTime;
  */
 public interface Controller {
 
+    void init();
+
     void selectService(String serviceName);
     boolean hasSelectedService();
     boolean deleteSelectedService();
     boolean deleteService(String serviceName);
     void createNewService();
 
-    void saveServices();
     boolean isSaved();
     boolean isModified();
     void applyChanges() throws NameConflictException;

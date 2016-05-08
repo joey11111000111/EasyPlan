@@ -2,7 +2,7 @@ package com.github.joey11111000111.EasyPlan.core;
 
 import com.github.joey11111000111.EasyPlan.util.DayTime;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,22 +11,23 @@ import java.util.List;
  * It holds the data in two separate forms simultaneously, which allows new
  * modifications to be discarded.
  */
-public class BusService implements Serializable {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class BusService {
 
-    static final long serialVersionUID = 0L;
     /**
      * The name of a newly created, unmodified bus service
      */
-    static final String DEFAULT_NAME = "new service";
+    @XmlTransient static final String DEFAULT_NAME = "new service";
 
-    private List<Integer> savedStops;
-    private String name;
+    @XmlElement(name = "touchedStop") private List<Integer> savedStops;
+    @XmlElement(name = "serviceName") private String name;
     private int timeGap;
     private DayTime firstLeaveTime;
     private DayTime boundaryTime;
 
-    transient private TouchedStops currentStops;
-    transient private BasicServiceData currentServiceData;
+    @XmlTransient private TouchedStops currentStops;
+    @XmlTransient private BasicServiceData currentServiceData;
 
     /**
      * Creates a bus service filled with default values. These values are:
@@ -85,8 +86,8 @@ public class BusService implements Serializable {
         // discard stop changes, if there were any
         if (currentStops.isModified()) {
             currentStops.clear();
-            for (int i : savedStops)
-                currentStops.appendStop(i);
+            for (int i = 1; i < savedStops.size(); i++)
+                currentStops.appendStop(savedStops.get(i));
             currentStops.markAsSaved();
             if (!restoreHappened)
                 restoreHappened = true;

@@ -3,6 +3,10 @@ package com.github.joey11111000111.EasyPlan.dao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +16,47 @@ import java.util.List;
 public class ObjectIO implements iObjectIO {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ObjectIO.class);
-    static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices";
+    static final String SAVE_PATH = System.getProperty("user.home") + "/.EasyPlan/savedServices.xml";
 
     @Override
-    public void saveObjects(Serializable[] objects) {
+    public void saveObject(Object object, Class<?> clazz) throws ObjectSaveFailureException {
+        OutputStream outputStream;
+        try {
+            outputStream = new FileOutputStream(SAVE_PATH);
+        } catch (FileNotFoundException e) {
+            throw new ObjectSaveFailureException("save file cannot be created");
+        }
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(clazz);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(object, outputStream);
+        } catch (JAXBException e) {
+            throw new ObjectSaveFailureException("Object cannot be saved: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public <E> E readObject(Class<E> clazz) throws ObjectReadFailureException {
+        InputStream inputStream;
+        try {
+            inputStream = new FileInputStream(SAVE_PATH);
+        } catch (FileNotFoundException e) {
+            throw new ObjectReadFailureException("save file is not found");
+        }
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(clazz);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            return (E)unmarshaller.unmarshal(inputStream);
+        } catch (JAXBException jaxbe) {
+            throw new ObjectReadFailureException("Cannot read object: " + jaxbe.getMessage());
+        }
+    }
+
+    /*    @Override
+    public void saveObjects(Serializable[] objec) {
         LOGGER.trace("called saveServices");
         int size = objects.length;
         // When there are no services, the reader will know that by not finding the save file
@@ -84,5 +125,5 @@ public class ObjectIO implements iObjectIO {
         }
 
         return readObjects;
-    }
+    }*/
 }//class

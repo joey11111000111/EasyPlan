@@ -37,6 +37,7 @@ public class ControlPane {
     private Spinner<Integer> timeGapSpinner;
     private TextArea stopsArea;
     private Button applyButton;
+    private Button discardButton;
     private ComboBox<String> serviceComboBox;
     private Button addNewButton;
     private Button deleteButton;
@@ -86,9 +87,10 @@ public class ControlPane {
         refreshStopsString(stopsStringProperty.getValue());
         root.getChildren().addAll(stopsText, stopsArea);
 
-        // apply changes button
+        // apply and discard changes buttons
         applyButton = createRoundedButton("Apply changes", widthProperty);
-        root.getChildren().add(applyButton);
+        discardButton = createRoundedButton("Discard changes", widthProperty);
+        root.getChildren().addAll(applyButton, discardButton);
 
         // All services part ---------------------------------------------
         Region firstSpacer = new Region();
@@ -138,6 +140,7 @@ public class ControlPane {
                 controller.setTimeGap(newValue));
 
         applyButton.setOnAction(event -> applyChanges());
+        discardButton.setOnAction(event -> discardChanges());
         serviceComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             controller.selectService(newValue);
             for (String name : controller.getServiceNames())
@@ -170,11 +173,7 @@ public class ControlPane {
 
 
 
-        exitButton.setOnAction(event -> {
-            if (!controller.isSaved())
-                controller.saveServices();
-            Platform.exit();
-        });
+        exitButton.setOnAction(event -> Platform.exit());
 
 
     }
@@ -223,13 +222,17 @@ public class ControlPane {
             sleeper.setOnSucceeded(event -> {
                 if (nameField.getStyleClass().contains("error-field"))
                     nameField.getStyleClass().remove("error-field");
-                System.err.println("lefutott");
             });
 
             Thread thd = new Thread(sleeper);
             thd.setDaemon(true);
             thd.start();
         }
+    }
+
+    private void discardChanges() {
+        if (controller.discardChanges() && serviceChangeProperty != null)
+            showService();
     }
 
     public Pane getRoot() {

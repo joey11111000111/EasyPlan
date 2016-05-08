@@ -9,6 +9,7 @@ import com.github.joey11111000111.EasyPlan.util.DayTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.annotation.*;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -18,17 +19,18 @@ import java.util.TreeMap;
  * Except for the user interface, every change is made through this class.
  * It offer methods to manage the bus services, including saving and reading them.
  */
+@XmlRootElement(name = "AllServices")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Core implements Controller {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Core.class);
 
-    private final iObjectIO objectIO;
-    private boolean saved;
+    @XmlTransient private boolean saved;
     private SortedMap<String, BusService> services;
     // the three below are for the selected service
-    private BusService selectedService;
-    private BasicServiceData basicData;
-    private TouchedStops touchedStops;
+    @XmlTransient private BusService selectedService;
+    @XmlTransient private BasicServiceData basicData;
+    @XmlTransient private TouchedStops touchedStops;
 
     /**
      * Creates a new instance filled with default settings. The reading of saved bus services
@@ -36,30 +38,22 @@ public class Core implements Controller {
      *   - the 'null service' is selected
      *   - the services are considered to be saved
      */
-    public Core(iObjectIO objectIO) {
+    public Core() {
         LOGGER.trace("creating Core instance...");
-        if (objectIO == null)
-            throw new NullPointerException("DAO object must not be null");
-        this.objectIO = objectIO;
 
         saved = true;
+        services = new TreeMap<>();
         selectedService = null;
         basicData = null;
         touchedStops = null;
-
-        // If there are saved services read them, if not, create a new one. Then select a service
-        services = new TreeMap<>();
-        try {
-            List<BusService> serviceList = objectIO.readObjects(BusService.class);
-            for (BusService bs : serviceList) {
-                bs.initTransientFields();
-                services.put(bs.getAppliedName(), bs);
-            }
-            selectService(serviceList.get(0).getAppliedName());
-        } catch (ObjectReadFailureException orfe) {
-            createNewService();
-        }
         LOGGER.debug("core instance successfully created");
+    }
+
+    @Override
+    public void init() {
+        services.values().stream().forEach(BusService::initTransientFields);
+        // select a service randomly
+        setSelectedService(services.values().iterator().next());
     }
 
     // Methods for the selected bus service -----------------------------------------------
@@ -131,6 +125,7 @@ public class Core implements Controller {
         LOGGER.debug("tried to discard changes, but there were no modifications");
         return false;
     }
+
 
     @Override
     public iTimetable getTimetableOf(String serviceName) {
@@ -458,14 +453,6 @@ public class Core implements Controller {
         return services.size();
     }
 
-    /**
-     * Saves all the bus services into the save file. If a bus service was modified, than only the applied
-     * changes are saved.
-     */
-    @Override
-    public void saveServices() {
-        objectIO.saveObjects(services.values().toArray(new BusService[0]));
-    }//saveServices
 
     /**
      * Creates a new bus service, filled with default values. The default name value is always the same,

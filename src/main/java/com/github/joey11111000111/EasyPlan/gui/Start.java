@@ -38,7 +38,6 @@ public class Start extends Application {
         stage = primaryStage;
         stage.setMinHeight(600);
         stage.setMinWidth(770);
-        stage.setOnCloseRequest(event1 -> controller.saveServices());
 
         GridPane root = new GridPane();
         editorScene = new Scene(root, 770, 700);
