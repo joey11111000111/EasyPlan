@@ -16,27 +16,27 @@ import java.util.List;
 public class ObjectIO implements iObjectIO {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ObjectIO.class);
+    // --------------------------------------------------------------------------------------
     static final String SAVE_PATH;
 
     static {
         StringBuilder sb = new StringBuilder(System.getProperty("user.home"));
-	String sep = System.getProperty("file.separator");
-	sb.append(sep).append(".EasyPlan").append(sep).append("savedServices.xml");
-	SAVE_PATH = sb.toString();
+	    String sep = System.getProperty("file.separator");
+	    sb.append(sep).append(".EasyPlan").append(sep).append("savedServices.xml");
+	    SAVE_PATH = sb.toString();
     }
 
     @Override
     public void saveObject(Object object, Class<?> clazz) throws ObjectSaveFailureException {
-	System.out.println("---------: " + SAVE_PATH + " :----------");
         try {
-	    File saveFile = new File(SAVE_PATH);
-	    if (!saveFile.exists()) {
-		saveFile.getParentFile().mkdirs();
-	        saveFile.createNewFile();
-	    }
-	} catch (IOException e) {
-	    throw new ObjectSaveFailureException("cannot explicitely create save file: " + e.getMessage());
-	}
+            File saveFile = new File(SAVE_PATH);
+            if (!saveFile.exists()) {
+                saveFile.getParentFile().mkdirs();
+                saveFile.createNewFile();
+            }
+        } catch (IOException e) {
+            throw new ObjectSaveFailureException("cannot explicitly create save file: " + e.getMessage());
+        }
 
         OutputStream outputStream;
         try {
@@ -44,7 +44,7 @@ public class ObjectIO implements iObjectIO {
         } catch (FileNotFoundException e) {
             throw new ObjectSaveFailureException("save file cannot be created: " + e.getMessage());
         }
-
+    // -------------------------------------------------------------------------------------------
         try {
             JAXBContext context = JAXBContext.newInstance(clazz);
             Marshaller marshaller = context.createMarshaller();

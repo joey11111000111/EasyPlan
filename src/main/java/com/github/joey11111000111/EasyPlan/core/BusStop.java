@@ -10,18 +10,31 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * The BusStop class manages all the data and operations (including the xml parsing) that are related to bus stops.
- * This class cannot be instantiated, nor modified in any way. Everything is handled through static methods.
- * All the bus stops have a unique id, which start from 0 and are increasing one by one. Thus the 'id' and 'index'
- * words are almost synonyms.
+ * The BusStop class manages all the data and operations (including the xml parsing)
+ * in connection with a single bus stop.
+ * No instances of this class can be acquired from the outside, nor modified in any way.
+ * Everything is handled through static methods.
+ * All the bus stops have a unique id, which (by convention) start from 0 and are increasing one by one.
+ * Thus the 'id' and 'index' words can be used as synonyms.
  */
 public final class BusStop implements Comparable<BusStop> {
 
+    /**
+     * The <a href="http://www.slf4j.org/">slf4j</a> logger object for this class.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(BusStop.class);
 
     // static ----------------------------------------------------------
+    /**
+     * Contains all the {@link BusStop} objects filled with the data of the city.xml file.
+     * The array-index and id of the objects are the same, sorted in ascending order.
+     */
     private static final BusStop[] allStops;
 
+    /**
+     * Reads the city.xml file, creates and validates the {@link BusStop} objects
+     * and fills up the {@link #allStops} array.
+     */
     static {
         iCityReader cityReader = new CityReader();
         List<iBusStopData> stopsData = cityReader.readCityStops();
@@ -87,14 +100,17 @@ public final class BusStop implements Comparable<BusStop> {
     }//static
 
 
-    // TODO: javadoc
+    /**
+     * Returns the number of created {@link BusStop} objects.
+     * @return the number of existing {link #BusStop} objects.
+     */
     public static int getStopCount() {
         return allStops.length;
     }
 
     /**
-     * Returns the X coordinate of the specified bus stop
-     * @param id specifies the bus stops, whose X coordinate will be returned
+     * Returns the X coordinate of the specified bus stop.
+     * @param id specifies the bus stops, whose X coordinate shell be returned
      * @return the X coordinate of the specified bus stop
      * @throws IndexOutOfBoundsException if there isn't a bus stop with the given id
      */
@@ -104,7 +120,7 @@ public final class BusStop implements Comparable<BusStop> {
         return allStops[id].x;
     }
     /**
-     * Returns the Y coordinate of the specified bus stop
+     * Returns the Y coordinate of the specified bus stop.
      * @param id specifies the bus stops, whose Y coordinate will be returned
      * @return the Y coordinate of the specified bus stop
      * @throws IndexOutOfBoundsException if there isn't a bus stop with the given id
@@ -116,7 +132,7 @@ public final class BusStop implements Comparable<BusStop> {
     }
 
     /**
-     * Returns all the bus stop ids that can be the next stop after the given bus stop
+     * Returns all the bus stop ids that can be the next stop after (thus reachable from) the given bus stop.
      * @param id the current bus stop, from which to go
      * @return all the bus stop ids that can be the next stop after the given bus stop
      */
@@ -130,8 +146,8 @@ public final class BusStop implements Comparable<BusStop> {
     }
 
     /**
-     * Returns true if there is a bus stop with the given id
-     * @param index the bus stop id whose validity will be checked
+     * Returns true if there is a bus stop with the given id.
+     * @param index the bus stop id whose validity shell be checked
      * @return true if there is a bus stop with the given id
      */
     public static boolean validId(int index) {
@@ -139,7 +155,7 @@ public final class BusStop implements Comparable<BusStop> {
     }
 
     /**
-     * Returns true, if the bus stop at 'toId' can be the next from 'fromId'
+     * Returns true, if the bus stop of 'toId' can be the next from 'fromId'.
      * @param toId the bus stop to go to
      * @param fromId the bus stop to go from
      * @return true when the bus stop at 'toId' can be the next from 'fromId'
@@ -155,7 +171,7 @@ public final class BusStop implements Comparable<BusStop> {
 
     /**
      * Returns the time (in minutes) that it takes to go from the bus stop with 'fromId' to the
-     * bus stop with 'toId'
+     * bus stop with 'toId'.
      * @param toId the bus stop to go to
      * @param fromId the bus stop to go from
      * @return the travel time in minutes
@@ -174,11 +190,33 @@ public final class BusStop implements Comparable<BusStop> {
     }
 
     // member ----------------------------------------------------------
+    /**
+     * The id of this {@link BusStop} object.
+     */
     public final int id;
-    public final int x;
-    public final int y;
-    private final Map<java.lang.Integer, java.lang.Integer> reachableStops;
 
+    /**
+     * The X coordinate of this {@link BusStop} object.
+     */
+    public final int x;
+
+    /**
+     * The Y coordinate of this {@link BusStop} object.
+     */
+    public final int y;
+
+    /**
+     * Shows which bus stops are reachable from this {@link BusStop} object.
+     * The keys are the id -s and values shows the time (in minutes) that it takes
+     * to reach that bus stop from this stop.
+     */
+    private final Map<Integer, Integer> reachableStops;
+
+    /**
+     * Creates a {@link BusStop} object using the given data.
+     * There is no way to acquire this object from outside of this class.
+     * @param busStopData contains all the data read from the city.xml file about a single object
+     */
     private BusStop(iBusStopData busStopData) {
         id = busStopData.getId();
         x = busStopData.getX();
@@ -186,6 +224,12 @@ public final class BusStop implements Comparable<BusStop> {
         reachableStops = Collections.unmodifiableMap(busStopData.getReachableStops());
     }
 
+    /**
+     * {@link BusStop} objects are sorted according to their id -s in ascending order.
+     * @param otherStop the {@link BusStop} object to compare this object to
+     * @return a negative, positive int or zero, according to the rules specified
+     * by the {@link Comparable} interface.
+     */
     public int compareTo(BusStop otherStop) {
         return this.id - otherStop.id;
     }
