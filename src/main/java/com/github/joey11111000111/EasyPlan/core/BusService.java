@@ -219,9 +219,9 @@ public class BusService {
      * data of this bus service.
      * @return the {@link Timetable} of this bus service.
      */
-    public Timetable getTimetable() {
+    public iTimetable getTimetable() {
         LOGGER.trace("called getTimetable");
-        Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
+        iTimetable.iTimetableArguments args = new Timetable.TimetableArguments();
         args.setName(currentServiceData.getName());
         args.setStopIds(currentStops.getStops());
         args.setTravelTimes(currentStops.getTravelTimes());
@@ -229,7 +229,7 @@ public class BusService {
         args.setFirstLeaveTime(currentServiceData.getFirstLeaveTime());
         args.setBoundaryTime(currentServiceData.getBoundaryTime());
 
-        return Timetable.newInstance(args);
+        return Timetable.createTimetable(args);
     }
 
     /**

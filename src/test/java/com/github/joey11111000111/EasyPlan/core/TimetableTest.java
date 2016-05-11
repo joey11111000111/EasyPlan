@@ -39,8 +39,8 @@ public class TimetableTest {
         timeGap = 20;
     }
 
-    private Timetable.TimeTableArguments createArgs() {
-        Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
+    private Timetable.TimetableArguments createArgs() {
+        Timetable.TimetableArguments args = new Timetable.TimetableArguments();
         args.setTimeGap(timeGap);
         args.setName(name);
         args.setFirstLeaveTime(firstLeaveTime);
@@ -53,7 +53,7 @@ public class TimetableTest {
 
     @Test
     public void testTimeTableArguments() {
-        Timetable.TimeTableArguments args = createArgs();
+        Timetable.TimetableArguments args = createArgs();
 
         int[] travelTimes = {-2, 1, 4};
         try {
@@ -130,10 +130,10 @@ public class TimetableTest {
     public void testOpenTimeTable() {
         int backupHours = boundaryTime.getHours();
         int backupMinutes = boundaryTime.getMinutes();
-        Timetable.TimeTableArguments args;
+        Timetable.TimetableArguments args;
         for (int i = 0; i < 2; i++) {
             args = createArgs();
-            Timetable tt = Timetable.newInstance(args);
+            Timetable tt = Timetable.createTimetable(args);
 
             assertEquals("22Y", tt.name);
             List<Timetable.StopTimes> list = tt.stopTimes;
@@ -167,13 +167,13 @@ public class TimetableTest {
         try {
             int backupHours = boundaryTime.getHours();
             int backupMinutes = boundaryTime.getMinutes();
-            Timetable.TimeTableArguments args;
+            Timetable.TimetableArguments args;
             for (int i = 0; i < 2; i++) {
                 int[] travelTimesSave = travelTimes;
                 int[] stopIdsSave = stopIds;
                 travelTimes = new int[0];
                 stopIds = new int[]{0};
-                Timetable tt = Timetable.newInstance(createArgs());
+                Timetable tt = Timetable.createTimetable(createArgs());
                 travelTimes = travelTimesSave;
                 stopIds = stopIdsSave;
 
@@ -192,20 +192,20 @@ public class TimetableTest {
 
     @Test
     public void testWithInvalidArgs() {
-        Timetable.TimeTableArguments args = new Timetable.TimeTableArguments();
+        Timetable.TimetableArguments args = new Timetable.TimetableArguments();
         Timetable tt;
         try {
-            tt = Timetable.newInstance(args);
+            tt = Timetable.createTimetable(args);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         args.setName("22Y");
         try {
-            tt = Timetable.newInstance(args);
+            tt = Timetable.createTimetable(args);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         args.setStopIds(new int[] {0, 1, 4, 6 ,9, 2});
         try {
-            tt = Timetable.newInstance(args);
+            tt = Timetable.createTimetable(args);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
     }

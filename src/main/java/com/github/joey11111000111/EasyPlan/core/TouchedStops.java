@@ -30,19 +30,19 @@ public class TouchedStops {
      * appending a single bus stop or deleting one or multiple stops. Which means that the only
      * counteractions are deleting a single stop or appending one or multiple stops. When appending,
      * the objects of this class stores a chain of stops to append. This class relies on the
-     * {@link OpenLinkedList} and its {@link Node} classes, that's why it is generic.
+     * {@link OpenLinkedList} and its {@link Node Node} classes, that's why it is generic.
      * The type parameter show what type of objects are there to deal with when it comes to appending.
      * @param <E> the type of objects in the append-chain
      */
     private static class UndoOperation<E> {
 
         /**
-         * Indicates which of the two operations the {@link UndoOperation} holds.
+         * Indicates which of the two operations the {@link UndoOperation UndoOperation} holds.
          */
         public enum OperationType {
 
             /**
-             * The wrapping {@link UndoOperation} object holds a delete operation.
+             * The wrapping {@link UndoOperation UndoOperation} object holds a delete operation.
              * This kind of operation doesn't need the {@link #chain append-chain},
              * because all it does is deleting the last bus stop in the
              * {@link TouchedStops#stops stop-list} of the buffer.
@@ -50,7 +50,7 @@ public class TouchedStops {
             DELETE,
 
             /**
-             * The wrapping {@link UndoOperation} object holds an append operation.
+             * The wrapping {@link UndoOperation UndoOperation} object holds an append operation.
              * This kind of operation will append the contained {@link #chain append-chain}
              * to the {@link TouchedStops#stops stop-list} of the buffer.
              */
@@ -108,7 +108,7 @@ public class TouchedStops {
          * type operation.
          * @param <E> The type of objects in the {@link #chain append-chain}. That chain has
          *           no importance the returned {@link OperationType#DELETE DELETE} operation.
-         * @return a new {@link UndoOperation} instance of type {@link OperationType#DELETE DELETE}
+         * @return a new {@link UndoOperation UndoOperation} instance of type {@link OperationType#DELETE DELETE}
          */
         public static <E> UndoOperation<E> newDeleteInstance() {
             return new UndoOperation<>(OperationType.DELETE, null);
@@ -119,7 +119,7 @@ public class TouchedStops {
          * type operation using the given append-chain.
          * @param chain the chain of elements that are to be used when committing this operation
          * @param <E> the type of objects held by the chain
-         * @return a new {@link UndoOperation} instance of type {@link OperationType#APPEND APPEND}
+         * @return a new {@link UndoOperation UndoOperation} instance of type {@link OperationType#APPEND APPEND}
          */
         public static <E> UndoOperation<E> newAppendInstance(Node<E> chain) {
             return new UndoOperation<>(OperationType.APPEND, chain);
@@ -127,7 +127,7 @@ public class TouchedStops {
     }//private static class
 
     /**
-     * List of the bus stops that this buffer contains.
+     * List of the bus stops that this buffer contains in their append order.
      */
     private OpenLinkedList<Integer> stops;
 
@@ -425,7 +425,8 @@ public class TouchedStops {
 
     /**
      * Returns an array containing the minutes that it takes to travel from the bus station
-     * to each of the added bus stops.
+     * to each of the added bus stops. All travel times are relative to the
+     * {@link BusService#firstLeaveTime firstLeaveTime}.
      * All the bus services start at the bus station, so there is no travel time for the first
      * appearance of the station.
      * @return an array with the travel times to each touched bus stop, relative

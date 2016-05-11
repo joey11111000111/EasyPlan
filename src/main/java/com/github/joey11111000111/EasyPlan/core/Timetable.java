@@ -5,36 +5,37 @@ import com.github.joey11111000111.EasyPlan.util.DayTime;
 import java.util.*;
 
 /**
- * A Timetable gives information about the schedules of a certain bus service.
- * It shows all the time of all the touched stops when a bus of the service arrives.
- * The bus station is also included.
- * All instances are unmodifiable, and no instances can be created outside the package.
- * However, every bus service can return its own timetable.
+ * Implements all functionality of the {@link iTimetable} interface and does nothing more.
  */
 public class Timetable implements iTimetable {
 
     /**
-     * An instance of this class contains all the arrive times of the buses of the service
-     * to a certain bus stop (can be the station as well). Instances are unmodifiable, and
-     * cannot be created outside of the package. However, the returned TimeTable contains one
-     * StopTimes instance for all the touched bus stops of the bus service.
+     * Implements all functionality of the {@link iStopTimes iStopTimes} interface.
+     * The only method in addition is a {@link #toString()}.
      */
     public static class StopTimes implements iStopTimes {
+
         /**
-         * the id of the bus stop, whose arrive times are recorded in the list
+         * The id of the bus stop, whose arrive times are recorded in the list.
          */
         private String id;
         /**
-         * Contains all the arrive times to this bus stop, starting with the time when
-         * the first bus leaves the station. This list always has at least one element.
+         * Contains all the arrive times to this bus stop, including all the buses of the represented service.
+         * This list always has at least one element.
          */
         private List<DayTime> times;
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getID() {
             return id;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public List<DayTime> getTimes() {
             return times;
@@ -42,6 +43,8 @@ public class Timetable implements iTimetable {
 
         /**
          * Creates an instance filled with the given data.
+         * All bus services create their own timetable objects, but no one else, that's why this constructor is
+         * package private.
          * @param id the id of the bus stop whose arrive times is stored in the instance
          * @param times an unmodifiable list of the arrive times to the given bus stop
          * @throws IllegalArgumentException when the list is empty or modifiable
@@ -58,6 +61,10 @@ public class Timetable implements iTimetable {
             this.times = times;
         }
 
+        /**
+         * Returns a string representing this object in a form of "id: 'id'  stop times: 'time'  'time' ...".
+         * @return a string representing this object
+         */
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append("id: ").append(id).append("  stop times: ");
@@ -68,21 +75,56 @@ public class Timetable implements iTimetable {
     }
 
     /**
-     * The sole purpose of this class is to help to create a Timetable instance.
+     * The sole purpose of this class is to help creating {@link Timetable} instances.
      * Since the constructor of the Timetable class requires quite a lot of arguments
      * which can be hard to correctly dealt with, this class can make it easy and safe.
-     * It checks the validity of the arguments and whether all the arguments are given all or not.
+     * It checks the validity of the arguments and whether all the arguments are given or not.
      * Also they can be given in any order, even more than once.
      */
-    static class TimeTableArguments {
+    static class TimetableArguments implements iTimetableArguments {
+
+        /**
+         * Buffer variable for {@link Timetable#name}.
+         * See {@link #setName(String)} for more information.
+         */
         private String name;
+
+        /**
+         * The id -s of all the touched stops of the represented service in the order of append.
+         * See {@link #setStopIds(int[])} for more information.
+         */
         private int[] stopIds;
+
+        /**
+         * The time (in minutes) that it takes to reach the stops along way from the bus station.
+         * See {@link #setTravelTimes(int[])} for more information.
+         */
         private int[] travelTimes;
+
+        /**
+         * The {@link BusService#firstLeaveTime firstLeaveTime} of the represented bus service.
+         * See {@link #setFirstLeaveTime(DayTime)} for more information.
+         */
         private DayTime firstLeaveTime;
+
+        /**
+         * The {@link BusService#boundaryTime boundaryTime} of the represented bus service.
+         * See {@link #setBoundaryTime(DayTime)} for more information.
+         */
         private DayTime boundaryTime;
+
+        /**
+         * The time in minutes to wait before the subsequent bus of the service leaves the station.
+         * See {@link #setTravelTimes(int[])} for more information.
+         */
         private int timeGap;
 
-        public TimeTableArguments() {
+
+        /**
+         * Creates a new instance completely filled with invalid data.
+         * The object gets valid once all data is set with valid arguments.
+         */
+        public TimetableArguments() {
             name = null;
             stopIds = null;
             travelTimes = null;
@@ -91,6 +133,10 @@ public class Timetable implements iTimetable {
             timeGap = -1;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void setName(String name) {
             if (name == null)
                 throw new NullPointerException("name must not be null");
@@ -99,6 +145,10 @@ public class Timetable implements iTimetable {
             this.name = name;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void setStopIds(int[] stopIds) {
             if (stopIds == null)
                 throw new NullPointerException("stopIds must not be null");
@@ -115,13 +165,16 @@ public class Timetable implements iTimetable {
                 if (!BusStop.validId(stopIds[i]))
                     throw new IllegalArgumentException("invalid array element");
 
-
-            // create deep copy
+            // TODO array-copy
             this.stopIds = new int[stopIds.length];
             for (int i = 0; i < stopIds.length; i++)
                 this.stopIds[i] = stopIds[i];
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void setTravelTimes(int[] travelTimes) {
             if (travelTimes == null)
                 throw new NullPointerException("travelTimes must not be null");
@@ -140,6 +193,10 @@ public class Timetable implements iTimetable {
                 this.travelTimes[i] = travelTimes[i];
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void setFirstLeaveTime(DayTime firstLeaveTime) {
             if (firstLeaveTime == null)
                 throw new NullPointerException("firstLeaveTime must not be null");
@@ -147,6 +204,10 @@ public class Timetable implements iTimetable {
             this.firstLeaveTime = new DayTime(firstLeaveTime);
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void setBoundaryTime(DayTime boundaryTime) {
             if (boundaryTime == null)
                 throw new NullPointerException("boundaryTime must not be null");
@@ -154,33 +215,79 @@ public class Timetable implements iTimetable {
             this.boundaryTime = new DayTime(boundaryTime);
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public void setTimeGap(int timeGap) {
             if (timeGap < 1)
                 throw new IllegalArgumentException("timeGap must be positive");
             this.timeGap = timeGap;
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int[] getStopIds() {
+            return stopIds;
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int[] getTravelTimes() {
+            return travelTimes;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public DayTime getFirstLeaveTime() {
+            return firstLeaveTime;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public DayTime getBoundaryTime() {
+            return boundaryTime;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getTimeGap() {
+            return timeGap;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public boolean isValid() {
             return name != null && stopIds != null && travelTimes != null
                     && firstLeaveTime != null && boundaryTime != null
                     && timeGap > 0;
         }
 
-        @Override
-        public String toString() {
-            return "TimeTableArguments{" +
-                    "name='" + name + '\'' +
-                    ", stopIds=" + Arrays.toString(stopIds) +
-                    ", travelTimes=" + Arrays.toString(travelTimes) +
-                    ", firstLeaveTime=" + firstLeaveTime +
-                    ", boundaryTime=" + boundaryTime +
-                    ", timeGap=" + timeGap +
-                    '}';
-        }
-    }
+    }//class TimetableArguments
 
     /**
-     * name of the bus service
+     * Name of the represented bus service.
      */
     private String name;
     /**
@@ -189,55 +296,96 @@ public class Timetable implements iTimetable {
      */
     private List<iStopTimes> stopTimes;
     /**
-     * contains the number of buses that will leave the station in one day
+     * Contains the number of buses that will leave the station between
+     * {@link BusService#firstLeaveTime firstLeaveTime} and {@link BusService#boundaryTime boundaryTime}.
      */
     private int busCount;
     /**
-     * the minutes before the next bus leaves the station after the previous one
+     * The minutes to wait before the next bus of the service leaves the station after the previous one.
      */
     private int timeGap;
     /**
-     * the time that it takes for one bus of the service to go through all the bus stops
-     * (return to the station is included if happens in the service)
+     * The time it takes for one bus of the service to go through all the touched bus stops.
      */
     private DayTime totalTravelTime;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getServiceName() {
         return name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<iStopTimes> getStopTimes() {
         return stopTimes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getBusCount() {
         return busCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getTimeGap() {
         return timeGap;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DayTime getTotalTravelTime() {
         return totalTravelTime;
     }
 
-    static Timetable newInstance(TimeTableArguments tta) {
+    /**
+     * Creates and returns a new iTimetable - instance.
+     * Since the iTimetable doesn't give modification methods, all the contained data
+     * will be decided at the time of creation.
+     * @param tta The data - container object used for the creation
+     * @return a new iTimetable instance
+     * @throws IllegalArgumentException if the given argument is invalid
+     *          See {@link iTimetableArguments#isValid()} for more information.
+     */
+    static iTimetable createTimetable(iTimetableArguments tta) {
         if (!tta.isValid())
             throw new IllegalArgumentException("given arguments are not in a ready state: "
                     + System.getProperty("line.separator")
                     + tta.toString());
 
-        return new Timetable(tta.name, tta.stopIds, tta.travelTimes, tta.firstLeaveTime,
-                    tta.boundaryTime, tta.timeGap);
+        return new Timetable(
+                tta.getName(),
+                tta.getStopIds(),
+                tta.getTravelTimes(),
+                tta.getFirstLeaveTime(),
+                tta.getBoundaryTime(),
+                tta.getTimeGap()
+        );
     }
 
-
+    /**
+     * Constructor only used by the {@link #createTimetable(iTimetableArguments)} static factory method.
+     * @param name {@link BusService#name name} of service
+     * @param stopIds id -s of bus stops the represented service touches
+     * @param travelTimes the minutes it takes to travel to each of the touched stops, relative to the station
+     * @param firstLeaveTime the {@link BusService#firstLeaveTime time} of day when the
+     *                       first bus of the service leaves the station
+     * @param boundaryTime the {@link BusService#boundaryTime time} of day after which
+     *                     no more buses of the represented service can leave the station
+     * @param timeGap the {@link BusService#timeGap wait time} in minutes between two
+     *                subsequent buses of the represented service
+     */
     private Timetable(String name, int[] stopIds, int[] travelTimes,
                       DayTime firstLeaveTime, DayTime boundaryTime, int timeGap) {
 
@@ -280,8 +428,21 @@ public class Timetable implements iTimetable {
             totalTravelTime = new DayTime(0, 0);
     }
 
+    /**
+     * Creates and returns a new {@link StopTimes} object that contains the id of the stop and all the the times
+     * when a bus of the represented service stops at this bus stop, in ascending order.
+     * @param id id of the represented bus stop
+     * @param busCount the number of times a bus of the service stops at this bus stop
+     * @param timeGap the minutes between two subsequent buses of the service stop at this bus stop
+     * @param firstLeaveMinutes the {@link BusService#firstLeaveTime firstLeaveTime} of the represented
+     *                          service converted into minutes
+     * @param travelTime The time in minutes that it takes to travel from the bus station to this bus stop
+     *                   through all the intervening bus stops. Acts as an offset value.
+     * @return a new {@link StopTimes} object that contains the id of the given stop and the times
+     *      of arriving buses of the represented service.
+     */
     private StopTimes getStopTimes(int id, int busCount, int timeGap, int firstLeaveMinutes, int travelTime) {
-        List<DayTime> list = new ArrayList<DayTime>(busCount);
+        List<DayTime> list = new ArrayList<>(busCount);
         for (int i = 0; i < busCount; i++) {
             int minutes = i * timeGap + firstLeaveMinutes + travelTime;
             list.add(new DayTime(minutes, true));

@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * The BusStop class manages all the data and operations (including the xml parsing)
- * in connection with a single bus stop.
+ * The BusStop class manages all the data and operations in connection with a single bus stop.
  * No instances of this class can be acquired from the outside, nor modified in any way.
  * Everything is handled through static methods.
  * All the bus stops have a unique id, which (by convention) start from 0 and are increasing one by one.
  * Thus the 'id' and 'index' words can be used as synonyms.
+ * This class is like a server, that only offers read operations to clients.
  */
 public final class BusStop implements Comparable<BusStop> {
 
