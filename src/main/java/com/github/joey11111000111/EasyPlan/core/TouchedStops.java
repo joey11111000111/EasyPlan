@@ -273,7 +273,7 @@ public class TouchedStops {
                     }
             }
         }
-        LOGGER.debug("the stop " + id + " was added less than twice");
+        LOGGER.trace("the stop " + id + " was added less than twice");
         return false;
     }
 

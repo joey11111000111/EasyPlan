@@ -75,7 +75,7 @@ public class BusService {
 
     /**
      * Creates a bus service filled with default values. These values are:<br>
-     *   - default name<br>
+     *   - default name (new service)<br>
      *   - empty stop list<br>
      *   - 10 minutes time gap<br>
      *   - first leaves the station at 08:00<br>

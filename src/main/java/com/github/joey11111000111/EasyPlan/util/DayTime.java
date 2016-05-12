@@ -94,7 +94,7 @@ public class DayTime implements Serializable {
 
     /**
      * Sets the hour part of the time to the given value
-     * @param hours the new hour part of the time, must be in range 0 - 23
+     * @param hours the new hour part of the time, must be in range of [0 - 23]
      * @return true, if the contained hour part was modified
      * @throws IllegalArgumentException - if the 'hours' parameter is out of range
      */

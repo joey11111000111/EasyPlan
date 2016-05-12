@@ -14,28 +14,53 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * The Core is the controller class for all the background actions of the application.
- * Except for the user interface, every change is made through this class.
- * It offer methods to manage the bus services, including saving and reading them.
+ * Implementation of the {@link Controller} interface. Offers no more public services.
+ * Logging is included. This is the root object to save.
  */
 @XmlRootElement(name = "AllServices")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Core implements Controller {
 
+    /**
+     * The <a href="http://www.slf4j.org/">slf4j</a> logger object for this class.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Core.class);
 
+    /**
+     * True, if the {@link #applyChanges() applied} data is the same as the data
+     * in the save file.
+     */
     @XmlTransient private boolean saved;
+
+    /**
+     * All services are stored in this variable.
+     * The key is the name of the service which is stored in the value part.
+     */
     private SortedMap<String, BusService> services;
-    // the three below are for the selected service
+
+    /**
+     * The currently checked out service. If there isn't a selected service,
+     * no modifications can be done. All modifications apply to the selected service.
+     */
     @XmlTransient private BusService selectedService;
+
+    /**
+     * The basic data buffer of the selected bus service.
+     */
     @XmlTransient private BasicServiceData basicData;
+
+    /**
+     * The touched stops buffer of the selected bus service.
+     */
     @XmlTransient private TouchedStops touchedStops;
 
     /**
-     * Creates a new instance filled with default settings. The reading of saved bus services
-     * happens here as well. The default settings are:
-     *   - the 'null service' is selected
-     *   - the services are considered to be saved
+     * Creates a new instance filled with default values.
+     * These values are:<br>
+     *   - no service is selected (null)<br>
+     *   - the buffers of the selected service are also null<br>
+     *   - the services are considered to be saved<br>
+     *   - empty map for the services
      */
     public Core() {
         LOGGER.trace("creating Core instance...");
@@ -48,14 +73,22 @@ public class Core implements Controller {
         LOGGER.debug("core instance successfully created");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init() {
         services.values().stream().forEach(BusService::initTransientFields);
-        // select a service randomly
-        setSelectedService(services.values().iterator().next());
+        selectFirstService();
     }
 
     // Methods for the selected bus service -----------------------------------------------
+
+    /**
+     * Selects the given service, if not already selected.
+     * Note that there is no argument validation due to being a private method.
+     * @param service the service to be selected
+     */
     private void setSelectedService(BusService service) {
         LOGGER.trace("called 'setSelectedService' with the service: "
                 + (service == null ? "null" : service.getAppliedName()) );
@@ -72,8 +105,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns true if there is an actual bus service selected
-     * @return true if there is an actual bus service selected
+     * {@inheritDoc}
      */
     @Override
     public boolean hasSelectedService() {
@@ -81,15 +113,18 @@ public class Core implements Controller {
         // if the selected service is not null, than the other two are not null too
         return selectedService != null;
     }
+
+    /**
+     * Checks whether there is a selected service and throws a {@link NoSelectedServiceException} if
+     * the answer is no. Only exist for convenience reasons.
+     */
     private void checkSelection() {
         if (!hasSelectedService())
             throw new NoSelectedServiceException();
     }
+
     /**
-     * Return true if there are new, unapplied modifications in either of the stop list
-     * or in the basic data in the selected bus service.
-     * @return true, if there are unapplied modifications
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public boolean isModified() {
@@ -99,8 +134,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns true, if there aren't any applied modifications, that are not saved to the save file
-     * @return true, if there aren't any applied modifications, that are not saved to the save file
+     * {@inheritDoc}
      */
     @Override
     public boolean isSaved() {
@@ -108,9 +142,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the selected bus service to the state, where the last call to 'applyChanges' happened.
-     * @return true, if there were any new changes to discard
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public boolean discardChanges() {
@@ -125,7 +157,9 @@ public class Core implements Controller {
         return false;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public iTimetable getTimetableOf(String serviceName) {
         LOGGER.trace("called getTimetableOf");
@@ -133,16 +167,14 @@ public class Core implements Controller {
             throw new NullPointerException("the given service name is null");
         BusService service = services.get(serviceName);
         if (service == null)
-            throw new IllegalArgumentException("the bus service with the given name '" + serviceName + "' does not exist");
+            throw new IllegalArgumentException("the bus service with the given name '" + serviceName
+                    + "' does not exist");
         return service.getTimetable();
     }
     // ---------------------------------
 
     /**
-     * Returns the (possibly unapplied) name of the selected bus service. It can differ from the name
-     * returned by the "getServiceNames", if the name was changes but not applied yet.
-     * @return the latest name of the bus service
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public String getName() {
@@ -152,14 +184,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Sets the name of the selected bus service. The new name is not registered to the
-     * bus service until the call of the "applyChanges" method.
-     * If the new name is already among the applied names of the other bus services,
-     * than the "applyChanges" will throw a NameConflictException.
-     * @param serviceName the new name of the bus service
-     * @throws NullPointerException when the given string is null
-     * @throws IllegalArgumentException when received an empty string
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void setName(String serviceName) {
@@ -170,10 +195,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the latest (possibly unapplied) value of the minutes until the following
-     * bus of the selected service leaves the station.
-     * @return the time gap between two following buses in minutes
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public int getTimeGap() {
@@ -183,10 +205,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Sets the minutes to wait before the following bus of the selected service leaves the station
-     * @param timeGap the new time gap between two following buses in minutes
-     * @throws IllegalArgumentException when the given minutes are less then 1
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void setTimeGap(int timeGap) {
@@ -197,10 +216,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the (possibly unapplied) time of the day when the first bus of the
-     * selected bus service leaves the station.
-     * @return the leave time of the first bus of the service
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public DayTime getFirstLeaveTime() {
@@ -210,9 +226,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Sets the time of the day when the first bus of the selected bus service leaves the bus station.
-     * @param time the new time of the day when the first bus of the bus service leaves the station.
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void setFirstLeaveTime(DayTime time) {
@@ -221,6 +235,10 @@ public class Core implements Controller {
         basicData.setFirstLeaveTime(time);
         LOGGER.info("the first leave time was set to " + time);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFirstLeaveHour(int hour) {
         LOGGER.trace("called setFirstLeaveHour with hour: " + hour);
@@ -228,6 +246,10 @@ public class Core implements Controller {
         basicData.setFirstLeaveHour(hour);
         LOGGER.info("the first leave hour was set to: " + hour);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFirstLeaveMinute(int minute) {
         LOGGER.trace("called setFirstLeaveMinute with minute: " + minute);
@@ -237,10 +259,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the (possibly unapplied) time of the day after which no buses
-     * of the selected bus service will leave the bus station.
-     * @return the time of the day after which no more buses will leave the station
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public DayTime getBoundaryTime() {
@@ -250,10 +269,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Sets the time of the day after which no buses of the selected bus service
-     * will leave the bus station.
-     * @param time the new time of the day after which no more buses will leave the station
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void setBoundaryTime(DayTime time) {
@@ -262,6 +278,10 @@ public class Core implements Controller {
         basicData.setBoundaryTime(time);
         LOGGER.info("the boundary time was set to " + time);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setBoundaryHour(int hour) {
         LOGGER.trace("called setBoundaryHour with hour: " + hour);
@@ -269,6 +289,10 @@ public class Core implements Controller {
         basicData.setBoundaryHours(hour);
         LOGGER.info("the boundary hour was set to " + hour);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setBoundaryMinute(int minute) {
         LOGGER.trace("called setBoundaryMinute with minute: " + minute);
@@ -280,15 +304,7 @@ public class Core implements Controller {
     // wrapper methods for the TouchedStops instance --------------------------
 
     /**
-     * Appends the given bus stop at the end of the stop list of the selected bus service.
-     * @param id the id of the bus stop that should be appended
-     * @throws IllegalStateException if the bus service is already closed (finished)
-     * @throws IllegalArgumentException if the bus stop with the given id:
-     *          - doesn't exist
-     *          - represents the bus station (it must be added in a separate way)
-     *          - is not reachable from the previous bus stop
-     *          - has already added twice
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void appendStop(int id) {
@@ -299,11 +315,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns true if the selected bus service returns to the station at the end of the way, it is the last
-     * (but not only) bus stop.
-     * @return true, if there is it least one bus stop in the selected bus service
-     * and the last bus stop is the bus station
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public boolean isClosed() {
@@ -313,9 +325,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns true if there are new, unsaved modifications in the selected bus service
-     * @return true, if there are unsaved modification in the selected bus service
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public boolean canUndo() {
@@ -325,10 +335,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns an array that contains the ids of the touched bus stops of the selected bus service.
-     * The order is the same as in the bus stop list (order of append).
-     * @return an array containing the ids of the touched bus stops in the order of append
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public int[] getStops() {
@@ -338,9 +345,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the number of touched stops of the service. It can never be less then 0,
-     * because the bus station, as the starting point is always in the list, as the first stop.
-     * @return the number of touched bus stops, included the start from the bus station
+     * {@inheritDoc}
      */
     @Override
     public int getStopCount() {
@@ -350,9 +355,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the id of the last bus stop of the bus service. If there are no bus stops added,
-     * it returns the id of the bus station
-     * @return the id of the last bus stop in the list
+     * {@inheritDoc}
      */
     @Override
     public int getLastStop() {
@@ -362,9 +365,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Removes all the bus stops from the stop list of the selected bus service.
-     * Calling this method when there aren't any bus stops added has no effect.
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void clearStops() {
@@ -375,11 +376,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Removes the last occurence of a bus stop from the selected service with all the following
-     * bus stops.
-     * @param fromId the bus stop from which the removal starts (the given bus stop is
-     *               included too)
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void removeChainFrom(int fromId) {
@@ -394,9 +391,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Discards the latest modification of the stop list of the selected service, that is not saved already.
-     * @throws IllegalStateException if there aren't any unsaved modifications
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public void undo() {
@@ -410,10 +405,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the ids of all the bus stops that can be the next bus stop of the selected bus service.
-     * A bus stop is only included if it is reachable and hasn't been added twice already.
-     * @return the ids of all the bus stops that can be the next bus stop of the selected bus service
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public int[] getReachableStopIds() {
@@ -423,15 +415,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns an array that contains the minutes that it takes to travel to
-     * each bus stop of the selected service. The station is included, when the bus service is closed.
-     * All the travel times are relative to when the bus leaves the bus station.
-     * So the travel to the second stop means the travel from the station to the
-     * first bus stop plus to travel time from the first bus stop to the second
-     * bus stop.
-     * @return an array with the travel times to each touched bus stops, relative
-     *           to when the bus leaves the station.
-     * @throws NoSelectedServiceException if there isn't a selected bus service
+     * {@inheritDoc}
      */
     @Override
     public int[] getTravelTimes() {
@@ -443,8 +427,7 @@ public class Core implements Controller {
 
 
     /**
-     * Returns the number of bus services.
-     * @return the number of bus services
+     * {@inheritDoc}
      */
     @Override
     public int getServiceCount() {
@@ -454,10 +437,7 @@ public class Core implements Controller {
 
 
     /**
-     * Creates a new bus service, filled with default values. The default name value is always the same,
-     * and since all applied service names must be unique, it is not possible to create more new bus services
-     * without modifying the name of the previous bus services.
-     * Trying to do it has no effect.
+     * {@inheritDoc}
      */
     @Override
     public void createNewService() {
@@ -476,17 +456,26 @@ public class Core implements Controller {
     }
 
     /**
-     * Removes the selected service, without a chance to bring it back.
-     * After deletion, the null service is selected.
-     * Does nothing when there isn't a selected service.
-     * @return true if the service was deleted successfully
+     * Selects the first bus service, according to the natural ordering of their names.
+     * Sets all selected service - related variable to null if there isn't a service to select.
+     */
+    private void selectFirstService() {
+        if (services.size() == 0) {
+            setSelectedService(null);
+            return;
+        }
+        setSelectedService(services.values().iterator().next());
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
-    public boolean deleteSelectedService() {
+    public void deleteSelectedService() {
         LOGGER.trace("called deleteSelectedService");
         if (!hasSelectedService()) {
             LOGGER.warn("there isn't a selected service to delete");
-            return false;
+            return;
         }
 
         String name = selectedService.getAppliedName();
@@ -494,32 +483,35 @@ public class Core implements Controller {
             LOGGER.info("removed the bus service '" + name + "'");
         else {
             LOGGER.warn("could not remove the bus service '" + name + "'");
-            return false;
+            return;
         }
 
-        setSelectedService(null);
+        selectFirstService();
         saved = false;
-        return true;
-    }
-
-    @Override
-    public boolean deleteService(String serviceName) {
-        LOGGER.trace("called deleteService");
-        if (!services.containsKey(serviceName))
-            return false;
-        if (getName().equals(serviceName))
-            return deleteSelectedService();
-        services.remove(serviceName);
-        saved = false;
-        LOGGER.info("removed the bus service '" + serviceName + "'");
-        return true;
     }
 
     /**
-     * Selects the service that has the given name.
-     * @param serviceName the name of the service that should be selected.
-     * @throws NullPointerException when the given string is null
-     * @throws IllegalArgumentException when there isn't a service with the given name
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteService(String serviceName) {
+        LOGGER.trace("called deleteService");
+        if (serviceName == null)
+            throw new NullPointerException("name of service is never null");
+        if (!services.containsKey(serviceName))
+            return;
+        if (getName().equals(serviceName)) {
+            deleteSelectedService();
+            return;
+        }
+
+        services.remove(serviceName);
+        saved = false;
+        LOGGER.info("removed the bus service '" + serviceName + "'");
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void selectService(String serviceName) {
@@ -542,9 +534,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Returns the applied name of all the existing bus services.
-     * The returned names are in alphabetic order.
-     * @return the applied name of all the existing bus services.
+     * {@inheritDoc}
      */
     @Override
     public String[] getServiceNames() {
@@ -553,9 +543,7 @@ public class Core implements Controller {
     }
 
     /**
-     * Applies/registers all the new modifications is there were any.
-     * @throws NameConflictException when the new name of the bus service is
-     *          already in use as an applied name of another bus service.
+     * {@inheritDoc}
      */
     @Override
     public void applyChanges() throws NameConflictException {
