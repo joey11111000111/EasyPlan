@@ -16,12 +16,18 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Created by joey on 3/19/16.
+ * Implementation of the {@link iCityReader} interface. Includes logging.
  */
 public class CityReader implements iCityReader {
 
+    /**
+     * The <a href="http://www.slf4j.org/">slf4j</a> logger object for this class.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(CityReader.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<iBusStopData> readCityStops() {
         List<iBusStopData> allStopsList = new LinkedList<>();
@@ -57,6 +63,12 @@ public class CityReader implements iCityReader {
         return allStopsList;
     }//readCityStops
 
+    /**
+     * This method reads the data of the specified bus stop element, refactors it
+     * to the form specified by the {@link iBusStopData} and returns it.
+     * @param bsElement the bus stop element whose data shell be read, refactored and returned
+     * @return the read and refactored data of the specified bus stop element
+     */
     private iBusStopData createBusStopDataObject(Element bsElement) {
         int id, x, y;
         // get id
@@ -77,6 +89,12 @@ public class CityReader implements iCityReader {
         return busStopData;
     }//createBusStopDataObject
 
+    /**
+     * Parses the tag with the specified name and returns its content as a number.
+     * @param parent The parent {@link Element} of the given tag
+     * @param tagName the name of the tag whose content shell be returned as a number
+     * @return the content of the specified tag as a single number
+     */
     private static int getNumericContentOfTag(Element parent, String tagName) {
         NodeList tags = parent.getElementsByTagName(tagName);
         // there is only one appearance of a certain tag in a connection element, so the first one is the needed
@@ -89,7 +107,12 @@ public class CityReader implements iCityReader {
         return java.lang.Integer.parseInt(text);
     }
 
-
+    /**
+     * Collects and returns all the reachable-data from the given bus stop element.
+     * @param busStop the bus stop element whose reachable-data shell be read and returned
+     * @return an (id - travel time) structured {@link Map} containing the id -s of the reachable stops
+     * from the given stop along with the travel times
+     */
     private static Map<Integer, Integer> getAllReachablesOf(Element busStop) {
         Map<Integer, Integer> reachables = new HashMap<>();
         NodeList connections = busStop.getElementsByTagName("connection");

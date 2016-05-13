@@ -8,24 +8,38 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 /**
- * Created by joey on 3/18/16.
+ * Implementation of the {@link iObjectIO} interface. Logging is included.
  */
 public class ObjectIO implements iObjectIO {
 
+    /**
+     * The <a href="http://www.slf4j.org/">slf4j</a> logger object for this class.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(ObjectIO.class);
-    // --------------------------------------------------------------------------------------
+
+    /**
+     * The string that represents the path to the save file.
+     */
     static final String SAVE_PATH;
 
+    /**
+     * Initializes the {@link #SAVE_PATH} in a platform independent way.
+     */
     static {
+        // TODO refactor to use a newer method
         StringBuilder sb = new StringBuilder(System.getProperty("user.home"));
 	    String sep = System.getProperty("file.separator");
 	    sb.append(sep).append(".EasyPlan").append(sep).append("savedServices.xml");
 	    SAVE_PATH = sb.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void saveObject(Object object, Class<?> clazz) throws ObjectSaveFailureException {
         try {
@@ -44,7 +58,6 @@ public class ObjectIO implements iObjectIO {
         } catch (FileNotFoundException e) {
             throw new ObjectSaveFailureException("save file cannot be created: " + e.getMessage());
         }
-    // -------------------------------------------------------------------------------------------
         try {
             JAXBContext context = JAXBContext.newInstance(clazz);
             Marshaller marshaller = context.createMarshaller();
@@ -55,6 +68,9 @@ public class ObjectIO implements iObjectIO {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E> E readObject(Class<E> clazz) throws ObjectReadFailureException {
         InputStream inputStream;

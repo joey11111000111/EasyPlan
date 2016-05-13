@@ -4,10 +4,12 @@ package com.github.joey11111000111.EasyPlan.util;
  * The OpenLinkedList class represents a linked list data structure, with
  * the capability of appending or removing a part chain to or from the end of the list.
  * It is "open", because it gives a little insight to the inner structure, in the form of
- * Nodes. Besides the stored data, the wrapping node can also be received, with all the possible
+ * {@link com.github.joey11111000111.EasyPlan.util.OpenLinkedList.Node Nodes}.
+ * Besides the stored data, the wrapping node can also be received, with all the possible
  * following nodes. The received part chain is removed from the list, and also unmodifiable,
  * so it is safe to use. This chain can also be appended to the list at a later time, independent
  * of the current state of the list. All data modifications happen at the end of the list.
+ * @param <E> the type of elements this list will contain
  */
 public class OpenLinkedList<E> {
 
@@ -18,11 +20,32 @@ public class OpenLinkedList<E> {
      * @param <E> the type of the stored element
      */
     public static class Node<E> {
+
+        /**
+         * The element that this link contains. Not allowed to be null.
+         */
         private E element;
+
+        /**
+         * A reference to the following link, possible to contain null.
+         */
         private Node<E> next;
+
+        /**
+         * A reference to the subsequent link, possible to contain null.
+         */
         private Node<E> previous;
 
         // only available in the class OpenLinkedList
+
+        /**
+         * Creates a new instance that contains the given element and the two
+         * given references.
+         * @param element the element to store
+         * @param next a reference to the next link in the chain
+         * @param previous a reference to the previous link in the chain
+         * @throws NullPointerException if the element to store is null
+         */
         private Node(E element, Node<E> next, Node<E> previous) {
             if (element == null)
                 throw new NullPointerException("Node element must not be null");
@@ -34,14 +57,14 @@ public class OpenLinkedList<E> {
         // iteration methods --------------
 
         /**
-         * Returns true, when there is at least one following node in the cain
+         * Returns true, when there is at least one following node in the cain.
          * @return true, when there is at least one following node in the chain
          */
         public boolean hasNext() {
             return next != null;
         }
         /**
-         * Returns true, when there is at least one previous node in the cain
+         * Returns true, when there is at least one previous node in the cain.
          * @return true, when there is at least one previous node in the chain
          */
         public boolean hasPrevious() {
@@ -70,7 +93,7 @@ public class OpenLinkedList<E> {
         }
 
         /**
-         * Returns the stored element
+         * Returns the stored element of this link.
          * @return the stored element of the given type
          */
         public E getElement() {
@@ -78,12 +101,25 @@ public class OpenLinkedList<E> {
         }
     }//static class
 
+    /**
+     * A reference to the first link of the chain.
+     * Contains null if the list is empty
+     */
     private Node<E> head;
+
+    /**
+     * A reference to the last link of the chain.
+     * Contains null if the list is empty
+     */
     private Node<E> tail;
+
+    /**
+     * Stores the number of elements in the list.
+     */
     private int size;
 
     /**
-     * Creates an empty list
+     * Creates an empty list.
      */
     public OpenLinkedList() {
         head = tail = null;
@@ -99,7 +135,7 @@ public class OpenLinkedList<E> {
     }
 
     /**
-     * Returns the number of stored elements
+     * Returns the number of stored elements.
      * @return the number of stored elements
      */
     public int size() {
@@ -107,6 +143,7 @@ public class OpenLinkedList<E> {
     }
 
     /**
+     * Appends the new element to the end of the list.
      * Creates a wrapping node for the element, and appends that node to the end of the list.
      * @param element the element to store at the end of the list
      */
@@ -122,11 +159,15 @@ public class OpenLinkedList<E> {
     }
 
     /**
-     * Appends the given node to the end of the list. If the node has following nodes (it is a chain)
-     * than the following elements are added too.
+     * Appends the given node to the end of the list.
+     * If the node has following nodes than the following elements are added with it too.
      * @param chain the chain to add to the end of the list
+     * @throws NullPointerException if the given argument is null
      */
     public void appendChain(Node<E> chain) {
+        if (chain == null)
+            throw new NullPointerException("cannot append null to the list");
+
         if (head == null) {
             head = chain;
             chain.previous = null;
@@ -146,7 +187,7 @@ public class OpenLinkedList<E> {
     }
 
     /**
-     * Returns true, when there is an element at the specified index
+     * Returns true, if there is an element at the specified index.
      * @param index the index to specify the position of an element
      * @return true, when the index is not negative and smaller than the
      * number of elements in the list
@@ -175,6 +216,14 @@ public class OpenLinkedList<E> {
         return last;
     }
 
+    /**
+     * Calculates the total number of links that this chain has.
+     * The starting link is included too.
+     * For example if the given chain has two more following links,
+     * than the result is 3.
+     * @param chain the chain whose link count shell be returned
+     * @return the total number of links that the given chain has
+     */
     private int countChainLinks(Node<E> chain) {
         int chainLinkNum = 1;
         while (chain.hasNext()) {
@@ -184,6 +233,12 @@ public class OpenLinkedList<E> {
         return chainLinkNum;
     }
 
+    /**
+     * Removes and returns the specified node from the list, with all its
+     * following nodes.
+     * @param node the node to remove and return
+     * @return the removed node with all its following nodes.
+     */
     private Node<E> removeChainFrom(Node<E> node) {
         if (!node.hasPrevious()) {
             head = tail = null;
@@ -204,7 +259,7 @@ public class OpenLinkedList<E> {
      * and returns this node. The index of the last element in the modified list
      * will be 'index - 1'.
      * @param index specifies which node of the list will be removed by its index
-     * @return the removed node, which can have following nodes (it can be a chain)
+     * @return the removed node, which can have following nodes
      * @throws IllegalStateException when the list is empty, thus there aren't any elements to remove
      * @throws IndexOutOfBoundsException when the specified index is out of range
      */
@@ -233,8 +288,8 @@ public class OpenLinkedList<E> {
      * Removes and returns the last node that contains the specified element. All the following
      * elements are removed and returned, as a chain.
      * @param element the last node will be removed that contains an element that is equal with this
-     * @return the node (possibly chain) that contains the given element and has the highest index
-     * @throws IllegalArgumentException when the list is empty
+     * @return the node that contains the given element and has the highest index
+     * @throws IllegalStateException when the list is empty
      * @throws IllegalArgumentException when the given element is not contained by any of the nodes
      */
     public Node<E> removeChainFrom(E element) {
@@ -254,7 +309,7 @@ public class OpenLinkedList<E> {
     }
 
     /**
-     * Removes all elements of the list
+     * Removes all elements of the list.
      */
     public void clear() {
         if (isEmpty())
@@ -264,14 +319,14 @@ public class OpenLinkedList<E> {
     }
 
     /**
-     * Returns the first node of the list
+     * Returns the first node of the list.
      * @return the first node of the list
      */
     public Node<E> getHead() {
         return head;
     }
     /**
-     * Returns the last node of the list
+     * Returns the last node of the list.
      * @return the last node of the list
      */
     public Node<E> getTail() {

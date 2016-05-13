@@ -1,9 +1,14 @@
 package com.github.joey11111000111.EasyPlan.dao;
 
 /**
- * Created by joey on 5/7/16.
+ * Thrown when something goes wrong during the object saving process.
  */
 public class ObjectSaveFailureException extends Exception {
+
+    /**
+     * creates a new instance with the given error message.
+     * @param message the error message of the exception
+     */
     public ObjectSaveFailureException(String message) {
         super(message);
     }
