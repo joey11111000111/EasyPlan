@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,17 +25,16 @@ public class ObjectIO implements iObjectIO {
     /**
      * The string that represents the path to the save file.
      */
-    static final String SAVE_PATH;
+    static final File SAVE_FILE;
 
     /**
      * Initializes the {@link #SAVE_PATH} in a platform independent way.
      */
     static {
-        // TODO refactor to use a newer method
-        StringBuilder sb = new StringBuilder(System.getProperty("user.home"));
-	    String sep = System.getProperty("file.separator");
-	    sb.append(sep).append(".EasyPlan").append(sep).append("savedServices.xml");
-	    SAVE_PATH = sb.toString();
+        SAVE_FILE = Paths.get(System.getProperty("user.home"),
+                              ".EasyPlan",
+                              "savedServices.xml")
+                              .toFile();
     }
 
     /**
@@ -42,19 +42,24 @@ public class ObjectIO implements iObjectIO {
      */
     @Override
     public void saveObject(Object object, Class<?> clazz) throws ObjectSaveFailureException {
-        try {
-            File saveFile = new File(SAVE_PATH);
-            if (!saveFile.exists()) {
-                saveFile.getParentFile().mkdirs();
-                saveFile.createNewFile();
+        LOGGER.trace("called saveObject");
+        if (!SAVE_FILE.exists()) {
+            LOGGER.debug("save file doesn't exist");
+            if (!SAVE_FILE.getParentFile().exists())
+                if (!SAVE_FILE.getParentFile().mkdirs())
+                    throw new ObjectSaveFailureException("cannot create parent library");
+            try {
+                if (!SAVE_FILE.createNewFile())
+                    throw new ObjectSaveFailureException("cannot explicitly create save file");
+            } catch (IOException ioe) {
+                throw new ObjectSaveFailureException("cannot explicitly create save file: " + ioe.getMessage());
             }
-        } catch (IOException e) {
-            throw new ObjectSaveFailureException("cannot explicitly create save file: " + e.getMessage());
+            LOGGER.debug("save file successfully created");
         }
 
         OutputStream outputStream;
         try {
-            outputStream = new FileOutputStream(SAVE_PATH);
+            outputStream = new FileOutputStream(SAVE_FILE);
         } catch (FileNotFoundException e) {
             throw new ObjectSaveFailureException("save file cannot be created: " + e.getMessage());
         }
@@ -63,6 +68,7 @@ public class ObjectIO implements iObjectIO {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(object, outputStream);
+            LOGGER.debug("successfully saved object into save file");
         } catch (JAXBException e) {
             throw new ObjectSaveFailureException("Object cannot be saved: " + e.getMessage());
         }
@@ -73,17 +79,22 @@ public class ObjectIO implements iObjectIO {
      */
     @Override
     public <E> E readObject(Class<E> clazz) throws ObjectReadFailureException {
+        LOGGER.trace("called readObject");
         InputStream inputStream;
         try {
-            inputStream = new FileInputStream(SAVE_PATH);
+            inputStream = new FileInputStream(SAVE_FILE);
         } catch (FileNotFoundException e) {
             throw new ObjectReadFailureException("save file is not found");
         }
 
+        LOGGER.debug("save file found");
+
         try {
             JAXBContext context = JAXBContext.newInstance(clazz);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            return (E)unmarshaller.unmarshal(inputStream);
+            E loadedObject = (E)unmarshaller.unmarshal(inputStream);
+            LOGGER.debug("object successfully loaded from save file");
+            return loadedObject;
         } catch (JAXBException jaxbe) {
             throw new ObjectReadFailureException("Cannot read object: " + jaxbe.getMessage());
         }
