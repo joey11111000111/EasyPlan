@@ -7,7 +7,7 @@ package com.github.joey11111000111.EasyPlan.dao;
 public class ObjectReadFailureException extends Exception {
 
     /**
-     * creates a new instance with the given error message.
+     * Creates a new instance with the given error message.
      * @param message the error message of the exception
      */
     public ObjectReadFailureException(String message) {
