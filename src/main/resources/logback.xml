@@ -5,8 +5,16 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logfile</file>
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logDebugLevel</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="TRACE_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logTraceLevel</file>
         <append>false</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level: %msg%n</pattern>
@@ -15,6 +23,7 @@
 
     <root level="debug">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="DEBUG_FILE"/>
+        <appender-ref ref="TRACE_FILE"/>
     </root>
 </configuration>

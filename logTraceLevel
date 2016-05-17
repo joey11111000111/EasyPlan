@@ -1,0 +1,202 @@
+23:32:33.498 DEBUG: core instance successfully created
+23:32:33.509 INFO : added a new bus service
+23:32:33.510 INFO : selected the 'new service' bus service
+23:32:33.510 DEBUG: now marked as modified
+23:32:33.510 INFO : the name was set to '22Y'
+23:32:33.511 INFO : the time gap was set to 90
+23:32:33.511 INFO : the first leave minute was set to: 9
+23:32:33.511 INFO : the first leave hour was set to: 2
+23:32:33.511 INFO : the boundary minute was set to 11
+23:32:33.511 INFO : the boundary hour was set to 12
+23:32:33.544 DEBUG: now it's marked as modified
+23:32:33.546 DEBUG: new stop successfully appended
+23:32:33.546 INFO : the bus stop '1' was added to the service
+23:32:33.546 DEBUG: new stop successfully appended
+23:32:33.547 INFO : the bus stop '4' was added to the service
+23:32:33.547 DEBUG: new stop successfully appended
+23:32:33.547 INFO : the bus stop '6' was added to the service
+23:32:33.547 DEBUG: new stop successfully appended
+23:32:33.547 INFO : the bus stop '0' was added to the service
+23:32:33.548 DEBUG: now it's marked as saved
+23:32:33.548 DEBUG: now marked as saved
+23:32:33.548 INFO : applied changes to the service 'new service' (old name)
+23:32:33.548 DEBUG: save file doesn't exist
+23:32:33.549 DEBUG: save file successfully created
+23:32:33.600 DEBUG: successfully saved object into save file
+23:32:33.600 DEBUG: save file found
+23:32:33.609 DEBUG: core instance successfully created
+23:32:33.611 DEBUG: object successfully loaded from save file
+23:32:33.666 DEBUG: now it's marked as modified
+23:32:33.667 DEBUG: new stop successfully appended
+23:32:33.667 DEBUG: new stop successfully appended
+23:32:33.667 DEBUG: new stop successfully appended
+23:32:33.667 DEBUG: new stop successfully appended
+23:32:33.667 DEBUG: now it's marked as saved
+23:32:33.668 INFO : selected the '22Y' bus service
+23:32:33.714 DEBUG: now it's marked as modified
+23:32:33.715 DEBUG: new stop successfully appended
+23:32:33.717 DEBUG: new stop successfully appended
+23:32:33.718 DEBUG: new stop successfully appended
+23:32:33.718 DEBUG: now marked as modified
+23:32:33.718 DEBUG: now it's marked as modified
+23:32:33.718 DEBUG: new stop successfully appended
+23:32:33.720 DEBUG: new stop successfully appended
+23:32:33.720 DEBUG: new stop successfully appended
+23:32:33.720 DEBUG: now marked as modified
+23:32:33.720 DEBUG: now it's marked as saved
+23:32:33.721 DEBUG: now marked as saved
+23:32:33.721 DEBUG: now it's marked as modified
+23:32:33.721 DEBUG: new stop successfully appended
+23:32:33.721 DEBUG: new stop successfully appended
+23:32:33.721 DEBUG: new stop successfully appended
+23:32:33.721 DEBUG: now it's marked as saved
+23:32:33.723 DEBUG: now it's marked as modified
+23:32:33.723 DEBUG: new stop successfully appended
+23:32:33.723 DEBUG: new stop successfully appended
+23:32:33.724 DEBUG: new stop successfully appended
+23:32:33.724 DEBUG: removing finished successfully
+23:32:33.724 DEBUG: undo operation successfully added
+23:32:33.725 DEBUG: now it's marked as saved
+23:32:33.725 DEBUG: there are discarded touched stops changes
+23:32:33.725 DEBUG: now marked as modified
+23:32:33.726 DEBUG: now marked as saved
+23:32:33.726 DEBUG: there are discarded basic data changes
+23:32:33.726 DEBUG: now marked as modified
+23:32:33.726 DEBUG: now it's marked as modified
+23:32:33.727 DEBUG: new stop successfully appended
+23:32:33.727 DEBUG: new stop successfully appended
+23:32:33.727 DEBUG: new stop successfully appended
+23:32:33.727 DEBUG: now it's marked as saved
+23:32:33.728 DEBUG: now marked as saved
+23:32:33.728 DEBUG: now marked as modified
+23:32:33.729 DEBUG: now it's marked as modified
+23:32:33.729 DEBUG: new stop successfully appended
+23:32:33.730 DEBUG: now marked as saved
+23:32:33.731 DEBUG: there are discarded basic data changes
+23:32:33.731 DEBUG: removing finished successfully
+23:32:33.732 DEBUG: undo operation successfully added
+23:32:33.732 DEBUG: new stop successfully appended
+23:32:33.732 DEBUG: new stop successfully appended
+23:32:33.732 DEBUG: new stop successfully appended
+23:32:33.733 DEBUG: now it's marked as saved
+23:32:33.733 DEBUG: there are discarded touched stops changes
+23:32:33.734 DEBUG: now marked as modified
+23:32:33.734 DEBUG: now it's marked as modified
+23:32:33.735 DEBUG: new stop successfully appended
+23:32:33.735 DEBUG: new stop successfully appended
+23:32:33.735 DEBUG: now it's marked as saved
+23:32:33.736 DEBUG: now marked as saved
+23:32:33.737 DEBUG: now marked as modified
+23:32:33.738 DEBUG: now marked as modified
+23:32:33.738 DEBUG: now marked as saved
+23:32:33.739 DEBUG: now marked as saved
+23:32:33.762 DEBUG: now marked as modified
+23:32:33.764 DEBUG: now marked as modified
+23:32:33.766 DEBUG: now marked as modified
+23:32:33.767 DEBUG: now marked as modified
+23:32:33.769 DEBUG: now marked as modified
+23:32:33.770 DEBUG: now marked as saved
+23:32:33.778 DEBUG: there is nothing to remove
+23:32:33.778 DEBUG: now it's marked as modified
+23:32:33.781 DEBUG: new stop successfully appended
+23:32:33.782 DEBUG: undo operation successfully added
+23:32:33.782 DEBUG: new stop successfully appended
+23:32:33.783 DEBUG: new stop successfully appended
+23:32:33.783 DEBUG: new stop successfully appended
+23:32:33.783 DEBUG: new stop successfully appended
+23:32:33.784 DEBUG: the stop 1 was added twice already
+23:32:33.786 DEBUG: new stop successfully appended
+23:32:33.787 DEBUG: undo operation successfully added
+23:32:33.787 DEBUG: new stop successfully appended
+23:32:33.787 DEBUG: new stop successfully appended
+23:32:33.788 DEBUG: removing finished successfully
+23:32:33.788 DEBUG: undo operation successfully added
+23:32:33.788 DEBUG: new stop successfully appended
+23:32:33.788 DEBUG: new stop successfully appended
+23:32:33.788 DEBUG: new stop successfully appended
+23:32:33.789 DEBUG: new stop successfully appended
+23:32:33.789 DEBUG: new stop successfully appended
+23:32:33.789 DEBUG: new stop successfully appended
+23:32:33.789 DEBUG: undo operation successfully added
+23:32:33.789 DEBUG: removing finished successfully
+23:32:33.789 DEBUG: undo operation successfully added
+23:32:33.790 DEBUG: now it's marked as modified
+23:32:33.791 DEBUG: new stop successfully appended
+23:32:33.791 DEBUG: new stop successfully appended
+23:32:33.791 DEBUG: new stop successfully appended
+23:32:33.792 DEBUG: delete operation happened
+23:32:33.794 DEBUG: new stop successfully appended
+23:32:33.795 DEBUG: new stop successfully appended
+23:32:33.795 DEBUG: new stop successfully appended
+23:32:33.796 DEBUG: delete operation happened
+23:32:33.796 DEBUG: new stop successfully appended
+23:32:33.797 DEBUG: new stop successfully appended
+23:32:33.798 DEBUG: undo operation successfully added
+23:32:33.798 DEBUG: append operation happened
+23:32:33.798 DEBUG: new stop successfully appended
+23:32:33.799 DEBUG: new stop successfully appended
+23:32:33.799 DEBUG: new stop successfully appended
+23:32:33.799 DEBUG: undo operation successfully added
+23:32:33.804 DEBUG: append operation happened
+23:32:33.805 DEBUG: removing finished successfully
+23:32:33.805 DEBUG: undo operation successfully added
+23:32:33.805 DEBUG: now it's marked as saved
+23:32:33.805 DEBUG: now it's marked as modified
+23:32:33.805 DEBUG: new stop successfully appended
+23:32:33.805 DEBUG: new stop successfully appended
+23:32:33.805 DEBUG: new stop successfully appended
+23:32:33.806 DEBUG: new stop successfully appended
+23:32:33.806 DEBUG: new stop successfully appended
+23:32:33.806 DEBUG: new stop successfully appended
+23:32:33.808 DEBUG: new stop successfully appended
+23:32:33.808 DEBUG: undo operation successfully added
+23:32:33.808 DEBUG: new stop successfully appended
+23:32:33.808 DEBUG: undo operation successfully added
+23:32:33.809 DEBUG: new stop successfully appended
+23:32:33.809 DEBUG: delete operation happened
+23:32:33.809 DEBUG: append operation happened
+23:32:33.809 DEBUG: delete operation happened
+23:32:33.809 DEBUG: append operation happened
+23:32:33.809 DEBUG: delete operation happened
+23:32:33.809 DEBUG: delete operation happened
+23:32:33.809 DEBUG: delete operation happened
+23:32:33.809 DEBUG: delete operation happened
+23:32:33.811 DEBUG: delete operation happened
+23:32:33.812 DEBUG: delete operation happened
+23:32:33.812 DEBUG: delete operation happened
+23:32:33.812 DEBUG: there is nothing to clear
+23:32:33.815 DEBUG: now it's marked as modified
+23:32:33.815 DEBUG: new stop successfully appended
+23:32:33.816 DEBUG: new stop successfully appended
+23:32:33.816 DEBUG: new stop successfully appended
+23:32:33.816 DEBUG: new stop successfully appended
+23:32:33.817 DEBUG: delete operation happened
+23:32:33.817 DEBUG: removing finished successfully
+23:32:33.817 DEBUG: undo operation successfully added
+23:32:33.817 DEBUG: new stop successfully appended
+23:32:33.817 DEBUG: removing finished successfully
+23:32:33.818 DEBUG: undo operation successfully added
+23:32:33.818 DEBUG: nowhere to travel -> no travel time
+23:32:33.819 DEBUG: there is nothing to clear
+23:32:33.819 DEBUG: now it's marked as modified
+23:32:33.819 DEBUG: new stop successfully appended
+23:32:33.819 DEBUG: now it's marked as saved
+23:32:33.819 DEBUG: removing finished successfully
+23:32:33.819 DEBUG: undo operation successfully added
+23:32:33.820 DEBUG: now it's marked as modified
+23:32:33.820 DEBUG: new stop successfully appended
+23:32:33.820 DEBUG: new stop successfully appended
+23:32:33.820 DEBUG: new stop successfully appended
+23:32:33.820 DEBUG: delete operation happened
+23:32:33.820 DEBUG: new stop successfully appended
+23:32:33.820 DEBUG: a closed service has no further reachable stops
+23:32:33.821 DEBUG: delete operation happened
+23:32:33.821 DEBUG: new stop successfully appended
+23:32:33.821 DEBUG: new stop successfully appended
+23:32:33.821 DEBUG: new stop successfully appended
+23:32:33.822 DEBUG: new stop successfully appended
+23:32:33.822 DEBUG: new stop successfully appended
+23:32:33.822 DEBUG: new stop successfully appended
+23:32:33.822 DEBUG: the stop 8 was added twice already
+23:32:33.822 DEBUG: removing finished successfully
+23:32:33.822 DEBUG: undo operation successfully added

@@ -21,6 +21,7 @@ public class TouchedStopsTest {
 
     @Test
     public void testInitialState() {
+        assertEquals(0, ts.getLastStop());
         // test boolean
         assertFalse(ts.isClosed());
         assertFalse(ts.isModified());
@@ -44,6 +45,12 @@ public class TouchedStopsTest {
 
     @Test
     public void testAppendRemoveCloseClear() {
+        ts.removeChainFrom(0);
+        assertEquals(0, ts.getLastStop());
+        ts.appendStop(1);
+        ts.removeChainFrom(0);
+        assertEquals(0, ts.getLastStop());
+
         try {
             ts.appendStop(0);
             assertTrue(false);
@@ -62,6 +69,7 @@ public class TouchedStopsTest {
             ts.appendStop(12);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
+
 
         ts.appendStop(4);
         ts.appendStop(1);

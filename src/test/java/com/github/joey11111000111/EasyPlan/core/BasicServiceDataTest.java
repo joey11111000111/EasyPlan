@@ -36,6 +36,10 @@ public class BasicServiceDataTest {
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
         try {
+            bsd.setTimeGap(4000);
+            assertTrue(false);
+        } catch (IllegalArgumentException iae) {}
+        try {
             bsd.setFirstLeaveHour(24);
             assertTrue(false);
         } catch (IllegalArgumentException iae) {}
@@ -70,26 +74,12 @@ public class BasicServiceDataTest {
     }
 
     @Test
-    public void testGettersSettersMarkers() {
-        assertFalse(bsd.isModified());
-
-        // set and get name
-        String name = "22Y";
-        bsd.setName(name);
-        assertEquals(name, bsd.getName());
-        // setting the same name again should not change the name reference in the object
-        assertTrue(name == bsd.getName());
-        String name2 = new String("22Y");
-        bsd.setName(name2);
-        assertFalse(name2 == bsd.getName());
-        // set and get timeGap
-        int timeGap = 12;
-        bsd.setTimeGap(timeGap);
-        bsd.setTimeGap(timeGap);    // setting it again should have no effect
-        assertEquals(timeGap, bsd.getTimeGap());
-        // test getters and setters for firstLeaveTime
+    public void testFirstLeaveTimeGettersSetters() {
         int flHour = 9, flMinute = 56;
         bsd.setFirstLeaveTime(flHour, flMinute);
+        assertEquals(flHour, bsd.getFirstLeaveHours());
+        assertEquals(flMinute, bsd.getFirstLeaveMinutes());
+        bsd.setFirstLeaveTime(new DayTime(flHour, flMinute));
         assertEquals(flHour, bsd.getFirstLeaveHours());
         assertEquals(flMinute, bsd.getFirstLeaveMinutes());
         flHour = 12;
@@ -105,12 +95,20 @@ public class BasicServiceDataTest {
         int setMinutes = new DayTime(flHour, flMinute).getTimeAsMinutes();
         int receivedMinutes = bsd.getFirstLeaveTime().getTimeAsMinutes();
         assertEquals(setMinutes, receivedMinutes);
+        // set to the same values
+        bsd.setFirstLeaveTime(flHour, flMinute);
+        assertEquals(new DayTime(flHour, flMinute), bsd.getFirstLeaveTime());
+        bsd.setFirstLeaveHour(flHour);
+        bsd.setFirstLeaveMinutes(flMinute);
+    }
 
-
-
-        // test getters/setters for boundaryTime
+    @Test
+    public void testBoundaryTimeGettersSetters() {
         int bHour = 9, bMinute = 56;
         bsd.setBoundaryTime(bHour, bMinute);
+        assertEquals(bHour, bsd.getBoundaryHours());
+        assertEquals(bMinute, bsd.getBoundaryMinutes());
+        bsd.setBoundaryTime(new DayTime(bHour, bMinute));
         assertEquals(bHour, bsd.getBoundaryHours());
         assertEquals(bMinute, bsd.getBoundaryMinutes());
         bHour = 12;
@@ -123,17 +121,46 @@ public class BasicServiceDataTest {
         assertEquals(bMinute, bsd.getBoundaryMinutes());
         // no exception, no effect should take place
         bsd.setBoundaryTime(bHour, bMinute);
-        setMinutes = new DayTime(bHour, bMinute).getTimeAsMinutes();
-        receivedMinutes = bsd.getBoundaryTime().getTimeAsMinutes();
+        int setMinutes = new DayTime(bHour, bMinute).getTimeAsMinutes();
+        int receivedMinutes = bsd.getBoundaryTime().getTimeAsMinutes();
         assertEquals(setMinutes, receivedMinutes);
+        // set the same values
+        bsd.setBoundaryTime(bHour, bMinute);
+        assertEquals(new DayTime(bHour, bMinute), bsd.getBoundaryTime());
+        bsd.setBoundaryHours(bHour);
+        bsd.setBoundaryMinutes(bMinute);
+    }
 
+    @Test
+    public void testNameGettersSetters() {
+        String name = "22Y";
+        bsd.setName(name);
+        assertEquals(name, bsd.getName());
+        // setting the same name again should not change the name reference in the object
+        assertSame(name, bsd.getName());
+        String name2 = new String("22Y");
+        bsd.setName(name2);
+        assertFalse(name2 == bsd.getName());
+    }
+
+    @Test
+    public void testTimeGapGettersSetters() {
+        int timeGap = 12;
+        bsd.setTimeGap(timeGap);
+        bsd.setTimeGap(timeGap);    // setting it again should have no effect
+        assertEquals(timeGap, bsd.getTimeGap());
+    }
+
+    @Test
+    public void testMarkers() {
+        assertFalse(bsd.isModified());
+        bsd.setTimeGap(23);
         assertTrue(bsd.isModified());
         bsd.markAsSaved();
         assertFalse(bsd.isModified());
         // markAsSaved again should have no effect
         bsd.markAsSaved();
         assertFalse(bsd.isModified());
-
     }
 
 }//class

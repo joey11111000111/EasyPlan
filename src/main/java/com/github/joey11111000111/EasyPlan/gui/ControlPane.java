@@ -136,8 +136,12 @@ public class ControlPane {
                 controller.setBoundaryHour(newValue));
         toMinuteSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
                 controller.setBoundaryMinute(newValue));
-        timeGapSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
-                controller.setTimeGap(newValue));
+        timeGapSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue >= 24 * 60)
+                        newValue = 24 * 60 - 1;
+                    else
+                        controller.setTimeGap(newValue);
+                });
 
         applyButton.setOnAction(event -> applyChanges());
         discardButton.setOnAction(event -> discardChanges());

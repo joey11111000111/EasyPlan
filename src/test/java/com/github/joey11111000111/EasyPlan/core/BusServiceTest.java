@@ -80,4 +80,79 @@ public class BusServiceTest {
         service.applyChanges();
     }
 
+    @Test
+    public void testDiscardChanges() {
+        BusService bs = new BusService();
+        TouchedStops ts = bs.getCurrentStops();
+        BasicServiceData bsd = bs.getCurrentServiceData();
+
+        ts.appendStop(1);
+        ts.appendStop(4);
+        ts.appendStop(6);
+
+        assertEquals(4, ts.getStopCount());
+        bs.discardChanges();
+        assertEquals(1, ts.getStopCount());
+        bs.discardChanges();
+        assertEquals(1, ts.getStopCount());
+
+        bsd.setName("22Y");
+        bsd.setTimeGap(44);
+
+        assertEquals("22Y", bsd.getName());
+        bs.discardChanges();
+        assertEquals("new service", bsd.getName());
+        bs.discardChanges();
+        assertEquals("new service", bsd.getName());
+
+        bsd.setFirstLeaveTime(12, 20);
+        bsd.setTimeGap(20);
+        ts.appendStop(1);
+        ts.appendStop(4);
+        ts.appendStop(6);
+        bs.applyChanges();
+        bsd.setTimeGap(30);
+        ts.appendStop(4);
+
+        bs.discardChanges();
+        assertEquals(20, bsd.getTimeGap());
+        assertEquals(6, ts.getLastStop());
+    }
+    
+    @Test
+    public void testTimetableCreation() {
+        BusService bs = new BusService();
+        bs.getCurrentServiceData().setFirstLeaveTime(12, 12);
+        bs.getCurrentServiceData().setBoundaryTime(12, 13);
+        bs.getCurrentServiceData().setName("22Y");
+
+        bs.getCurrentStops().appendStop(4);
+        bs.getCurrentStops().appendStop(6);
+        bs.applyChanges();
+
+        iTimetable timetable = bs.getTimetable();
+        // no exceptions means pass
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        BusService bs1 = new BusService();
+        BusService bs2 = new BusService();
+        assertFalse(bs1.equals(new Object()));
+        assertFalse(bs1.equals(null));
+        assertTrue(bs1.equals(bs1));
+
+        assertTrue(bs1.equals(bs2));
+        assertTrue(bs2.equals(bs1));
+        assertEquals(bs1.hashCode(), bs2.hashCode());
+
+        bs1.getCurrentServiceData().setName("22Y");
+        bs2.getCurrentServiceData().setName("Körjárat");
+        bs1.applyChanges();
+        bs2.applyChanges();
+        assertFalse(bs1.equals(bs2));
+        assertFalse(bs2.equals(bs1));
+        assertTrue(bs1.hashCode() != bs2.hashCode());
+    }
+
 }//class

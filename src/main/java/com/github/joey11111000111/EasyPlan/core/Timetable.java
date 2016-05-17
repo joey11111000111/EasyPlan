@@ -72,7 +72,7 @@ public class Timetable implements iTimetable {
                 sb.append(st).append("  ");
             return sb.toString();
         }
-    }
+    }//static class
 
     /**
      * The sole purpose of this class is to help creating {@link Timetable} instances.

@@ -154,4 +154,35 @@ public class DayTime implements Serializable {
 
         return sb.toString();
     }
+
+    /**
+     * Two {@code DayTime} objects equal if the hour and minute part
+     * in the two objects are the same, thus representing the same time.
+     * @param o the object to compare to
+     * @return true, if the given object is a {@code DayTime} instance and represents
+     *      the same time as this object
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DayTime dayTime = (DayTime) o;
+
+        if (hours != dayTime.hours) return false;
+        return minutes == dayTime.minutes;
+
+    }
+
+    /**
+     * The hashcode calculation include the hour and the minute part
+     * of the object as two separate data.
+     * @return the hashcode of this object
+     */
+    @Override
+    public int hashCode() {
+        int result = hours;
+        result = 31 * result + minutes;
+        return result;
+    }
 }//class

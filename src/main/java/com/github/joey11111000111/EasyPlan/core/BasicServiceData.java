@@ -139,7 +139,7 @@ class BasicServiceData {
         if (timeGap < 1)
             throw new IllegalArgumentException("timeGap must be at least 1");
         if (timeGap >= 24 * 60)
-            throw new IllegalArgumentException("timeGap must be less than one whole day");
+            throw new IllegalArgumentException("timeGap must be less than one whole day: " + timeGap);
         if (this.timeGap == timeGap)
             return;
         this.timeGap = timeGap;

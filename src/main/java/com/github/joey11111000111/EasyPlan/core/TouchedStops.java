@@ -327,13 +327,8 @@ public class TouchedStops {
             return;
         }
         Node<Integer> chain;
-        try {
-            chain = stops.removeChainFrom(1);
-            LOGGER.debug("removing finished successfully");
-        } catch (IllegalStateException ise) {
-            LOGGER.debug("threw IllegalStateException");
-            return;
-        }
+        chain = stops.removeChainFrom(1);
+        LOGGER.debug("removing finished successfully");
 
         undoStack.push(UndoOperation.newAppendInstance(chain));
         LOGGER.debug("undo operation successfully added");
