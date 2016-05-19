@@ -17,3 +17,5 @@ There are certain rules to follow when creating bus services. These are the foll
 #### Prerequisites:
   - Java 1.8 (includes JavaFX)
   - [Apache Maven](https://maven.apache.org).
+
+Background image: [Dirty metal surface](http://www.psdgraphics.com/textures/dirty-metal-surface-texture/)

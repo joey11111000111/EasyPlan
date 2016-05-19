@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * Created by joey on 2015.11.07..
  */
 public class TimetableTest {
-    
+
     @Test
     public void testValidCreationAndGetters() {
         iTimetable.iTimetableArguments args = new Timetable.TimetableArguments();

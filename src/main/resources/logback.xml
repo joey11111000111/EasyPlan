@@ -1,12 +1,19 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level: %msg%n</pattern>
         </encoder>
     </appender>
 
+
     <appender name="DEBUG_FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logDebugLevel</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <file>log/debugLog</file>
         <append>false</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level: %msg%n</pattern>
@@ -14,15 +21,30 @@
     </appender>
 
     <appender name="TRACE_FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logTraceLevel</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+        <file>log/traceLog</file>
         <append>false</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level: %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="debug">
+    <appender name="INFO_FILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <file>log/infoLog</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="ALL">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="INFO_FILE"/>
         <appender-ref ref="DEBUG_FILE"/>
         <appender-ref ref="TRACE_FILE"/>
     </root>
