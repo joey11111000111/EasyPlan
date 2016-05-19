@@ -4,9 +4,6 @@ import com.github.joey11111000111.EasyPlan.util.DayTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- * Created by joey on 2015.11.09..
- */
 public class BusServiceTest {
 
     @Test
@@ -28,16 +25,6 @@ public class BusServiceTest {
         assertFalse(ts.isModified());
         assertFalse(ts.isClosed());
         assertFalse(ts.canUndo());
-
-        // test time table
-/*        Timetable table = service.getTimetable();
-        assertTrue("new service".equals(table.name));
-        assertEquals(1, table.stopTimes.size());
-        Timetable.StopTimes st = table.stopTimes.get(0);
-        assertEquals(0, st.id);
-        assertEquals(flMInutes, st.times.get(0).getTimeAsMinutes());
-        assertEquals(0, table.totalTravelTime.getTimeAsMinutes());
-        assertEquals(61, table.busCount);*/
     }
 
     @Test

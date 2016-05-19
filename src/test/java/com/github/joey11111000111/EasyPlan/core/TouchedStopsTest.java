@@ -7,9 +7,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by joey on 2015.11.05..
- */
 public class TouchedStopsTest {
 
     TouchedStops ts;
@@ -212,29 +209,23 @@ public class TouchedStopsTest {
     @Test
     public void testTravelTimes() {
         // test a closed service
-        System.out.println("*0*");
         ts.appendStop(1);
         ts.appendStop(4);
         ts.appendStop(6);
         ts.appendStop(0);
-        System.out.println("*1*");
         int[] times = ts.getTravelTimes();
-        System.out.println("*2*");
         assertEquals(4, times.length);
         assertEquals(8, times[0]);
         assertEquals(21, times[1]);
         assertEquals(31, times[2]);
         assertEquals(43, times[3]);
-        System.out.println("*3*");
         // test an open service
         ts.undo();
-        System.out.println("*4*");
         times = ts.getTravelTimes();
         assertEquals(3, times.length);
         assertEquals(8, times[0]);
         assertEquals(21, times[1]);
         assertEquals(31, times[2]);
-        System.out.println("*5*");
 
         // test a 1-stop-sized service
         ts.clear();
@@ -242,12 +233,10 @@ public class TouchedStopsTest {
         times = ts.getTravelTimes();
         assertEquals(1, times.length);
         assertEquals(5, times[0]);
-        System.out.println("*6*");
 
         // test an empty service
         ts.clear();
         times = ts.getTravelTimes();
-        System.out.println("*7*");
         assertEquals(0, times.length);
     }
 

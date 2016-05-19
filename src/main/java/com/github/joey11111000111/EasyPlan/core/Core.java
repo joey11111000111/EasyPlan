@@ -452,7 +452,6 @@ public class Core implements Controller {
         services.put(newService.getAppliedName(), newService);
         LOGGER.info("added a new bus service");
         setSelectedService(newService);
-        saved = false;
     }
 
     /**
@@ -517,7 +516,6 @@ public class Core implements Controller {
     public void selectService(String serviceName) {
         LOGGER.trace("called selectService with name: " + serviceName);
         if (serviceName == null) {
-            LOGGER.warn("given name is null");
             throw new NullPointerException("the name of the selected service cannot be null");
         }
         if (hasSelectedService())

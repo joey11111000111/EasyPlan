@@ -12,9 +12,6 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by joey on 2015.11.07..
- */
 public class TimetableTest {
 
     @Test

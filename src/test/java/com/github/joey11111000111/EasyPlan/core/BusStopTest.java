@@ -4,9 +4,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by joey on 2015.11.02..
- */
 public class BusStopTest {
 
     @Test
