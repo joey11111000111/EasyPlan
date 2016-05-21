@@ -14,9 +14,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 
-/**
- * Created by joey on 2015.12.06..
- */
+// CHECKSTYLE:OFF
 public class BusStationShape implements MarkableShape {
 
     private final LinearGradient NEUTRAL;

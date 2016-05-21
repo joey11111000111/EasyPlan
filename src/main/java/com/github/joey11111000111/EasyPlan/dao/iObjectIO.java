@@ -1,8 +1,5 @@
 package com.github.joey11111000111.EasyPlan.dao;
 
-import java.io.Serializable;
-import java.util.List;
-
 /**
  * Handles the saving and loading of an object to a file.
  */

@@ -223,7 +223,7 @@ public class CoreTest {
 
     @Test
     public void testCreateDeleteAndSelectService() {
-        core.selectService("not contained service name");
+        testForException(core::selectService, "not contained service name", IllegalArgumentException.class);
         core.deleteSelectedService();
         core.deleteService("not existing service name");    // should have no effect
 

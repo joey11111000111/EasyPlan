@@ -18,9 +18,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-/**
- * Created by joey on 2015.12.06..
- */
+// CHECKSTYLE:OFF
 public class BusStopShape implements MarkableShape {
 
     private static DoubleProperty radiusProperty;

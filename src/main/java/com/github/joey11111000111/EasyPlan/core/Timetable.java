@@ -55,10 +55,10 @@ public class Timetable implements iTimetable {
             try {
                 times.add(new DayTime(0, 0));
                 throw new IllegalArgumentException("given list must be unmodifiable");
-            } catch (UnsupportedOperationException uoe) {}
-
-            this.id = Integer.toString(id);
-            this.times = times;
+            } catch (UnsupportedOperationException uoe) {
+                this.id = Integer.toString(id);
+                this.times = times;
+            }
         }
 
         /**
@@ -400,7 +400,7 @@ public class Timetable implements iTimetable {
         // calculate the number of buses to go since firstLeaveTime until boundaryTime
         int busCount;
         if (boundaryMinutes < firstLeaveMinutes)
-            busCount = (boundaryMinutes + 24 * 60) - firstLeaveMinutes;
+            busCount = boundaryMinutes + 24 * 60 - firstLeaveMinutes;
         else
             busCount = boundaryMinutes - firstLeaveMinutes;
         busCount = Math.abs(busCount);

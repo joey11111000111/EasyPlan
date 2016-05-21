@@ -10,9 +10,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by joey on 2015.12.07..
- */
+// CHECKSTYLE:OFF
 public class Start extends Application {
 
     static Controller controller;

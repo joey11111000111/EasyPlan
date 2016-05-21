@@ -1,19 +1,18 @@
 package com.github.joey11111000111.EasyPlan.dao;
 
-import com.github.joey11111000111.EasyPlan.core.BusStop;
-import com.github.joey11111000111.EasyPlan.core.Core;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the {@link iCityReader} interface. Includes logging.

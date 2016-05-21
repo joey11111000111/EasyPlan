@@ -8,10 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 /**
  * Implementation of the {@link iObjectIO} interface. Logging is included.
  */
@@ -45,8 +42,7 @@ public class ObjectIO implements iObjectIO {
         LOGGER.trace("called saveObject");
         if (!SAVE_FILE.exists()) {
             LOGGER.debug("save file doesn't exist");
-            if (!SAVE_FILE.getParentFile().exists())
-                if (!SAVE_FILE.getParentFile().mkdirs())
+            if (!SAVE_FILE.getParentFile().exists() && !SAVE_FILE.getParentFile().mkdirs())
                     throw new ObjectSaveFailureException("cannot create parent library");
             try {
                 if (!SAVE_FILE.createNewFile())

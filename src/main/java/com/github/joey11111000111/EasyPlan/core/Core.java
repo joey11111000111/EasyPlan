@@ -518,9 +518,8 @@ public class Core implements Controller {
         if (serviceName == null) {
             throw new NullPointerException("the name of the selected service cannot be null");
         }
-        if (hasSelectedService())
-            if (serviceName.equals(selectedService.getAppliedName()))
-                return;
+        if (hasSelectedService() && serviceName.equals(selectedService.getAppliedName()))
+            return;
 
         if (!services.containsKey(serviceName)) {
             LOGGER.warn("a bus service with the given name '" + serviceName + "' doesn't exist");

@@ -150,7 +150,20 @@
 
     <reporting>
         <plugins>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.4</version>
+				<configuration>
+					<minimumTokens>10</minimumTokens>
+					<rulesets>
+						<ruleset>/rulesets/java/basic.xml</ruleset>
+						<ruleset>/rulesets/java/unusedcode.xml</ruleset>
+						<ruleset>/rulesets/java/imports.xml</ruleset>
+						<ruleset>/rulesets/java/codesize.xml</ruleset>
+					</rulesets>
+				</configuration>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -165,7 +178,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.15</version>
                 <configuration>
-                    <configLocation>${basedir}/src/main/resources/checkstyle.xml</configLocation>
+                    <configLocation>config/checkstyle.xml</configLocation>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

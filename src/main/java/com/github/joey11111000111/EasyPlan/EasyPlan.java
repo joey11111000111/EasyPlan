@@ -38,6 +38,7 @@ public class EasyPlan {
 
         LOGGER.trace("iObjectIO created");
 
+        // set up controller
         Controller controller;
         try {
             controller = objectIO.readObject(Core.class);
@@ -49,15 +50,19 @@ public class EasyPlan {
             LOGGER.debug("a new Controller was created");
         }
 
+        // set up and launch GUI
         Start.setController(controller);
         Start.start();
         LOGGER.debug("GUI was launched");
 
-        try {
-            objectIO.saveObject(controller, Core.class);
-            LOGGER.debug("the controller was successfully saved");
-        } catch (ObjectSaveFailureException e) {
-            LOGGER.warn("couldn't save controller: " + e.getMessage());
+        // save if needed
+        if (!controller.isSaved()) {
+            try {
+                objectIO.saveObject(controller, Core.class);
+                LOGGER.debug("the controller was successfully saved");
+            } catch (ObjectSaveFailureException e) {
+                LOGGER.warn("couldn't save controller: " + e.getMessage());
+            }
         }
 
         LOGGER.trace("application is safely closed");

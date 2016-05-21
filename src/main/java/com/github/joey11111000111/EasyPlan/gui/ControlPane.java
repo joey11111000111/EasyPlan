@@ -22,9 +22,7 @@ import javafx.scene.text.Text;
 
 import static com.github.joey11111000111.EasyPlan.gui.Start.controller;
 
-/**
- * Created by joey on 2015.12.17..
- */
+// CHECKSTYLE:OFF
 public class ControlPane {
 
     private VBox root;

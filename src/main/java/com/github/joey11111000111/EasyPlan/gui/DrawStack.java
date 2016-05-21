@@ -25,9 +25,7 @@ import java.io.InputStream;
 
 import static com.github.joey11111000111.EasyPlan.gui.Start.controller;
 
-/**
- * Created by joey on 2015.12.06..
- */
+// CHECKSTYLE:OFF
 public class DrawStack {
 
     private static final int ROW_COL_NUM = 10;
