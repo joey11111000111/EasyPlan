@@ -53,7 +53,7 @@ public class ObjectIO implements iObjectIO {
             LOGGER.debug("save file successfully created");
         }
 
-        OutputStream outputStream;
+        OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(SAVE_FILE);
         } catch (FileNotFoundException e) {
@@ -67,6 +67,12 @@ public class ObjectIO implements iObjectIO {
             LOGGER.debug("successfully saved object into save file");
         } catch (JAXBException e) {
             throw new ObjectSaveFailureException("Object cannot be saved: " + e.getMessage());
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                LOGGER.warn("cannot close output stream");
+            }
         }
     }
 
@@ -76,7 +82,7 @@ public class ObjectIO implements iObjectIO {
     @Override
     public <E> E readObject(Class<E> clazz) throws ObjectReadFailureException {
         LOGGER.trace("called readObject");
-        InputStream inputStream;
+        InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(SAVE_FILE);
         } catch (FileNotFoundException e) {
@@ -93,6 +99,12 @@ public class ObjectIO implements iObjectIO {
             return loadedObject;
         } catch (JAXBException jaxbe) {
             throw new ObjectReadFailureException("Cannot read object: " + jaxbe.getMessage());
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException ioe) {
+                LOGGER.warn("cannot close input stream");
+            }
         }
     }
 

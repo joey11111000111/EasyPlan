@@ -22,7 +22,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.InputStream;
+import java.util.Arrays;
 
+import static com.github.joey11111000111.EasyPlan.gui.Start.LOGGER;
 import static com.github.joey11111000111.EasyPlan.gui.Start.controller;
 
 // CHECKSTYLE:OFF
@@ -205,7 +207,7 @@ public class DrawStack {
         // add event handler
         stop.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             if (event == null) {
-                System.err.println("mouse error");
+                LOGGER.warn("mouse error, event is null");
                 return;
             }
             if (event.getButton() == MouseButton.PRIMARY && !controller.isClosed())
@@ -235,8 +237,7 @@ public class DrawStack {
 
         lines.getChildren().clear();
         directions.getChildren().clear();
-        for (MarkableShape shape : allStops)
-            shape.markNeutral();
+        Arrays.stream(allStops).forEach(MarkableShape::markNeutral);
     }
     
     private void markStops() {
@@ -431,8 +432,7 @@ public class DrawStack {
 
         fadeTransitions[0].setOnFinished(event -> animating = false);
         animating = true;
-        for (FadeTransition fadeOut : fadeTransitions)
-            fadeOut.play();
+        Arrays.stream(fadeTransitions).forEach(FadeTransition::play);
 
         // delete lines after the animation ends
         Task<Void> sleeper = new Task<Void>() {
